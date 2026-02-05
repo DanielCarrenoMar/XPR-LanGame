@@ -25,7 +25,7 @@ class NetClient {
             return;
         }
 
-        const serverUrl = import.meta.env.VITE_SERVER_URL ?? "http://localhost:8081";
+        const serverUrl = import.meta.env.VITE_SERVER_URL ?? "https://xpr-langame.onrender.com/";
         this.socket = io(serverUrl);
 
         this.socket.on("connect", () => {
