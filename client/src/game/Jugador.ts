@@ -13,13 +13,15 @@ export class Jugador extends GameObjects.Arc
     private keys: WasdKeys | null;
     private speed: number;
     private aimDot: GameObjects.Arc;
-    private bullets: Array<{ sprite: GameObjects.Arc; velocity: PhaserMath.Vector2 }>;
+    public bullets: Array<{ sprite: GameObjects.Arc; velocity: PhaserMath.Vector2 }>;
     private bulletSpeed: number;
+    private onShoot?: (x: number, y: number, angle: number) => void;
 
-    constructor (scene: Scene, x: number, y: number)
+    constructor (scene: Scene, x: number, y: number, onShoot?: (x: number, y: number, angle: number) => void)
     {
         super(scene, x, y, 20, 0, 360, false, Modificable.playerColor);
-
+        
+        this.onShoot = onShoot;
         scene.add.existing(this);
 
         this.speed = 220;
@@ -90,6 +92,7 @@ export class Jugador extends GameObjects.Arc
         const velocity = new PhaserMath.Vector2(Math.cos(angle), Math.sin(angle)).scale(this.bulletSpeed);
 
         this.bullets.push({ sprite: bullet, velocity });
+        this.onShoot?.(this.x, this.y, angle);
     }
 
     private updateBullets (delta: number)

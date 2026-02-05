@@ -1,4 +1,4 @@
-import { Scene } from 'phaser';
+import { Scene, Math as PhaserMath, GameObjects } from 'phaser';
 import { Jugador } from '../Jugador';
 import { netClient, PlayerState } from '../../net/netClient';
 
@@ -9,6 +9,7 @@ export class Game extends Scene
     msg_text : Phaser.GameObjects.Text;
     jugador: Jugador;
     otherPlayers: Map<number, Phaser.GameObjects.Arc>;
+    remoteBullets: { sprite: Phaser.GameObjects.Arc; velocity: PhaserMath.Vector2 }[];
 
     constructor ()
     {
@@ -30,8 +31,11 @@ export class Game extends Scene
         });
         this.msg_text.setOrigin(0.5);
 
-        this.jugador = new Jugador(this, 512, 560);
+        this.jugador = new Jugador(this, 512, 560, (x, y, angle) => {
+            netClient.sendFire(x, y, angle);
+        });
         this.otherPlayers = new Map();
+        this.remoteBullets = [];
 
         netClient.setHandlers({
             onAllPlayers: (players) => {
@@ -45,16 +49,72 @@ export class Game extends Scene
             },
             onPlayerRemoved: (playerId) => {
                 this.removeOtherPlayer(playerId);
+            },
+            onPlayerShoot: (data) => {
+                this.addRemoteBullet(data.x, data.y, data.angle);
             }
         });
 
         netClient.connect();
+
+        window.addEventListener('beforeunload', () => {
+            netClient.disconnect();
+        })
     }
 
     update (_time: number, delta: number)
     {
         this.jugador.update(delta);
         netClient.sendPlayerPosition(this.jugador.x, this.jugador.y);
+        
+        this.updateRemoteBullets(delta);
+        this.checkCollisions();
+    }
+
+    private addRemoteBullet(x: number, y: number, angle: number)
+    {
+        const bulletSpeed = 520; // Same as Jugador
+        const bullet = this.add.circle(x, y, 6, 0xff0000); // Red color for enemy bullets
+        const velocity = new PhaserMath.Vector2(Math.cos(angle), Math.sin(angle)).scale(bulletSpeed);
+        this.remoteBullets.push({ sprite: bullet, velocity });
+    }
+
+    private updateRemoteBullets(delta: number)
+    {
+        const step = delta / 1000;
+        const width = this.scale.width;
+        const height = this.scale.height;
+
+        for (let i = this.remoteBullets.length - 1; i >= 0; i--)
+        {
+            const b = this.remoteBullets[i];
+            b.sprite.x += b.velocity.x * step;
+            b.sprite.y += b.velocity.y * step;
+
+            if (b.sprite.x < -20 || b.sprite.x > width + 20 ||
+                b.sprite.y < -20 || b.sprite.y > height + 20)
+            {
+                b.sprite.destroy();
+                this.remoteBullets.splice(i, 1);
+            }
+        }
+    }
+
+    private checkCollisions()
+    {
+        // Check other players' bullets vs me
+        for (let i = this.remoteBullets.length - 1; i >= 0; i--)
+        {
+            const bullet = this.remoteBullets[i];
+            const dist = PhaserMath.Distance.Between(bullet.sprite.x, bullet.sprite.y, this.jugador.x, this.jugador.y);
+
+            if (dist < 30) // Player radius ~20 + Bullet radius ~6 + buffer
+            {
+                bullet.sprite.destroy();
+                this.remoteBullets.splice(i, 1);
+                this.jugador.setPosition(200,200)
+            }
+        }
     }
 
     private syncOtherPlayers(players: PlayerState[]): void

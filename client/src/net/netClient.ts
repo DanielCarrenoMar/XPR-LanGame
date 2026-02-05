@@ -11,6 +11,7 @@ type ClientHandlers = {
     onPlayerAdded?: (player: PlayerState) => void;
     onPlayerMoved?: (player: PlayerState) => void;
     onPlayerRemoved?: (playerId: number) => void;
+    onPlayerShoot?: (data: { id: number; x: number; y: number; angle: number }) => void;
 };
 
 class NetClient {
@@ -25,7 +26,8 @@ class NetClient {
             return;
         }
 
-        const serverUrl = import.meta.env.VITE_SERVER_URL ?? "https://xpr-langame.onrender.com/";
+        //const serverUrl = "https://xpr-langame.onrender.com/";
+        const serverUrl = "http://localhost:8081";
         this.socket = io(serverUrl);
 
         this.socket.on("connect", () => {
@@ -61,6 +63,20 @@ class NetClient {
             }
             this.handlers.onPlayerRemoved?.(playerId);
         });
+
+        this.socket.on("fire", (data: { id: number; x: number; y: number; angle: number }) => {
+            if (this.isLocalPlayer(data.id)) {
+                return;
+            }
+            this.handlers.onPlayerShoot?.(data);
+        });
+    }
+
+    disconnect(): void {
+        if (this.socket) {
+            this.socket.disconnect();
+            this.socket = null;
+        }
     }
 
     setHandlers(handlers: ClientHandlers): void {
@@ -88,6 +104,16 @@ class NetClient {
         this.lastSent = { x, y };
         this.lastSentAt = now;
         this.socket.emit("posPlayer", { x, y });
+    }
+
+    sendFire(x: number, y: number, angle: number): void {
+        if (!this.socket || !this.socket.connected) return;
+        this.socket.emit("fire", { x, y, angle });
+    }
+
+    sendPlayerHit(targetId: number): void {
+        if (!this.socket || !this.socket.connected) return;
+        this.socket.emit("playerHit", targetId);
     }
 
     private filterLocalPlayer(players: PlayerState[]): PlayerState[] {

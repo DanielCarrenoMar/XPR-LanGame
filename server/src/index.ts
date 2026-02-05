@@ -63,6 +63,23 @@ io.on("connection", (socket: Socket) => {
             io.emit("move", socket.data.player);
         });
 
+        socket.on("fire", (data: { x: number; y: number; angle: number }) => {
+            // Broadcast the fire event to all other players
+            socket.broadcast.emit("fire", { id: socket.data.player.id, ...data });
+        });
+
+        socket.on("playerHit", (targetId: number) => {
+             // Find the target player and respawn them
+             for (const [_, s] of io.sockets.sockets) {
+                 if (s.data.player && s.data.player.id === targetId) {
+                     s.data.player.x = randomInt(100, 400);
+                     s.data.player.y = randomInt(100, 400);
+                     io.emit("move", s.data.player); // "Reappear" at new position
+                     break;
+                 }
+             }
+        });
+
         socket.on("disconnect", () => {
             if (!socket.data.player) return;
             io.emit("remove", socket.data.player.id);
