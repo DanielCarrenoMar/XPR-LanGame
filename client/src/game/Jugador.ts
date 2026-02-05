@@ -1,5 +1,5 @@
 import { GameObjects, Input, Math as PhaserMath, Scene } from 'phaser';
-import { Modificable } from './modificable';
+import { Modificable } from '../modificable';
 
 type WasdKeys = {
     W: Input.Keyboard.Key;

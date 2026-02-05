@@ -18,6 +18,7 @@ export function registerSockets(io: Server): void {
       };
 
       socket.data.player = player;
+      socket.emit("playerId", player.id);
       socket.emit("allplayers", getAllPlayers(io));
       socket.broadcast.emit("newplayer", player);
 
