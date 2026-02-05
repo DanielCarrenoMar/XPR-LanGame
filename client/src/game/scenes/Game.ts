@@ -49,7 +49,6 @@ export class Game extends Scene
         });
 
         netClient.connect();
-
     }
 
     update (_time: number, delta: number)
