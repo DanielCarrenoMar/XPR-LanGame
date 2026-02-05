@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "pnpm tsx --watch src/index.ts",
-    "build": "tsc -p tsconfig.json",
+    "build": "pnpm i && tsc -p tsconfig.json",
     "start": "node dist/index.js"
   },
   "dependencies": {
