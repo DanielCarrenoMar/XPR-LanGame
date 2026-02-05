@@ -1,10 +1,12 @@
 import { Scene } from 'phaser';
+import { Jugador } from '../Jugador';
 
 export class Game extends Scene
 {
     camera: Phaser.Cameras.Scene2D.Camera;
     background: Phaser.GameObjects.Image;
     msg_text : Phaser.GameObjects.Text;
+    jugador: Jugador;
 
     constructor ()
     {
@@ -26,10 +28,12 @@ export class Game extends Scene
         });
         this.msg_text.setOrigin(0.5);
 
-        this.input.once('pointerdown', () => {
+        this.jugador = new Jugador(this, 512, 560);
 
-            this.scene.start('GameOver');
+    }
 
-        });
+    update (_time: number, delta: number)
+    {
+        this.jugador.update(delta);
     }
 }
