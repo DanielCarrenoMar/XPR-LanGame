@@ -8,7 +8,7 @@ export class Game extends Scene
     background: Phaser.GameObjects.Image;
     msg_text : Phaser.GameObjects.Text;
     jugador: Jugador;
-    otherPlayers: Map<number, Phaser.GameObjects.Arc>;
+    otherPlayers: Map<number, { player: Phaser.GameObjects.Arc; shield?: Phaser.GameObjects.Line }>;
     remoteBullets: { sprite: Phaser.GameObjects.Arc; velocity: PhaserMath.Vector2 }[];
 
     constructor ()
@@ -65,7 +65,7 @@ export class Game extends Scene
     update (_time: number, delta: number)
     {
         this.jugador.update(delta);
-        netClient.sendPlayerPosition(this.jugador.x, this.jugador.y);
+        netClient.sendPlayerPosition(this.jugador.x, this.jugador.y, this.jugador.currentAimAngle);
         
         this.updateRemoteBullets(delta);
         this.checkCollisions();
@@ -106,6 +106,13 @@ export class Game extends Scene
         for (let i = this.remoteBullets.length - 1; i >= 0; i--)
         {
             const bullet = this.remoteBullets[i];
+
+            if (this.jugador.checkShieldCollision(bullet.sprite.x, bullet.sprite.y)) {
+                bullet.sprite.destroy();
+                this.remoteBullets.splice(i, 1);
+                continue;
+            }
+
             const dist = PhaserMath.Distance.Between(bullet.sprite.x, bullet.sprite.y, this.jugador.x, this.jugador.y);
 
             if (dist < 30) // Player radius ~20 + Bullet radius ~6 + buffer
@@ -148,7 +155,19 @@ export class Game extends Scene
 
         const other = this.add.circle(player.x, player.y, 18, 0xf4a261);
         other.setStrokeStyle(2, 0x243b2d);
-        this.otherPlayers.set(player.id, other);
+        
+        let shield: Phaser.GameObjects.Line | undefined;
+        if (player.backModule === "SHIELD") {
+            // Line perpendicular to direction
+            shield = this.add.line(player.x, player.y, 30, -25, 30, 25, 0x00ffff);
+            shield.setLineWidth(4);
+            // Initial rotation if available
+            if (player.angle !== undefined) {
+                 shield.setRotation(player.angle + Math.PI); // Back module
+            }
+        }
+
+        this.otherPlayers.set(player.id, { player: other, shield });
     }
 
     private moveOtherPlayer(player: PlayerState): void
@@ -159,8 +178,17 @@ export class Game extends Scene
             return;
         }
 
-        other.x = player.x;
-        other.y = player.y;
+        other.player.x = player.x;
+        other.player.y = player.y;
+
+        if (other.shield) {
+            other.shield.x = player.x;
+            other.shield.y = player.y;
+            if (player.angle !== undefined) {
+                // Back module
+               other.shield.setRotation(player.angle + Math.PI);
+            }
+        }
     }
 
     private removeOtherPlayer(playerId: number): void
@@ -171,7 +199,8 @@ export class Game extends Scene
             return;
         }
 
-        other.destroy();
+        other.player.destroy();
+        other.shield?.destroy();
         this.otherPlayers.delete(playerId);
     }
 }

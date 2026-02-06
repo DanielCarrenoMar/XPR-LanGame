@@ -1,10 +1,15 @@
 import { io, Socket } from "socket.io-client";
+import { Modificable, ModuleType } from "../modificable";
 
 export type PlayerState = {
     id: number;
     x: number;
     y: number;
+    angle: number;
+    frontModule: ModuleType;
+    backModule: ModuleType;
 };
+
 
 type ClientHandlers = {
     onAllPlayers?: (players: PlayerState[]) => void;
@@ -18,7 +23,7 @@ class NetClient {
     private socket: Socket | null = null;
     private handlers: ClientHandlers = {};
     private localPlayerId: number | null = null;
-    private lastSent: { x: number; y: number } | null = null;
+    private lastSent: { x: number; y: number; angle: number } | null = null;
     private lastSentAt = 0;
 
     connect(): void {
@@ -31,7 +36,10 @@ class NetClient {
         this.socket = io(serverUrl);
 
         this.socket.on("connect", () => {
-            this.socket?.emit("newplayer");
+            this.socket?.emit("newplayer", {
+                frontModule: Modificable.frontModule,
+                backModule: Modificable.backModule
+            });
         });
 
         this.socket.on("playerId", (playerId: number) => {
@@ -83,7 +91,7 @@ class NetClient {
         this.handlers = handlers;
     }
 
-    sendPlayerPosition(x: number, y: number): void {
+    sendPlayerPosition(x: number, y: number, angle: number): void {
         if (!this.socket || !this.socket.connected) {
             return;
         }
@@ -91,19 +99,22 @@ class NetClient {
         const now = performance.now();
         const minIntervalMs = 50;
         const minDistance = 0.5;
+        const minAngle = 0.05; // radians
 
         if (this.lastSent) {
             const dx = x - this.lastSent.x;
             const dy = y - this.lastSent.y;
             const distance = Math.hypot(dx, dy);
-            if (distance < minDistance && now - this.lastSentAt < minIntervalMs) {
+            const dAngle = Math.abs(angle - this.lastSent.angle);
+            
+            if (distance < minDistance && dAngle < minAngle && now - this.lastSentAt < minIntervalMs) {
                 return;
             }
         }
 
-        this.lastSent = { x, y };
+        this.lastSent = { x, y, angle };
         this.lastSentAt = now;
-        this.socket.emit("posPlayer", { x, y });
+        this.socket.emit("posPlayer", { x, y, angle });
     }
 
     sendFire(x: number, y: number, angle: number): void {

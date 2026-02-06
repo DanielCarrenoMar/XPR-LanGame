@@ -22,10 +22,10 @@ export class MainMenu extends Scene
             stroke: '#000000', strokeThickness: 8,
             align: 'center'
         }).setOrigin(0.5);
-
+        
+        this.scene.start('Game');
         this.input.once('pointerdown', () => {
 
-            this.scene.start('Game');
 
         });
     }

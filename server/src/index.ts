@@ -6,7 +6,11 @@ type Player = {
     id: number;
     x: number;
     y: number;
+    angle: number;
+    frontModule: string;
+    backModule: string;
 };
+
 
 let lastPlayerId = 0;
 
@@ -43,11 +47,14 @@ function randomInt(low: number, high: number): number {
 }
 
 io.on("connection", (socket: Socket) => {
-    socket.on("newplayer", () => {
+    socket.on("newplayer", (modules?: { frontModule: string, backModule: string }) => {
         const player: Player = {
             id: lastPlayerId++,
             x: randomInt(100, 400),
-            y: randomInt(100, 400)
+            y: randomInt(100, 400),
+            angle: 0,
+            frontModule: modules?.frontModule || "PISTOL",
+            backModule: modules?.backModule || "SHIELD"
         };
         console.log(`Player connected: ${player.id}`);
 
@@ -56,10 +63,11 @@ io.on("connection", (socket: Socket) => {
         socket.emit("allplayers", getAllPlayers(io));
         socket.broadcast.emit("newplayer", player);
 
-        socket.on("posPlayer", (data: { x: number; y: number }) => {
+        socket.on("posPlayer", (data: { x: number; y: number; angle: number }) => {
             if (!socket.data.player) return;
             socket.data.player.x = data.x;
             socket.data.player.y = data.y;
+            socket.data.player.angle = data.angle;
             io.emit("move", socket.data.player);
         });
 
