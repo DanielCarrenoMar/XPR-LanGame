@@ -5,6 +5,8 @@ import { netClient, PlayerState } from '../../net/netClient';
 
 export class Game extends Scene
 {
+    private readonly mapWidth = 1200;
+    private readonly mapHeight = 1200;
     camera: Phaser.Cameras.Scene2D.Camera;
     background: Phaser.GameObjects.Image;
     msg_text : Phaser.GameObjects.Text;
@@ -21,8 +23,10 @@ export class Game extends Scene
     {
         this.camera = this.cameras.main;
         this.camera.setBackgroundColor(0x00ff00);
+        this.camera.setBounds(0, 0, this.mapWidth, this.mapHeight);
 
-        this.background = this.add.image(512, 384, 'background');
+        this.background = this.add.image(this.mapWidth / 2+5, this.mapHeight / 2+5, 'background');
+        this.background.setDisplaySize(this.mapWidth-20, this.mapHeight-20);
         this.background.setAlpha(0.5);
 
         this.msg_text = this.add.text(512, 384, 'Make something fun!\nand share it with us:\nsupport@phaser.io', {
@@ -35,6 +39,7 @@ export class Game extends Scene
         this.jugador = new LocalPlayer(this, 512, 560, (x, y, angle) => {
             netClient.sendFire(x, y, angle);
         });
+        this.camera.startFollow(this.jugador, false, 0.08, 0.08);
         this.otherPlayers = new Map();
         this.remoteBullets = [];
 
@@ -84,8 +89,8 @@ export class Game extends Scene
     private updateRemoteBullets(delta: number)
     {
         const step = delta / 1000;
-        const width = this.scale.width;
-        const height = this.scale.height;
+        const width = this.mapWidth;
+        const height = this.mapHeight;
 
         for (let i = this.remoteBullets.length - 1; i >= 0; i--)
         {
