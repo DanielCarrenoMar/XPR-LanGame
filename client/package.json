@@ -8,7 +8,8 @@
         "#entities/*": "./src/game/entities/*",
         "#scenes/*": "./src/game/scenes/*",
         "#net/*": "./src/net/*",
-        "#utils/*": "./src/utils/*"
+        "#utils/*": "./src/utils/*",
+        "#src/*": "./src/*"
     },
     "scripts": {
         "dev": "node log.js dev & vite --config vite/config.dev.mjs",

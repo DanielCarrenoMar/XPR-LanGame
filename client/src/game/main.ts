@@ -1,4 +1,5 @@
 import { Boot } from "#scenes/Boot.ts";
+import GameScene from "#scenes/Game.ts";
 import { InitialMenu } from "#scenes/InitialMenu.ts";
 import { Preloader } from "#scenes/Preloader.ts";
 import { AUTO, Game } from "phaser";
@@ -14,7 +15,7 @@ const config: Phaser.Types.Core.GameConfig = {
         Boot,
         Preloader,
         InitialMenu,
-        Game
+        GameScene
     ]
 };
 

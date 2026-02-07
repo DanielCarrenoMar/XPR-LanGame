@@ -4,7 +4,7 @@ import { LocalPlayer } from '#player/LocalPlayer.ts';
 import { netClient } from '#net/netClient.ts';
 import { PlayerState } from '#net/netClient.ts';
 
-export class Game extends Scene
+export default class Game extends Scene
 {
     private readonly mapWidth = 1200;
     private readonly mapHeight = 1200;
@@ -22,20 +22,23 @@ export class Game extends Scene
 
     create ()
     {
+        const map = this.make.tilemap({ key: 'mainMap' });
+        const tileset = map.addTilesetImage('grass', 'grassTiled');
+
+        if (!tileset) {
+            console.error('Tileset not found!');
+            return;
+        }
+
+        const floorLayer = map.createLayer('Floor', tileset);
+
         this.camera = this.cameras.main;
         this.camera.setBackgroundColor(0x00ff00);
-        this.camera.setBounds(0, 0, this.mapWidth, this.mapHeight);
+        this.camera.setBounds(0, 0, map.width, map.height);
 
-        this.background = this.add.image(this.mapWidth / 2+5, this.mapHeight / 2+5, 'background');
-        this.background.setDisplaySize(this.mapWidth-20, this.mapHeight-20);
+        this.background = this.add.image(map.width / 2+5, map.height / 2+5, 'background');
+        this.background.setDisplaySize(map.width-20, map.height-20);
         this.background.setAlpha(0.5);
-
-        this.msg_text = this.add.text(512, 384, 'Make something fun!\nand share it with us:\nsupport@phaser.io', {
-            fontFamily: 'Arial Black', fontSize: 38, color: '#ffffff',
-            stroke: '#000000', strokeThickness: 8,
-            align: 'center'
-        });
-        this.msg_text.setOrigin(0.5);
 
         this.jugador = new LocalPlayer(this, 512, 560, (x, y, angle) => {
             netClient.sendFire(x, y, angle);
