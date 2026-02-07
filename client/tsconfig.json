@@ -9,19 +9,18 @@
             "DOM.Iterable"
         ],
         "skipLibCheck": true,
-        /* Bundler mode */
-        "moduleResolution": "bundler",
+        "moduleResolution": "nodenext",
         "allowImportingTsExtensions": true,
         "isolatedModules": true,
         "moduleDetection": "force",
         "noEmit": true,
-        /* Linting */
         "strictPropertyInitialization": false,
         "strict": true,
         "noUnusedLocals": true,
         "noUnusedParameters": true,
         "noFallthroughCasesInSwitch": true,
-        "noUncheckedSideEffectImports": true
+        "noUncheckedSideEffectImports": true,
+        "baseUrl": "."
     },
     "include": [
         "src"

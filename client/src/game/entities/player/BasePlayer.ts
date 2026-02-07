@@ -1,5 +1,5 @@
 import { GameObjects, Math as PhaserMath, Scene } from 'phaser';
-import { ModuleType } from '../modificable';
+import { ModuleType } from '../modificable.ts';
 
 type ShieldSet = { front?: GameObjects.Line; back?: GameObjects.Line };
 

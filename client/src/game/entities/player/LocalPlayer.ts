@@ -1,6 +1,6 @@
 import { GameObjects, Input, Math as PhaserMath, Scene } from 'phaser';
-import { Modificable, ModuleType } from '../modificable';
-import { BasePlayer } from './BasePlayer';
+import { Modificable, ModuleType } from '../modificable.ts';
+import { BasePlayer } from './BasePlayer.ts';
 
 type WasdKeys = {
     W: Input.Keyboard.Key;

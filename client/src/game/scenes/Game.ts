@@ -1,7 +1,8 @@
 import { Scene, Math as PhaserMath } from 'phaser';
-import { LocalPlayer } from '../LocalPlayer';
-import { RemotePlayer } from '../RemotePlayer';
-import { netClient, PlayerState } from '../../net/netClient';
+import { RemotePlayer } from '#player/RemotePlayer.ts';
+import { LocalPlayer } from '#player/LocalPlayer.ts';
+import { netClient } from '#net/netClient.ts';
+import { PlayerState } from '#net/netClient.ts';
 
 export class Game extends Scene
 {

@@ -1,6 +1,6 @@
 import { Scene } from 'phaser';
-import { ModuleType } from '../modificable';
-import { BasePlayer } from './BasePlayer';
+import { ModuleType } from '../modificable.ts';
+import { BasePlayer } from './BasePlayer.ts';
 
 export class RemotePlayer extends BasePlayer
 {

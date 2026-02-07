@@ -3,6 +3,13 @@
     "description": "A Phaser 3 TypeScript template using Vite.",
     "type": "module",
     "version": "1.0.0",
+    "imports": {
+        "#player/*": "./src/game/entities/player/*",
+        "#entities/*": "./src/game/entities/*",
+        "#scenes/*": "./src/game/scenes/*",
+        "#net/*": "./src/net/*",
+        "#utils/*": "./src/utils/*"
+    },
     "scripts": {
         "dev": "node log.js dev & vite --config vite/config.dev.mjs",
         "build": "node log.js build & vite build --config vite/config.prod.mjs",
