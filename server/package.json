@@ -3,6 +3,12 @@
   "private": true,
   "version": "1.0.0",
   "type": "module",
+  "imports": {
+    "#handlers/*": "./src/spckets/handlers/*",
+    "#sockets/*": "./src/sockets/*",
+    "#endpoints/*": "./src/endpoint/*",
+    "#src/*": "./src/*"
+  },
   "scripts": {
     "dev": "pnpm tsx --watch src/index.ts",
     "build": "pnpm i && tsc -p tsconfig.json",
