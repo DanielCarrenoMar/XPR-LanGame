@@ -53,8 +53,8 @@ export class LocalPlayer extends BasePlayer
         const height = bounds.height;
         const radius = this.radius;
 
-        this.x = PhaserMath.Clamp(nextX, bounds.left + radius, bounds.left + width - radius);
-        this.y = PhaserMath.Clamp(nextY, bounds.top + radius, bounds.top + height - radius);
+        this.x = nextX
+        this.y = nextY
 
         const pointer = this.scene.input.activePointer;
         this.currentAimAngle = PhaserMath.Angle.Between(this.x, this.y, pointer.worldX, pointer.worldY);

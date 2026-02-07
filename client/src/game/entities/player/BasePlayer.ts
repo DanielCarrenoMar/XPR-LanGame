@@ -32,7 +32,7 @@ export class BasePlayer extends GameObjects.Arc
         backModule: ModuleType,
         strokeColor = 0x0b1d4d
     ) {
-        super(scene, x, y, 20, 0, 360, false, color);
+        super(scene, x, y, 18, 0, 360, false, color);
 
         this.frontModule = frontModule;
         this.backModule = backModule;

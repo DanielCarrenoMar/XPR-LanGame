@@ -39,16 +39,29 @@
                 "y": 479.23444976076564
             }
         },
+        "maps/mainMap2.json": {
+            "scale": 0.125,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 1548,
+                "y": 1820
+            }
+        },
         "maps/patters/Grass.tsx": {
             "scaleInDock": 1
         },
         "patters/Grass.tsx": {
             "scaleInDock": 1,
             "scaleInEditor": 1
+        },
+        "tiledsets/Grass.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
         }
     },
     "last.exportedFilePath": "C:/Users/Geman Carreño/OneDrive/Documentos/CODE/XPR-LanGame/client/public/tiled/maps",
     "last.imagePath": "C:/Users/Geman Carreño/OneDrive/Documentos/CODE/XPR-LanGame/client/public/MiniWorldSprites/Ground",
+    "lastUsedTilesetExportFilter": "JSON tileset files (*.tsj *.json)",
     "map.height": 60,
     "map.lastUsedExportFilter": "JSON map files (*.tmj *.json)",
     "map.lastUsedFormat": "json",
@@ -57,10 +70,12 @@
     ],
     "project": "sin nombre.tiled-project",
     "recentFiles": [
+        "tiledsets/Grass.tsx",
         "maps/mainMap.json",
-        "maps/mainMap.tmj",
+        "maps/mainMap2.json",
         "maps/mainMap.tmx",
         "patters/Grass.tsx",
+        "maps/mainMap.tmj",
         "mainMap.tmx"
     ],
     "tileset.lastUsedFormat": "tsx",

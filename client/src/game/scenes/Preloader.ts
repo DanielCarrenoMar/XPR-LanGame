@@ -33,8 +33,8 @@ export class Preloader extends Scene
         this.load.setPath('assets');
         this.load.image('logo', 'logo.png');
 
-        this.load.setPath('MiniWorldSprites');
-        this.load.image('grassTiled', 'Ground/Grass.png');
+        this.load.setPath('tiled/tiledsets');
+        this.load.image('grassTiled', 'Grass.png');
 
         this.load.setPath('tiled/maps');
         this.load.tilemapTiledJSON('mainMap', 'mainMap.json');

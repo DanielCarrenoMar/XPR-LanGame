@@ -9,7 +9,6 @@ export default class Game extends Scene
     private readonly mapWidth = 1200;
     private readonly mapHeight = 1200;
     camera: Phaser.Cameras.Scene2D.Camera;
-    background: Phaser.GameObjects.Image;
     msg_text : Phaser.GameObjects.Text;
     jugador: LocalPlayer;
     otherPlayers: Map<number, RemotePlayer>;
@@ -23,7 +22,7 @@ export default class Game extends Scene
     create ()
     {
         const map = this.make.tilemap({ key: 'mainMap' });
-        const tileset = map.addTilesetImage('grass', 'grassTiled');
+        const tileset = map.addTilesetImage('Grass', 'grassTiled');
 
         if (!tileset) {
             console.error('Tileset not found!');
@@ -34,12 +33,6 @@ export default class Game extends Scene
 
         this.camera = this.cameras.main;
         this.camera.setBackgroundColor(0x00ff00);
-        this.camera.setBounds(0, 0, map.width, map.height);
-
-        this.background = this.add.image(map.width / 2+5, map.height / 2+5, 'background');
-        this.background.setDisplaySize(map.width-20, map.height-20);
-        this.background.setAlpha(0.5);
-
         this.jugador = new LocalPlayer(this, 512, 560, (x, y, angle) => {
             netClient.sendFire(x, y, angle);
         });
