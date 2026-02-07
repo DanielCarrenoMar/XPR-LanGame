@@ -1,5 +1,5 @@
 import { io, Socket } from "socket.io-client";
-import { Modificable, ModuleType } from "../modificable";
+import { Modificable, ModuleType } from "#src/modificable.ts";
 
 export type PlayerState = {
     id: number;
@@ -31,8 +31,8 @@ class NetClient {
             return;
         }
 
-        const serverUrl = "https://xpr-langame.onrender.com/";
-        //const serverUrl = "http://localhost:8081";
+        //const serverUrl = "https://xpr-langame.onrender.com/";
+        const serverUrl = "http://localhost:8081";
         this.socket = io(serverUrl);
 
         this.socket.on("connect", () => {
