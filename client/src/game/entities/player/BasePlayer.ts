@@ -1,5 +1,5 @@
 import { GameObjects, Math as PhaserMath, Scene } from 'phaser';
-import { ModuleType } from '../modificable.ts';
+import { ModuleType } from '#src/modificable.ts';
 
 type ShieldSet = { front?: GameObjects.Line; back?: GameObjects.Line };
 
@@ -32,7 +32,7 @@ export class BasePlayer extends GameObjects.Arc
         backModule: ModuleType,
         strokeColor = 0x0b1d4d
     ) {
-        super(scene, x, y, 18, 0, 360, false, color);
+        super(scene, x, y, 20, 0, 360, false, color);
 
         this.frontModule = frontModule;
         this.backModule = backModule;
