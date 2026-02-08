@@ -1,5 +1,7 @@
 export default abstract class BaseWeapon extends Phaser.GameObjects.Sprite {
 
+    public ownerId: number | null = null;
+
 
     constructor(scene: Phaser.Scene, x: number, y: number, texture: string = "yoshi") {
         super(scene, x, y, texture);
