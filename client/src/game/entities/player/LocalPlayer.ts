@@ -48,16 +48,13 @@ export class LocalPlayer extends BasePlayer
         if (this.keys.A.isDown) nextX -= step;
         if (this.keys.D.isDown) nextX += step;
 
-        const bounds = this.scene.cameras.main.getBounds();
-        const width = bounds.width;
-        const height = bounds.height;
-        const radius = this.radius;
-
         this.x = nextX
         this.y = nextY
-
+        
         const pointer = this.scene.input.activePointer;
-        this.currentAimAngle = PhaserMath.Angle.Between(this.x, this.y, pointer.worldX, pointer.worldY);
+        const pointerPosition = pointer.positionToCamera(this.scene.cameras.main) as PhaserMath.Vector2;
+        
+        this.currentAimAngle = PhaserMath.Angle.Between(this.x, this.y, pointerPosition.x, pointerPosition.y);
 
         this.updateVisuals();
         this.updateBullets(delta);
