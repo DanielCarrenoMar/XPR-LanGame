@@ -4,6 +4,8 @@ import { LocalPlayer } from '#player/LocalPlayer.ts';
 import { netClient } from '#net/netClient.ts';
 import { PlayerState } from '#net/netClient.ts';
 import { createBullet } from '#utils/factories.ts';
+import Bullet from '#entities/bullet/Bullet.ts';
+import { BaseBullet } from '#entities/bullet/BaseBullet.ts';
 
 export default class Game extends Scene
 {
@@ -36,9 +38,7 @@ export default class Game extends Scene
         this.physics.world.setBounds(0, 0, this.mapWidth, this.mapHeight);
 
         this.camera = this.cameras.main;;
-        this.jugador = new LocalPlayer(this, 512, 560, (x, y, angle) => {
-            netClient.sendFire(x, y, angle);
-        });
+        this.jugador = new LocalPlayer(this, 512, 560);
         this.camera.startFollow(this.jugador, false, 0.08, 0.08);
         this.otherPlayers = new Map();
 
