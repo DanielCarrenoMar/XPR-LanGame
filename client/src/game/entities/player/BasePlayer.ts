@@ -1,22 +1,13 @@
-import { GameObjects, Math as PhaserMath, Scene } from 'phaser';
+import { GameObjects, Scene } from 'phaser';
 import { WeaponType } from '#src/modificable.ts';
 import { createWeapon } from '#utils/factories.ts';
 import BaseWeapon from './weapon/BaseWeapon.ts';
-
-type ShieldSet = { front?: GameObjects.Line; back?: GameObjects.Line };
-
-type ShieldGeometry = {
-    offset: number;
-    halfLength: number;
-    maxDistance: number;
-};
 
 export class BasePlayer extends GameObjects.Sprite
 {
     protected frontWeapon: BaseWeapon | null = null;
     protected backWeapon: BaseWeapon | null = null;
     protected aimDot: GameObjects.Arc;
-    protected shields: ShieldSet = {};
     public currentAimAngle = 0;
     
     constructor(
@@ -44,17 +35,6 @@ export class BasePlayer extends GameObjects.Sprite
         this.aimDot.x = this.x + Math.cos(this.currentAimAngle) * aimDistance;
         this.aimDot.y = this.y + Math.sin(this.currentAimAngle) * aimDistance;
 
-        if (this.shields.front) {
-            this.shields.front.x = this.x;
-            this.shields.front.y = this.y;
-            this.shields.front.setRotation(this.currentAimAngle);
-        }
-        if (this.shields.back) {
-            this.shields.back.x = this.x;
-            this.shields.back.y = this.y;
-            this.shields.back.setRotation(this.currentAimAngle + Math.PI);
-        }
-
         this.setRotation(this.currentAimAngle);
 
         const aimX = Math.cos(this.currentAimAngle) * 40;
@@ -69,8 +49,6 @@ export class BasePlayer extends GameObjects.Sprite
 
     override destroy(fromScene?: boolean): void {
         this.aimDot.destroy();
-        this.shields.front?.destroy();
-        this.shields.back?.destroy();
         super.destroy(fromScene);
     }
 }
