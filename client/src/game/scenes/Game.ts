@@ -6,8 +6,8 @@ import { PlayerState } from '#net/netClient.ts';
 
 export default class Game extends Scene
 {
-    private readonly mapWidth = 1200;
-    private readonly mapHeight = 1200;
+    private  mapWidth: number;
+    private  mapHeight: number;
     camera: Phaser.Cameras.Scene2D.Camera;
     msg_text : Phaser.GameObjects.Text;
     jugador: LocalPlayer;
@@ -30,6 +30,11 @@ export default class Game extends Scene
         }
 
         const floorLayer = map.createLayer('Floor', tileset);
+
+        this.mapWidth = map.widthInPixels;
+        this.mapHeight = map.heightInPixels;
+
+        this.physics.world.setBounds(0, 0, this.mapWidth, this.mapHeight);
 
         this.camera = this.cameras.main;
         this.camera.setBackgroundColor(0x00ff00);

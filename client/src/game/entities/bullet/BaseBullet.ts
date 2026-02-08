@@ -9,6 +9,6 @@ export abstract class BaseBullet extends Phaser.GameObjects.Arc
         super(scene, x, y, 4, 0, 360, false, 0xff0000);
         this.type = type;
         this.velocity = velocity;
-        scene.add.existing(this);
+        scene.physics.add.existing(this);
     }
 }
