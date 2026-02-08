@@ -4,9 +4,9 @@ export default class Bullet extends BaseBullet {
     private static readonly TIME = 2500;
     private timer: number = 0;
 
-    constructor(scene: Phaser.Scene, x: number, y: number, angle: number) {
+    constructor(scene: Phaser.Scene, x: number, y: number, angle: number, ownerId: number | null) {
         const velocity = new Phaser.Math.Vector2(Math.cos(angle), Math.sin(angle)).scale(300);
-        super(scene, x, y, velocity, "BULLET");
+        super(scene, x, y, velocity, "BULLET", ownerId);
     }
 
     preUpdate(): void {

@@ -4,10 +4,12 @@ import BaseWeapon from "#player/weapon/BaseWeapon.ts";
 import ShotgunWeapon from "#player/weapon/ShotgunWeapon.ts";
 import { WeaponType } from "#src/modificable.ts";
 
-export function createBullet(scene: Phaser.Scene, x: number, y: number, angle: number, type: BulletType): BaseBullet {
+export function createBullet(scene: Phaser.Scene, x: number, y: number, angle: number, type: BulletType, ownerId: number | null): BaseBullet {
     switch (type) {
         case "BULLET":
-            return new Bullet(scene, x, y, angle);
+            const bullet = new Bullet(scene, x, y, angle, ownerId);
+            scene.events.emit("bullet-created", bullet);
+            return bullet;
         default:
             throw new Error(`Unknown bullet type: ${type}`);
     }

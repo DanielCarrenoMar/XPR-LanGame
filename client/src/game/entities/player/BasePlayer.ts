@@ -9,6 +9,7 @@ export class BasePlayer extends GameObjects.Sprite
     protected backWeapon: BaseWeapon | null = null;
     protected aimDot: GameObjects.Arc;
     public currentAimAngle = 0;
+    public playerId: number | null = null;
     
     constructor(
         scene: Scene,

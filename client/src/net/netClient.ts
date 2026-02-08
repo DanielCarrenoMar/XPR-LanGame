@@ -17,6 +17,7 @@ type ClientHandlers = {
     onPlayerMoved?: (player: PlayerState) => void;
     onPlayerRemoved?: (playerId: number) => void;
     onPlayerShoot?: (data: { id: number; x: number; y: number; angle: number }) => void;
+    onLocalPlayerId?: (playerId: number) => void;
 };
 
 class NetClient {
@@ -44,6 +45,7 @@ class NetClient {
 
         this.socket.on("playerId", (playerId: number) => {
             this.localPlayerId = playerId;
+            this.handlers.onLocalPlayerId?.(playerId);
         });
 
         this.socket.on("allplayers", (players: PlayerState[]) => {
@@ -125,6 +127,10 @@ class NetClient {
     sendPlayerHit(targetId: number): void {
         if (!this.socket || !this.socket.connected) return;
         this.socket.emit("playerHit", targetId);
+    }
+
+    getLocalPlayerId(): number | null {
+        return this.localPlayerId;
     }
 
     private filterLocalPlayer(players: PlayerState[]): PlayerState[] {
