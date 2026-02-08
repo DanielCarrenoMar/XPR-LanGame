@@ -1,6 +1,8 @@
 import { GameObjects, Input, Math as PhaserMath, Scene } from 'phaser';
 import { BasePlayer } from './BasePlayer.ts';
 import { Modificable, ModuleType } from '#src/modificable.ts';
+import BaseModule from './modules/BaseModule.ts';
+import ShotgunMod from './modules/ShotGunMod.ts';
 
 type WasdKeys = {
     W: Input.Keyboard.Key;
@@ -30,6 +32,7 @@ export class LocalPlayer extends BasePlayer
         this.keys = scene.input.keyboard?.addKeys('W,A,S,D') as WasdKeys | null;
         this.bullets = [];
         this.bulletSpeed = 520;
+        this.module1 = new ShotgunMod(scene, x, y);
 
         scene.input.on('pointerdown', this.handleShoot, this);
     }
@@ -64,11 +67,10 @@ export class LocalPlayer extends BasePlayer
         if (pointer.button !== 0) {
             return;
         }
-
-        const angle = PhaserMath.Angle.Between(this.x, this.y, pointer.worldX, pointer.worldY);
-
-        this.fireModule(Modificable.frontModule, angle);
-        this.fireModule(Modificable.backModule, angle + Math.PI);
+        const playerPos = new PhaserMath.Vector2(this.x, this.y);
+        const targetPos = pointer.positionToCamera(this.scene.cameras.main) as PhaserMath.Vector2;
+        this.module1?.fire(playerPos, targetPos);
+        this.module2?.fire(playerPos, targetPos);
     }
 
     private fireModule(moduleType: ModuleType, angle: number): void {

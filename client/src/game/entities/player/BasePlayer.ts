@@ -1,5 +1,6 @@
 import { GameObjects, Math as PhaserMath, Scene } from 'phaser';
 import { ModuleType } from '#src/modificable.ts';
+import BaseModule from './modules/BaseModule.ts';
 
 type ShieldSet = { front?: GameObjects.Line; back?: GameObjects.Line };
 
@@ -9,12 +10,14 @@ type ShieldGeometry = {
     maxDistance: number;
 };
 
-export class BasePlayer extends GameObjects.Arc
+export class BasePlayer extends GameObjects.Sprite
 {
     protected frontModule: ModuleType;
     protected backModule: ModuleType;
     protected aimDot: GameObjects.Arc;
     protected shields: ShieldSet = {};
+    protected module1: BaseModule | null = null;
+    protected module2: BaseModule | null = null;
     public currentAimAngle = 0;
 
     private shieldGeom: ShieldGeometry = {
@@ -32,13 +35,13 @@ export class BasePlayer extends GameObjects.Arc
         backModule: ModuleType,
         strokeColor = 0x0b1d4d
     ) {
-        super(scene, x, y, 20, 0, 360, false, color);
+        super(scene, x, y, "yoshi");
+        this.setDisplaySize(64, 64);
 
         this.frontModule = frontModule;
         this.backModule = backModule;
 
         scene.add.existing(this);
-        this.setStrokeStyle(2, strokeColor);
 
         this.aimDot = scene.add.circle(x, y, 4, 0xffffff);
         this.initShields();
@@ -46,7 +49,7 @@ export class BasePlayer extends GameObjects.Arc
     }
 
     protected updateVisuals(): void {
-        const aimDistance = this.radius + 10;
+        const aimDistance = this.width / 2;
         this.aimDot.x = this.x + Math.cos(this.currentAimAngle) * aimDistance;
         this.aimDot.y = this.y + Math.sin(this.currentAimAngle) * aimDistance;
 
@@ -60,6 +63,8 @@ export class BasePlayer extends GameObjects.Arc
             this.shields.back.y = this.y;
             this.shields.back.setRotation(this.currentAimAngle + Math.PI);
         }
+
+        this.module1?.setPosition(this.x, this.y);
     }
 
     protected initShields(): void {
