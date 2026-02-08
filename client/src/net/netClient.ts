@@ -1,13 +1,13 @@
 import { io, Socket } from "socket.io-client";
-import { Modificable, ModuleType } from "#src/modificable.ts";
+import { Modificable, WeaponType } from "#src/modificable.ts";
 
 export type PlayerState = {
     id: number;
     x: number;
     y: number;
     angle: number;
-    frontModule: ModuleType;
-    backModule: ModuleType;
+    frontModule: WeaponType;
+    backModule: WeaponType;
 };
 
 

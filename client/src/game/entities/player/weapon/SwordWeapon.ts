@@ -1,6 +1,6 @@
-import BaseModule from "./BaseModule.ts";
+import BaseWeapon from "./BaseWeapon.ts";
 
-export default class ShieldMod extends BaseModule {
+export default class SwordWeapon extends BaseWeapon {
 
     constructor(scene: Phaser.Scene, x: number, y: number) {
         super(scene, x, y);

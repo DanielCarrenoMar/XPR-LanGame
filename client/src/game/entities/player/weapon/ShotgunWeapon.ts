@@ -1,8 +1,8 @@
 import { netClient } from "#net/netClient.ts";
 import { createBullet } from "#utils/factories.ts";
-import BaseModule from "./BaseModule.ts";
+import BaseWeapon from "./BaseWeapon.ts";
 
-export default class ShotgunMod extends BaseModule {
+export default class ShotgunWeapon extends BaseWeapon {
 
     constructor(scene: Phaser.Scene, x: number, y: number) {
         super(scene, x, y);

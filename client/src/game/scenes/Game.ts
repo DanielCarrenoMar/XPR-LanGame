@@ -107,8 +107,7 @@ export default class Game extends Scene
         {
             return;
         }
-
-        const other = new RemotePlayer(this, player.x, player.y, 0xf4a261, player.frontModule, player.backModule);
+        const other = new RemotePlayer(this, player.x, player.y, player.frontModule, player.backModule);
         other.applyRemoteState(player.x, player.y, player.angle ?? 0);
 
         this.otherPlayers.set(player.id, other);

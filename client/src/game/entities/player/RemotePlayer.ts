@@ -1,6 +1,6 @@
 import { Scene } from 'phaser';
-import { ModuleType } from '../modificable.ts';
 import { BasePlayer } from './BasePlayer.ts';
+import { WeaponType } from '#src/modificable.ts';
 
 export class RemotePlayer extends BasePlayer
 {
@@ -8,11 +8,10 @@ export class RemotePlayer extends BasePlayer
         scene: Scene,
         x: number,
         y: number,
-        color: number,
-        frontModule: ModuleType,
-        backModule: ModuleType
+        frontModule: WeaponType,
+        backModule: WeaponType
     ) {
-        super(scene, x, y, color, frontModule, backModule, 0x243b2d);
+        super(scene, x, y, frontModule, backModule);
     }
 
     applyRemoteState(x: number, y: number, angle: number): void {
