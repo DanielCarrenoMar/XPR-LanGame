@@ -60,9 +60,9 @@ export default class Game extends Scene
 
         netClient.connect();
 
-        window.addEventListener('beforeunload', () => {
+        this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => {
             netClient.disconnect();
-        })
+        });
     }
 
     update (_time: number, delta: number)
