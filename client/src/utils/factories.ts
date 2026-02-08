@@ -1,4 +1,4 @@
-import { BulletType } from "#entities/bullet/BaseBullet.ts";
+import { BaseBullet, BulletType } from "#entities/bullet/BaseBullet.ts";
 import Bullet from "#entities/bullet/Bullet.ts";
 
 export function createBullet(scene: Phaser.Scene, x: number, y: number, angle: number, type: BulletType): BaseBullet {

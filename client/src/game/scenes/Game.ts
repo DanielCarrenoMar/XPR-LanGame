@@ -36,8 +36,7 @@ export default class Game extends Scene
 
         this.physics.world.setBounds(0, 0, this.mapWidth, this.mapHeight);
 
-        this.camera = this.cameras.main;
-        this.camera.setBackgroundColor(0x00ff00);
+        this.camera = this.cameras.main;;
         this.jugador = new LocalPlayer(this, 512, 560, (x, y, angle) => {
             netClient.sendFire(x, y, angle);
         });

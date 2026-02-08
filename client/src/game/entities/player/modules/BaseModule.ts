@@ -4,6 +4,7 @@ export default abstract class BaseModule extends Phaser.GameObjects.Sprite {
     constructor(scene: Phaser.Scene, x: number, y: number, texture: string = "yoshi") {
         super(scene, x, y, texture);
         this.setDisplaySize(32, 32);
+        scene.physics.add.existing(this, true);
         scene.add.existing(this);
     }
 

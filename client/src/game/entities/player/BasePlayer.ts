@@ -41,6 +41,7 @@ export class BasePlayer extends GameObjects.Sprite
         this.frontModule = frontModule;
         this.backModule = backModule;
 
+        scene.physics.add.existing(this);
         scene.add.existing(this);
 
         this.aimDot = scene.add.circle(x, y, 4, 0xffffff);
