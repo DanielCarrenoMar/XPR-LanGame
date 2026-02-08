@@ -1,3 +1,4 @@
+import { netClient } from "#net/netClient.ts";
 import { createBullet } from "#utils/factories.ts";
 import BaseModule from "./BaseModule.ts";
 
@@ -14,6 +15,7 @@ export default class ShotgunMod extends BaseModule {
 
         angles.forEach((a) => {
             createBullet(this.scene, this.x, this.y, a, "BULLET");
+            netClient.sendFire(this.x, this.y, a);
         });
     }
 }

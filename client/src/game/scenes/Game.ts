@@ -1,18 +1,17 @@
-import { Scene, Math as PhaserMath } from 'phaser';
+import { Scene} from 'phaser';
 import { RemotePlayer } from '#player/RemotePlayer.ts';
 import { LocalPlayer } from '#player/LocalPlayer.ts';
 import { netClient } from '#net/netClient.ts';
 import { PlayerState } from '#net/netClient.ts';
+import { createBullet } from '#utils/factories.ts';
 
 export default class Game extends Scene
 {
     private  mapWidth: number;
     private  mapHeight: number;
-    camera: Phaser.Cameras.Scene2D.Camera;
-    msg_text : Phaser.GameObjects.Text;
-    jugador: LocalPlayer;
-    otherPlayers: Map<number, RemotePlayer>;
-    remoteBullets: { sprite: Phaser.GameObjects.Arc; velocity: PhaserMath.Vector2 }[];
+    private camera: Phaser.Cameras.Scene2D.Camera;
+    private jugador: LocalPlayer;
+    private otherPlayers: Map<number, RemotePlayer>;
 
     constructor ()
     {
@@ -42,7 +41,6 @@ export default class Game extends Scene
         });
         this.camera.startFollow(this.jugador, false, 0.08, 0.08);
         this.otherPlayers = new Map();
-        this.remoteBullets = [];
 
         netClient.setHandlers({
             onAllPlayers: (players) => {
@@ -73,91 +71,12 @@ export default class Game extends Scene
     {
         this.jugador.update(delta);
         netClient.sendPlayerPosition(this.jugador.x, this.jugador.y, this.jugador.currentAimAngle);
-        
-        this.updateRemoteBullets(delta);
-        this.checkCollisions();
-        this.checkLocalBulletsVsShields();
+
     }
 
     private addRemoteBullet(x: number, y: number, angle: number)
     {
-        const bulletSpeed = 520; // Same as LocalPlayer
-        const bullet = this.add.circle(x, y, 6, 0xff0000); // Red color for enemy bullets
-        const velocity = new PhaserMath.Vector2(Math.cos(angle), Math.sin(angle)).scale(bulletSpeed);
-        this.remoteBullets.push({ sprite: bullet, velocity });
-    }
-
-    private updateRemoteBullets(delta: number)
-    {
-        const step = delta / 1000;
-        const width = this.mapWidth;
-        const height = this.mapHeight;
-
-        for (let i = this.remoteBullets.length - 1; i >= 0; i--)
-        {
-            const b = this.remoteBullets[i];
-            b.sprite.x += b.velocity.x * step;
-            b.sprite.y += b.velocity.y * step;
-
-            if (b.sprite.x < -20 || b.sprite.x > width + 20 ||
-                b.sprite.y < -20 || b.sprite.y > height + 20)
-            {
-                b.sprite.destroy();
-                this.remoteBullets.splice(i, 1);
-            }
-        }
-    }
-
-    private checkCollisions()
-    {
-        // Check other players' bullets vs me
-        for (let i = this.remoteBullets.length - 1; i >= 0; i--)
-        {
-            const bullet = this.remoteBullets[i];
-
-            if (this.jugador.checkShieldCollision(bullet.sprite.x, bullet.sprite.y)) {
-                bullet.sprite.destroy();
-                this.remoteBullets.splice(i, 1);
-                continue;
-            }
-
-            const dist = PhaserMath.Distance.Between(bullet.sprite.x, bullet.sprite.y, this.jugador.x, this.jugador.y);
-
-            if (dist < 30) // Player radius ~20 + Bullet radius ~6 + buffer
-            {
-                bullet.sprite.destroy();
-                this.remoteBullets.splice(i, 1);
-                this.jugador.setPosition(200,200)
-            }
-        }
-    }
-
-    private checkLocalBulletsVsShields(): void
-    {
-        if (!this.jugador.bullets.length || !this.otherPlayers.size) {
-            return;
-        }
-
-        for (let i = this.jugador.bullets.length - 1; i >= 0; i--)
-        {
-            const bullet = this.jugador.bullets[i];
-            let blocked = false;
-
-            for (const other of this.otherPlayers.values())
-            {
-                if (other.checkShieldCollision(bullet.sprite.x, bullet.sprite.y))
-                {
-                    blocked = true;
-                    break;
-                }
-            }
-
-            if (blocked)
-            {
-                bullet.sprite.destroy();
-                this.jugador.bullets.splice(i, 1);
-            }
-        }
+        createBullet(this, x, y, angle, 'BULLET')
     }
 
     private syncOtherPlayers(players: PlayerState[]): void
