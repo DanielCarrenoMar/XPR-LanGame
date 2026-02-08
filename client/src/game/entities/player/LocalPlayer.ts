@@ -32,7 +32,8 @@ export class LocalPlayer extends BasePlayer
         this.keys = scene.input.keyboard?.addKeys('W,A,S,D') as WasdKeys | null;
         this.bullets = [];
         this.bulletSpeed = 520;
-        this.module1 = new ShotgunMod(scene, x, y);
+        this.moduleFront = new ShotgunMod(scene, x, y);
+        this.moduleBack = new ShotgunMod(scene, x, y);
 
         scene.input.on('pointerdown', this.handleShoot, this);
     }
@@ -69,8 +70,10 @@ export class LocalPlayer extends BasePlayer
         }
         const playerPos = new PhaserMath.Vector2(this.x, this.y);
         const targetPos = pointer.positionToCamera(this.scene.cameras.main) as PhaserMath.Vector2;
-        this.module1?.fire(playerPos, targetPos);
-        this.module2?.fire(playerPos, targetPos);
+        const targetMirror = targetPos.clone().subtract(playerPos).scale(-1).add(playerPos);
+
+        this.moduleFront?.fire(playerPos, targetPos);
+        this.moduleBack?.fire(playerPos, targetMirror);
     }
 
     private fireModule(moduleType: ModuleType, angle: number): void {

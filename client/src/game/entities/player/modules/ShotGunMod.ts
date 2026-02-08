@@ -13,7 +13,7 @@ export default class ShotgunMod extends BaseModule {
         const angles = [angle - spread, angle, angle + spread];
 
         angles.forEach((a) => {
-            createBullet(this.scene, playerPos.x, playerPos.y, a, "BULLET");
+            createBullet(this.scene, this.x, this.y, a, "BULLET");
         });
     }
 }

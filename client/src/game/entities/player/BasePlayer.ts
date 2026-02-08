@@ -16,8 +16,8 @@ export class BasePlayer extends GameObjects.Sprite
     protected backModule: ModuleType;
     protected aimDot: GameObjects.Arc;
     protected shields: ShieldSet = {};
-    protected module1: BaseModule | null = null;
-    protected module2: BaseModule | null = null;
+    protected moduleFront: BaseModule | null = null;
+    protected moduleBack: BaseModule | null = null;
     public currentAimAngle = 0;
 
     private shieldGeom: ShieldGeometry = {
@@ -64,7 +64,16 @@ export class BasePlayer extends GameObjects.Sprite
             this.shields.back.setRotation(this.currentAimAngle + Math.PI);
         }
 
-        this.module1?.setPosition(this.x, this.y);
+        this.setRotation(this.currentAimAngle);
+
+        const aimX = Math.cos(this.currentAimAngle) * 40;
+        const aimY = Math.sin(this.currentAimAngle) * 40;
+
+        this.moduleFront?.setPosition(this.x + aimX, this.y + aimY);
+        this.moduleFront?.setRotation(this.currentAimAngle);
+
+        this.moduleBack?.setPosition(this.x - aimX, this.y - aimY);
+        this.moduleBack?.setRotation(this.currentAimAngle + Math.PI);
     }
 
     protected initShields(): void {
