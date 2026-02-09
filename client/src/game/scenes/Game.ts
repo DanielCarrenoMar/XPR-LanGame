@@ -22,8 +22,8 @@ export default class Game extends Scene
 
     // NET
 
+    private readonly SEND_INTERVAL_MS = 60;
     private lastPositionSendMs = 0;
-    private readonly positionSendIntervalMs = 80;
     private lastSentX = NaN;
     private lastSentY = NaN;
     private lastSentAngle = NaN;
@@ -92,7 +92,7 @@ export default class Game extends Scene
     {
         this.player.update(delta);
 
-        if (time - this.lastPositionSendMs < this.positionSendIntervalMs) return;
+        if (time - this.lastPositionSendMs < this.SEND_INTERVAL_MS) return;
 
         const x = Math.floor(this.player.x * 100) / 100;
         const y = Math.floor(this.player.y * 100) / 100;
