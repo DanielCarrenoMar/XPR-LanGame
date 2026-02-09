@@ -20,6 +20,14 @@ export default class Game extends Scene
     private meleeGroup!: Phaser.Physics.Arcade.Group;
     private shieldGroup!: Phaser.Physics.Arcade.StaticGroup;
 
+    // NET
+
+    private lastPositionSendMs = 0;
+    private readonly positionSendIntervalMs = 80;
+    private lastSentX = NaN;
+    private lastSentY = NaN;
+    private lastSentAngle = NaN;
+
     constructor ()
     {
         super('Game');
@@ -77,11 +85,26 @@ export default class Game extends Scene
         });
     }
 
-    update (_time: number, delta: number)
+    update (time: number, delta: number)
     {
         this.jugador.update(delta);
-        netClient.sendPlayerPosition(this.jugador.x, this.jugador.y, this.jugador.currentAimAngle);
 
+        if (time - this.lastPositionSendMs < this.positionSendIntervalMs) return;
+
+        const x = Math.floor(this.jugador.x * 100) / 100;
+        const y = Math.floor(this.jugador.y * 100) / 100;
+        const angle = Math.floor(this.jugador.currentAimAngle * 100) / 100;
+
+        if (x === this.lastSentX && y === this.lastSentY && angle === this.lastSentAngle) {
+            return;
+        }
+
+        this.lastPositionSendMs = time;
+        this.lastSentX = x;
+        this.lastSentY = y;
+        this.lastSentAngle = angle;
+
+        netClient.sendPlayerPosition(x, y, angle);
     }
 
     private addRemoteBullet(x: number, y: number, angle: number, ownerId: number)
