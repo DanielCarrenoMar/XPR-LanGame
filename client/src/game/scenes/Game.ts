@@ -248,6 +248,8 @@ export default class Game extends Scene
         const localPlayerId = netClient.getLocalPlayerId()
         if (localPlayerId && localPlayerId === player.getPlayerId()) return
 
+        console.log(`Player ${player.getPlayerId()} hit by melee from player ${localPlayerId}`);
+
         melee.onHit();
         netClient.sendPlayerHit(player.getPlayerId());
     }
