@@ -7,6 +7,7 @@ export default class Bullet extends BaseBullet {
     constructor(scene: Phaser.Scene, x: number, y: number, angle: number, ownerId: number | null) {
         const velocity = new Phaser.Math.Vector2(Math.cos(angle), Math.sin(angle)).scale(300);
         super(scene, x, y, velocity, "BULLET", ownerId);
+        scene.events.emit("bullet-created", this);
     }
 
     preUpdate(): void {

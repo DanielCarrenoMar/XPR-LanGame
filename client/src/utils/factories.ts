@@ -10,7 +10,6 @@ export function createBullet(scene: Phaser.Scene, x: number, y: number, angle: n
     switch (type) {
         case "BULLET":
             const bullet = new Bullet(scene, x, y, angle, ownerId);
-            scene.events.emit("bullet-created", bullet);
             return bullet;
         default:
             throw new Error(`Unknown bullet type: ${type}`);
