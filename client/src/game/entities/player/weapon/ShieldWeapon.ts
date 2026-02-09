@@ -4,8 +4,8 @@ import BaseWeapon from "./BaseWeapon.ts";
 export default class ShieldWeapon extends BaseWeapon {
     private shield: Shield;
 
-    constructor(scene: Phaser.Scene, x: number, y: number, ownerId: number) {
-        super(scene, x, y, ownerId, "logo");
+    constructor(scene: Phaser.Scene, x: number, y: number) {
+        super(scene, x, y, "logo");
         this.shield = new Shield(scene, x, y, "logo");
     }
 

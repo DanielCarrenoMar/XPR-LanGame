@@ -22,8 +22,8 @@ export class BasePlayer extends GameObjects.Sprite
         super(scene, x, y, "yoshi");
         this.setDisplaySize(64, 64);
 
-        this.frontWeapon = createWeapon(scene, x, y, frontModule, this.playerId);
-        this.backWeapon = createWeapon(scene, x, y, backModule, this.playerId);
+        this.frontWeapon = createWeapon(scene, x, y, frontModule);
+        this.backWeapon = createWeapon(scene, x, y, backModule);
 
         scene.physics.add.existing(this);
         scene.add.existing(this);

@@ -246,10 +246,6 @@ export default class Game extends Scene
             return;
         }
 
-        if (melee.getOwnerId() === player.getPlayerId()) return;
-
-        console.log(`Player ${player.getPlayerId()} hit by melee from ${melee.getOwnerId()}`);
-
         melee.onHit();
         netClient.sendPlayerHit(player.getPlayerId());
     }
