@@ -17,16 +17,27 @@ export default class SwordWeapon extends BaseWeapon {
         this.swordMelee.setPosition(this.x, this.y);
     }
 
+    override setActive(value: boolean): this {
+        super.setActive(value);
+        this.swordMelee.setActive(value);
+        return this;
+    }
+
     fire(): void {
         if (this.isSwinging) return;
-        const body = this.body as Phaser.Physics.Arcade.StaticBody;
+        const body = this.swordMelee.body as Phaser.Physics.Arcade.StaticBody;
         this.isSwinging = true;
 
-        body.setSize(800, 800);
+        body.setSize(64, 64);
 
         this.scene.time.delayedCall(180, () => {
             body.setSize();
             this.isSwinging = false;
         });
+    }
+
+    override destroy(fromScene?: boolean): void {
+        this.swordMelee.destroy();
+        super.destroy(fromScene);
     }
 }

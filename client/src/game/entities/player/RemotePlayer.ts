@@ -12,6 +12,8 @@ export class RemotePlayer extends BasePlayer
         backModule: WeaponType
     ) {
         super(scene, x, y, frontModule, backModule);
+        this.frontWeapon?.setActive(false)
+        this.backWeapon?.setActive(false)
     }
 
     applyRemoteState(x: number, y: number, angle: number): void {

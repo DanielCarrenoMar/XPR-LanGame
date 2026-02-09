@@ -68,6 +68,7 @@ io.on("connection", (socket: Socket) => {
             socket.data.player.x = data.x;
             socket.data.player.y = data.y;
             socket.data.player.angle = data.angle;
+        
             io.emit("move", socket.data.player);
         });
 

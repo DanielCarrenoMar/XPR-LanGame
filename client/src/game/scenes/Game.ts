@@ -151,12 +151,8 @@ export default class Game extends Scene
     private moveOtherPlayer(player: PlayerState): void
     {
         const other = this.otherPlayers.get(player.id);
-        if (!other)
-        {
-            return;
-        }
-
-        other.applyRemoteState(player.x, player.y, player.angle ?? other.currentAimAngle);
+        if (!other) return;
+        other.applyRemoteState(player.x, player.y, player.angle);
     }
 
     private removeOtherPlayer(playerId: number): void
@@ -236,7 +232,7 @@ export default class Game extends Scene
         if (!player || !melee || !player.active || !melee.active) {
             return;
         }
-
+        console.log('Melee hit detected');
         melee.onHit();
         netClient.sendPlayerHit(player.getPlayerId());
     }

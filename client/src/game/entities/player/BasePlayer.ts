@@ -70,6 +70,8 @@ export class BasePlayer extends GameObjects.Sprite
     override destroy(fromScene?: boolean): void {
         this.aimDot.destroy();
         this.playerIdText.destroy();
+        this.frontWeapon?.destroy();
+        this.backWeapon?.destroy();
         super.destroy(fromScene);
     }
 }
