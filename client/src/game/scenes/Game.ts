@@ -232,12 +232,10 @@ export default class Game extends Scene
             return;
         }
 
+        if (bullet.ownerId === player.getPlayerId()) return
 
         bullet.destroy();
-
-        if (bullet.ownerId === netClient.getLocalPlayerId() && player.getPlayerId() !== null) {
-            netClient.sendPlayerHit(player.getPlayerId());
-        }
+        netClient.sendPlayerHit(player.getPlayerId());
     }
 
     private handleMeleeHit: Phaser.Types.Physics.Arcade.ArcadePhysicsCallback = (playerObj, meleeObj) => {
