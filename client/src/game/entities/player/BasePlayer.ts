@@ -8,8 +8,8 @@ export class BasePlayer extends GameObjects.Sprite
     protected frontWeapon: BaseWeapon | null = null;
     protected backWeapon: BaseWeapon | null = null;
     protected aimDot: GameObjects.Arc;
+    private playerId: number;
     public currentAimAngle = 0;
-    public playerId: number | null = null;
     
     constructor(
         scene: Scene,
@@ -20,6 +20,8 @@ export class BasePlayer extends GameObjects.Sprite
     ) {
         super(scene, x, y, "yoshi");
         this.setDisplaySize(64, 64);
+
+        this.setPlayerId(-1)
 
         this.frontWeapon = createWeapon(scene, x, y, frontModule);
         this.backWeapon = createWeapon(scene, x, y, backModule);
@@ -32,6 +34,16 @@ export class BasePlayer extends GameObjects.Sprite
 
         this.aimDot = scene.add.circle(x, y, 4, 0xffffff);
         this.updateVisuals();
+    }
+
+    public setPlayerId(id: number): void {
+        this.playerId = id;
+        if (this.frontWeapon) this.frontWeapon.ownerId = id;
+        if (this.backWeapon) this.backWeapon.ownerId = id;
+    }
+
+    public getPlayerId(): number {
+        return this.playerId;
     }
 
     protected updateVisuals(): void {
@@ -54,11 +66,5 @@ export class BasePlayer extends GameObjects.Sprite
     override destroy(fromScene?: boolean): void {
         this.aimDot.destroy();
         super.destroy(fromScene);
-    }
-
-    public setPlayerId(id: number): void {
-        this.playerId = id;
-        if (this.frontWeapon) this.frontWeapon.ownerId = id;
-        if (this.backWeapon) this.backWeapon.ownerId = id;
     }
 }

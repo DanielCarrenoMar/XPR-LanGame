@@ -6,6 +6,7 @@ import { PlayerState } from '#net/netClient.ts';
 import { createBullet } from '#utils/factories.ts';
 import { BaseBullet } from '#entities/bullet/BaseBullet.ts';
 import { BasePlayer } from '#player/BasePlayer.ts';
+import BaseMelee from '#entities/melee/BaseMelee.ts';
 
 export default class Game extends Scene
 {
@@ -14,7 +15,7 @@ export default class Game extends Scene
     private camera: Phaser.Cameras.Scene2D.Camera;
     private jugador: LocalPlayer;
     private otherPlayers: Map<number, RemotePlayer>;
-    private playerGroup!: Phaser.Physics.Arcade.Group;
+    private remotePlayersGroup!: Phaser.Physics.Arcade.Group;
     private bulletGroup!: Phaser.Physics.Arcade.Group;
     private meleeGroup!: Phaser.Physics.Arcade.Group;
     private shieldGroup!: Phaser.Physics.Arcade.StaticGroup;
@@ -41,49 +42,12 @@ export default class Game extends Scene
 
         this.physics.world.setBounds(0, 0, this.mapWidth, this.mapHeight);
 
-        this.playerGroup = this.physics.add.group();
-        this.bulletGroup = this.physics.add.group({ runChildUpdate: true });
-        this.meleeGroup = this.physics.add.group();
-        this.shieldGroup = this.physics.add.staticGroup();
-        this.events.on("bullet-created", (bullet: BaseBullet) => {
-            this.bulletGroup.add(bullet);
-            const body = bullet.body as Phaser.Physics.Arcade.Body;
-            body.setVelocity(bullet.spawnVelocity.x, bullet.spawnVelocity.y);
-        });
-        this.events.on("melee-hitbox-created", (hitbox: Phaser.GameObjects.GameObject & { ownerId?: number | null }) => {
-            this.meleeGroup.add(hitbox);
-        });
-        this.events.on("shield-created", (shield: Phaser.GameObjects.GameObject) => {
-            this.shieldGroup.add(shield);
-        });
+        this.addColisions()
 
         this.camera = this.cameras.main;;
         this.jugador = new LocalPlayer(this, 512, 560);
-        this.playerGroup.add(this.jugador);
         this.camera.startFollow(this.jugador, false, 0.08, 0.08);
         this.otherPlayers = new Map();
-
-        this.physics.add.overlap(
-            this.playerGroup,
-            this.bulletGroup,
-            this.handleBulletHit as Phaser.Types.Physics.Arcade.ArcadePhysicsCallback,
-            undefined,
-            this
-        );
-        this.physics.add.overlap(
-            this.playerGroup,
-            this.meleeGroup,
-            this.handleMeleeHit as Phaser.Types.Physics.Arcade.ArcadePhysicsCallback,
-            undefined,
-            this
-        );
-        this.physics.add.overlap(
-            this.bulletGroup,
-            this.shieldGroup,
-            this.handleShieldBlock as Phaser.Types.Physics.Arcade.ArcadePhysicsCallback,
-            undefined,
-            this
-        );
 
         netClient.setHandlers({
             onAllPlayers: (players) => {
@@ -158,7 +122,7 @@ export default class Game extends Scene
         other.applyRemoteState(player.x, player.y, player.angle ?? 0);
 
         this.otherPlayers.set(player.id, other);
-        this.playerGroup.add(other);
+        this.remotePlayersGroup.add(other);
     }
 
     private moveOtherPlayer(player: PlayerState): void
@@ -180,9 +144,50 @@ export default class Game extends Scene
             return;
         }
 
-        this.playerGroup.remove(other, false, false);
+        this.remotePlayersGroup.remove(other, false, false);
         other.destroy();
         this.otherPlayers.delete(playerId);
+    }
+
+    private addColisions(): void {
+        this.remotePlayersGroup = this.physics.add.group();
+        this.bulletGroup = this.physics.add.group();
+        this.meleeGroup = this.physics.add.group();
+        this.shieldGroup = this.physics.add.staticGroup();
+
+        this.events.on("bullet-created", (bullet: BaseBullet) => {
+            this.bulletGroup.add(bullet);
+            const body = bullet.body as Phaser.Physics.Arcade.Body;
+            body.setVelocity(bullet.spawnVelocity.x, bullet.spawnVelocity.y);
+        });
+        this.events.on("melee-created", (melee: BaseMelee) => {
+            this.meleeGroup.add(melee);
+        });
+        this.events.on("shield-created", (shield: Phaser.GameObjects.GameObject) => {
+            this.shieldGroup.add(shield);
+        });
+
+        this.physics.add.overlap(
+            this.remotePlayersGroup,
+            this.bulletGroup,
+            this.handleBulletHit as Phaser.Types.Physics.Arcade.ArcadePhysicsCallback,
+            undefined,
+            this
+        );
+        this.physics.add.overlap(
+            this.remotePlayersGroup,
+            this.meleeGroup,
+            this.handleMeleeHit as Phaser.Types.Physics.Arcade.ArcadePhysicsCallback,
+            undefined,
+            this
+        );
+        this.physics.add.overlap(
+            this.bulletGroup,
+            this.shieldGroup,
+            this.handleShieldBlock as Phaser.Types.Physics.Arcade.ArcadePhysicsCallback,
+            undefined,
+            this
+        );
     }
 
     private handleBulletHit: Phaser.Types.Physics.Arcade.ArcadePhysicsCallback = (playerObj, bulletObj) => {
@@ -193,40 +198,24 @@ export default class Game extends Scene
             return;
         }
 
-        if (player === this.jugador && bullet.ownerId === null) {
-            return;
-        }
-
-        if (bullet.ownerId !== null && player.playerId !== null && bullet.ownerId === player.playerId) {
-            return;
-        }
 
         bullet.destroy();
 
-        if (bullet.ownerId === netClient.getLocalPlayerId() && player.playerId !== null) {
-            netClient.sendPlayerHit(player.playerId);
+        if (bullet.ownerId === netClient.getLocalPlayerId() && player.getPlayerId() !== null) {
+            netClient.sendPlayerHit(player.getPlayerId());
         }
     }
 
-    private handleMeleeHit: Phaser.Types.Physics.Arcade.ArcadePhysicsCallback = (playerObj, hitboxObj) => {
-        const player = (playerObj as unknown) as BasePlayer;
-        const hitbox = hitboxObj as Phaser.GameObjects.GameObject & { ownerId?: number | null };
+    private handleMeleeHit: Phaser.Types.Physics.Arcade.ArcadePhysicsCallback = (playerObj, meleeObj) => {
+        const player = playerObj as BasePlayer;
+        const melee = meleeObj as BaseMelee;
 
-        if (!player || !hitbox || !player.active || !hitbox.active) {
+        if (!player || !melee || !player.active || !melee.active) {
             return;
         }
 
-        const ownerId = hitbox.ownerId ?? null;
-
-        if (ownerId !== null && player.playerId !== null && ownerId === player.playerId) {
-            return;
-        }
-
-        hitbox.destroy();
-
-        if (ownerId === netClient.getLocalPlayerId() && player.playerId !== null) {
-            netClient.sendPlayerHit(player.playerId);
-        }
+        melee.onHit();
+        netClient.sendPlayerHit(player.getPlayerId());
     }
 
     private handleShieldBlock: Phaser.Types.Physics.Arcade.ArcadePhysicsCallback = (bulletObj, shieldObj) => {
