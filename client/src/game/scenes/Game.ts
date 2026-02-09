@@ -258,16 +258,6 @@ export default class Game extends Scene
             return;
         }
 
-        const body = bullet.body as Phaser.Physics.Arcade.Body;
-        const velocity = body.velocity.clone();
-        const normal = new Phaser.Math.Vector2(Math.cos(shield.rotation ?? 0), Math.sin(shield.rotation ?? 0)).normalize();
-        const reflected = velocity.reflect(normal).scale(0.9);
-
-        body.setVelocity(reflected.x, reflected.y);
-
-        const offset = reflected.clone().normalize().scale(6);
-        bullet.setPosition(bullet.x + offset.x, bullet.y + offset.y);
-
-        bullet.ownerId = shield.ownerId ?? bullet.ownerId;
+        bullet.destroy();
     }
 }
