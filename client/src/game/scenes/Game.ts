@@ -22,7 +22,7 @@ export default class Game extends Scene
 
     // NET
 
-    private readonly SEND_INTERVAL_MS = 60;
+    private readonly SEND_INTERVAL_MS = 30;
     private lastPositionSendMs = 0;
     private lastSentX = NaN;
     private lastSentY = NaN;
@@ -94,9 +94,9 @@ export default class Game extends Scene
 
         if (time - this.lastPositionSendMs < this.SEND_INTERVAL_MS) return;
 
-        const x = Math.floor(this.player.x * 100) / 100;
-        const y = Math.floor(this.player.y * 100) / 100;
-        const angle = Math.floor(this.player.currentAimAngle * 100) / 100;
+        const x = Math.floor(this.player.x * 1000) / 1000;
+        const y = Math.floor(this.player.y * 1000) / 1000;
+        const angle = Math.floor(this.player.currentAimAngle * 1000) / 1000;
 
         if (x === this.lastSentX && y === this.lastSentY && angle === this.lastSentAngle) {
             return;
