@@ -27,6 +27,9 @@ export class BasePlayer extends GameObjects.Sprite
         scene.physics.add.existing(this);
         scene.add.existing(this);
 
+        const body = this.body as Phaser.Physics.Arcade.StaticBody;
+        body.setSize(320, 320);
+
         this.aimDot = scene.add.circle(x, y, 4, 0xffffff);
         this.updateVisuals();
     }
