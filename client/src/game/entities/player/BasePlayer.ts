@@ -8,7 +8,8 @@ export class BasePlayer extends GameObjects.Sprite
     protected frontWeapon: BaseWeapon | null = null;
     protected backWeapon: BaseWeapon | null = null;
     protected aimDot: GameObjects.Arc;
-    private playerId: number;
+    protected playerIdText: GameObjects.Text;
+    private playerId: number = -1;
     public currentAimAngle = 0;
     
     constructor(
@@ -21,8 +22,6 @@ export class BasePlayer extends GameObjects.Sprite
         super(scene, x, y, "yoshi");
         this.setDisplaySize(64, 64);
 
-        this.setPlayerId(-1)
-
         this.frontWeapon = createWeapon(scene, x, y, frontModule);
         this.backWeapon = createWeapon(scene, x, y, backModule);
 
@@ -33,11 +32,17 @@ export class BasePlayer extends GameObjects.Sprite
         body.setSize(320, 320);
 
         this.aimDot = scene.add.circle(x, y, 4, 0xffffff);
+        this.playerIdText = scene.add.text(x, y - 48, "", {
+            fontFamily: "Arial",
+            fontSize: "12px",
+            color: "#ffffff"
+        }).setOrigin(0.5, 0.5);
         this.updateVisuals();
     }
 
     public setPlayerId(id: number): void {
         this.playerId = id;
+        this.playerIdText.setText(String(id));
     }
 
     public getPlayerId(): number {
@@ -59,10 +64,12 @@ export class BasePlayer extends GameObjects.Sprite
 
         this.backWeapon?.setPosition(this.x - aimX, this.y - aimY);
         this.backWeapon?.setRotation(this.currentAimAngle + Math.PI);
+        this.playerIdText.setPosition(this.x, this.y - 48);
     }
 
     override destroy(fromScene?: boolean): void {
         this.aimDot.destroy();
+        this.playerIdText.destroy();
         super.destroy(fromScene);
     }
 }
