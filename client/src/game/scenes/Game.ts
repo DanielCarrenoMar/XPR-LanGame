@@ -245,6 +245,8 @@ export default class Game extends Scene
         if (!player || !melee || !player.active || !melee.active) {
             return;
         }
+        const localPlayerId = netClient.getLocalPlayerId()
+        if (localPlayerId && localPlayerId === player.getPlayerId()) return
 
         melee.onHit();
         netClient.sendPlayerHit(player.getPlayerId());
