@@ -28,7 +28,7 @@ class NetClient {
     private lastSent: { x: number; y: number; angle: number } | null = null;
     private lastSentAt = 0;
 
-    connect(): void {
+    connect(initialPosition?: { x: number; y: number }): void {
         if (this.socket) {
             return;
         }
@@ -40,7 +40,9 @@ class NetClient {
         this.socket.on("connect", () => {
             this.socket?.emit("newplayer", {
                 frontModule: Modificable.frontModule,
-                backModule: Modificable.backModule
+                backModule: Modificable.backModule,
+                x: initialPosition?.x,
+                y: initialPosition?.y
             });
         });
 

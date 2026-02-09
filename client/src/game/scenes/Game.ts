@@ -81,7 +81,7 @@ export default class Game extends Scene
             }
         });
 
-        netClient.connect();
+        netClient.connect({ x: this.player.x, y: this.player.y });
 
         this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => {
             netClient.disconnect();

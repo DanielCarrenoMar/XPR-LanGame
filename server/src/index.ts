@@ -47,14 +47,14 @@ function randomInt(low: number, high: number): number {
 }
 
 io.on("connection", (socket: Socket) => {
-    socket.on("newplayer", (modules?: { frontModule: string, backModule: string }) => {
+    socket.on("newplayer", (data: { frontModule: string; backModule: string; x: number; y: number }) => {
         const player: Player = {
             id: lastPlayerId++,
-            x: randomInt(100, 400),
-            y: randomInt(100, 400),
+            x: data.x,
+            y: data.y,
             angle: 0,
-            frontModule: modules?.frontModule || "PISTOL",
-            backModule: modules?.backModule || "SHIELD"
+            frontModule: data.frontModule,
+            backModule: data.backModule
         };
         console.log(`Player connected: ${player.id}`);
 
