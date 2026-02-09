@@ -18,7 +18,8 @@ type ClientHandlers = {
     onPlayerRemoved?: (playerId: number) => void;
     onPlayerShoot?: (data: { id: number; x: number; y: number; angle: number }) => void;
     onLocalPlayerId?: (playerId: number) => void;
-};
+    onPlayerHit?: (data: { fromId: number; targetId: number }) => void;
+}
 
 class NetClient {
     private socket: Socket | null = null;
@@ -79,6 +80,10 @@ class NetClient {
                 return;
             }
             this.handlers.onPlayerShoot?.(data);
+        });
+
+        this.socket.on("hit", (data: { fromId: number; targetId: number }) => {
+            this.handlers.onPlayerHit?.(data);
         });
     }
 

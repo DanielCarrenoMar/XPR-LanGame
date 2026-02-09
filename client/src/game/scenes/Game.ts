@@ -13,8 +13,8 @@ export default class Game extends Scene
     private  mapWidth: number;
     private  mapHeight: number;
     private camera: Phaser.Cameras.Scene2D.Camera;
-    private jugador: LocalPlayer;
-    private otherPlayers: Map<number, RemotePlayer>;
+    private player: LocalPlayer;
+    private remotePlayers: Map<number, RemotePlayer>;
     private remotePlayersGroup!: Phaser.Physics.Arcade.Group;
     private bulletGroup!: Phaser.Physics.Arcade.Group;
     private meleeGroup!: Phaser.Physics.Arcade.Group;
@@ -53,28 +53,31 @@ export default class Game extends Scene
         this.addColisions()
 
         this.camera = this.cameras.main;;
-        this.jugador = new LocalPlayer(this, 512, 560);
-        this.camera.startFollow(this.jugador, false, 0.08, 0.08);
-        this.otherPlayers = new Map();
+        this.player = new LocalPlayer(this, 512, 560);
+        this.camera.startFollow(this.player, false, 0.08, 0.08);
+        this.remotePlayers = new Map();
 
         netClient.setHandlers({
             onAllPlayers: (players) => {
-                this.syncOtherPlayers(players);
+                this.syncRemotePlayers(players);
             },
             onPlayerAdded: (player) => {
-                this.addOtherPlayer(player);
+                this.addRemotePlayer(player);
             },
             onPlayerMoved: (player) => {
-                this.moveOtherPlayer(player);
+                this.moveRemotePlayer(player);
             },
             onPlayerRemoved: (playerId) => {
-                this.removeOtherPlayer(playerId);
+                this.removeRemotePlayer(playerId);
             },
             onPlayerShoot: (data) => {
                 this.addRemoteBullet(data.x, data.y, data.angle, data.id);
             },
             onLocalPlayerId: (playerId) => {
-                this.jugador.setPlayerId(playerId);
+                this.player.setPlayerId(playerId);
+            },
+            onPlayerHit: (data) => {
+                this.hitPlayer(data);
             }
         });
 
@@ -87,13 +90,13 @@ export default class Game extends Scene
 
     update (time: number, delta: number)
     {
-        this.jugador.update(delta);
+        this.player.update(delta);
 
         if (time - this.lastPositionSendMs < this.positionSendIntervalMs) return;
 
-        const x = Math.floor(this.jugador.x * 100) / 100;
-        const y = Math.floor(this.jugador.y * 100) / 100;
-        const angle = Math.floor(this.jugador.currentAimAngle * 100) / 100;
+        const x = Math.floor(this.player.x * 100) / 100;
+        const y = Math.floor(this.player.y * 100) / 100;
+        const angle = Math.floor(this.player.currentAimAngle * 100) / 100;
 
         if (x === this.lastSentX && y === this.lastSentY && angle === this.lastSentAngle) {
             return;
@@ -112,31 +115,31 @@ export default class Game extends Scene
         createBullet(this, x, y, angle, 'BULLET', ownerId)
     }
 
-    private syncOtherPlayers(players: PlayerState[]): void
+    private syncRemotePlayers(players: PlayerState[]): void
     {
         const activeIds = new Set<number>();
 
         players.forEach((player) => {
             activeIds.add(player.id);
-            if (this.otherPlayers.has(player.id))
+            if (this.remotePlayers.has(player.id))
             {
-                this.moveOtherPlayer(player);
+                this.moveRemotePlayer(player);
                 return;
             }
-            this.addOtherPlayer(player);
+            this.addRemotePlayer(player);
         });
 
-        this.otherPlayers.forEach((_value, playerId) => {
+        this.remotePlayers.forEach((_value, playerId) => {
             if (!activeIds.has(playerId))
             {
-                this.removeOtherPlayer(playerId);
+                this.removeRemotePlayer(playerId);
             }
         });
     }
 
-    private addOtherPlayer(player: PlayerState): void
+    private addRemotePlayer(player: PlayerState): void
     {
-        if (this.otherPlayers.has(player.id))
+        if (this.remotePlayers.has(player.id))
         {
             return;
         }
@@ -144,20 +147,20 @@ export default class Game extends Scene
         other.setPlayerId(player.id);
         other.applyRemoteState(player.x, player.y, player.angle ?? 0);
 
-        this.otherPlayers.set(player.id, other);
+        this.remotePlayers.set(player.id, other);
         this.remotePlayersGroup.add(other);
     }
 
-    private moveOtherPlayer(player: PlayerState): void
+    private moveRemotePlayer(player: PlayerState): void
     {
-        const other = this.otherPlayers.get(player.id);
+        const other = this.remotePlayers.get(player.id);
         if (!other) return;
         other.applyRemoteState(player.x, player.y, player.angle);
     }
 
-    private removeOtherPlayer(playerId: number): void
+    private removeRemotePlayer(playerId: number): void
     {
-        const other = this.otherPlayers.get(playerId);
+        const other = this.remotePlayers.get(playerId);
         if (!other)
         {
             return;
@@ -165,7 +168,19 @@ export default class Game extends Scene
 
         this.remotePlayersGroup.remove(other, false, false);
         other.destroy();
-        this.otherPlayers.delete(playerId);
+        this.remotePlayers.delete(playerId);
+    }
+
+    private hitPlayer(data: { fromId: number; targetId: number }): void {
+        if (data.targetId === this.player.getPlayerId()) {
+            this.player.setPosition(512, 560);
+            return
+        }
+
+        const player = this.remotePlayers.get(data.targetId);
+        if (!player) return
+
+
     }
 
     private addColisions(): void {
@@ -232,7 +247,7 @@ export default class Game extends Scene
         if (!player || !melee || !player.active || !melee.active) {
             return;
         }
-        console.log('Melee hit detected');
+
         melee.onHit();
         netClient.sendPlayerHit(player.getPlayerId());
     }

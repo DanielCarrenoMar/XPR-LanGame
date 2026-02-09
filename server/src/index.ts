@@ -78,15 +78,13 @@ io.on("connection", (socket: Socket) => {
         });
 
         socket.on("playerHit", (targetId: number) => {
-             // Find the target player and respawn them
-             for (const [_, s] of io.sockets.sockets) {
-                 if (s.data.player && s.data.player.id === targetId) {
-                     s.data.player.x = randomInt(100, 400);
-                     s.data.player.y = randomInt(100, 400);
-                     io.emit("move", s.data.player); // "Reappear" at new position
-                     break;
-                 }
-             }
+            if (!socket.data.player) return;
+            io.sockets.sockets.forEach((s) => {
+                const player = s.data.player as Player | undefined;
+                if (player && player.id === targetId) {
+                    s.emit("hit", { fromId: socket.data.player.id, targetId });
+                }
+            });
         });
 
         socket.on("disconnect", () => {
