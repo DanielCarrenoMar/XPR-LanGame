@@ -6,9 +6,9 @@ export default class SwordWeapon extends BaseWeapon {
     private isSwinging = false;
     private swordMelee: SwordMelee;
 
-    constructor(scene: Phaser.Scene, x: number, y: number) {
-        super(scene, x, y);
-        this.swordMelee = new SwordMelee(scene, x, y);
+    constructor(scene: Phaser.Scene, x: number, y: number, ownerId: number) {
+        super(scene, x, y, ownerId);
+        this.swordMelee = new SwordMelee(scene, x, y, this.ownerId);
     }
 
     protected preUpdate(time: number, delta: number): void {

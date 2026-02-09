@@ -16,14 +16,14 @@ export function createBullet(scene: Phaser.Scene, x: number, y: number, angle: n
     }
 }
 
-export function createWeapon(scene: Phaser.Scene, x: number, y: number, moduleType: WeaponType): BaseWeapon | null {
+export function createWeapon(scene: Phaser.Scene, x: number, y: number, moduleType: WeaponType, ownerId: number): BaseWeapon | null {
     switch (moduleType) {
         case "SHOTGUN":
-            return new ShotgunWeapon(scene, x, y);
+            return new ShotgunWeapon(scene, x, y, ownerId);
         case "SHIELD":
-            return new ShieldWeapon(scene, x, y);
+            return new ShieldWeapon(scene, x, y, ownerId);
         case "SWORD":
-            return new SwordWeapon(scene, x, y);
+            return new SwordWeapon(scene, x, y, ownerId);
         case "NONE":
             return null;
         default:
