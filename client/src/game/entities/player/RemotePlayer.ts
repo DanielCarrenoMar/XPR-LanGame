@@ -21,6 +21,8 @@ export class RemotePlayer extends BasePlayer
         this.targetX = x;
         this.targetY = y;
         this.targetAngle = 0;
+        this.frontWeapon?.setActive(false)
+        this.backWeapon?.setActive(false)
     }
 
     applyRemoteState(x: number, y: number, angle: number): void {
