@@ -26,7 +26,7 @@ export class RemotePlayer extends BasePlayer
     applyRemoteState(x: number, y: number, angle: number): void {
         this.targetX = x;
         this.targetY = y;
-        this.targetAngle = angle;
+        this.currentAimAngle = angle
 
         const dx = this.targetX - this.x;
         const dy = this.targetY - this.y;
@@ -44,7 +44,6 @@ export class RemotePlayer extends BasePlayer
         const t = Math.min(1, (delta / 1000) * this.interpSpeed);
         this.x = PhaserMath.Linear(this.x, this.targetX, t);
         this.y = PhaserMath.Linear(this.y, this.targetY, t);
-        this.currentAimAngle = PhaserMath.Angle.RotateTo(this.currentAimAngle, this.targetAngle, t * Math.PI);
 
         this.updateVisuals();
     }
