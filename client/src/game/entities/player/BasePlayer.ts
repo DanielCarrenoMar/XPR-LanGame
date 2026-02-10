@@ -36,7 +36,7 @@ export class BasePlayer extends GameObjects.Sprite
         scene.add.existing(this);
 
         const body = this.body as Phaser.Physics.Arcade.StaticBody;
-        body.setSize(305, 305);
+        body.setSize(170, 170);
 
         this.aimDot = scene.add.circle(x, y, 4, 0xffffff);
         this.playerIdText = scene.add.text(x, y - 48, "", {
