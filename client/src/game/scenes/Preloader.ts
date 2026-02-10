@@ -34,6 +34,13 @@ export class Preloader extends Scene
         this.load.image('logo', 'logo.png');
         this.load.image('yoshi', 'yoshi.jpg');
 
+        this.load.setPath('assets/sprites');
+        this.load.image('default', 'default.png');
+        this.load.image('parpadeo', 'parpadeo.png');
+        this.load.image('bigote', 'bigote.png');
+        this.load.image('conejo', 'conejo.png');
+        this.load.image('vendas', 'vendas.png');
+
         this.load.setPath('tiled/tiledsets');
         this.load.image('grassTiled', 'Grass.png');
 
