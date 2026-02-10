@@ -5,8 +5,8 @@ export default class ShieldWeapon extends BaseWeapon {
     private shield: Shield;
 
     constructor(scene: Phaser.Scene, x: number, y: number) {
-        super(scene, x, y, "logo");
-        this.shield = new Shield(scene, x, y, "logo");
+        super(scene, x, y, "shield");
+        this.shield = new Shield(scene, x, y);
     }
 
     protected preUpdate(time: number, delta: number): void {

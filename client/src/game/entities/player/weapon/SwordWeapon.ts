@@ -6,7 +6,7 @@ export default class SwordWeapon extends BaseWeapon {
     private isSwinging = false;
 
     constructor(scene: Phaser.Scene, x: number, y: number) {
-        super(scene, x, y);
+        super(scene, x, y, "sword");
     }
 
     fire(): void {

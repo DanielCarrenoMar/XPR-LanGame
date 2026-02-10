@@ -5,7 +5,7 @@ import BaseWeapon from "./BaseWeapon.ts";
 export default class ShotgunWeapon extends BaseWeapon {
 
     constructor(scene: Phaser.Scene, x: number, y: number) {
-        super(scene, x, y);
+        super(scene, x, y, "shotgun");
     }
 
     fire(playerPos: Phaser.Math.Vector2, targetPos: Phaser.Math.Vector2): void {
