@@ -33,8 +33,8 @@ class NetClient {
             return;
         }
 
-        const serverUrl = "https://xpr-langame.onrender.com/";
-        //const serverUrl = "http://localhost:8081";
+        //const serverUrl = "https://xpr-langame.onrender.com/";
+        const serverUrl = "http://localhost:8081";
         this.socket = io(serverUrl);
 
         this.socket.on("connect", () => {

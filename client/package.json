@@ -13,19 +13,22 @@
     },
     "scripts": {
         "dev": "node log.js dev & vite --config vite/config.dev.mjs",
+        "dev-client": "concurrently \"vite --config vite/config.dev.mjs\" \"tsx src/clientServer/index.ts\"",
         "build": "node log.js build & vite build --config vite/config.prod.mjs",
         "dev-nolog": "vite --config vite/config.dev.mjs",
         "build-nolog": "vite build --config vite/config.prod.mjs"
     },
     "devDependencies": {
+        "@types/express": "^5.0.1",
+        "concurrently": "^9.2.1",
         "typescript": "~5.7.2",
         "vite": "^6.3.1"
     },
     "dependencies": {
         "express": "^5.2.1",
         "phaser": "^3.90.0",
-        "socket.io": "^4.8.3",
         "socket.io-client": "^4.8.3",
-        "terser": "^5.39.0"
+        "terser": "^5.39.0",
+        "tsx": "^4.21.0"
     }
 }

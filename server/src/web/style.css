@@ -1,0 +1,87 @@
+:root {
+  color-scheme: light;
+  --bg: #f2efe8;
+  --ink: #1d1a14;
+  --accent: #d26f3a;
+  --accent-strong: #b35425;
+  --accent-cool: #2f6a8d;
+  --card: #ffffff;
+  --shadow: rgba(24, 20, 14, 0.12);
+}
+
+* {
+  box-sizing: border-box;
+  font-family: "Space Grotesk", "Segoe UI", sans-serif;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  background:
+    radial-gradient(circle at top, rgba(210, 111, 58, 0.2), transparent 45%),
+    radial-gradient(circle at 15% 85%, rgba(47, 106, 141, 0.25), transparent 50%),
+    var(--bg);
+  color: var(--ink);
+  padding: 24px;
+}
+
+.panel {
+  width: min(480px, 100%);
+  background: var(--card);
+  border-radius: 28px;
+  padding: 36px;
+  box-shadow: 0 24px 60px var(--shadow);
+  text-align: center;
+  border: 1px solid rgba(29, 26, 20, 0.08);
+}
+
+h1 {
+  margin: 0 0 12px;
+  font-size: 28px;
+  letter-spacing: 0.04em;
+}
+
+p {
+  margin: 0 0 28px;
+  color: rgba(29, 26, 20, 0.7);
+  font-size: 15px;
+}
+
+.actions {
+  display: grid;
+  gap: 16px;
+}
+
+button {
+  border: none;
+  border-radius: 16px;
+  padding: 16px 20px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  box-shadow: 0 10px 24px rgba(29, 26, 20, 0.15);
+}
+
+button:active {
+  transform: translateY(2px);
+}
+
+.battle-btn {
+  background: linear-gradient(135deg, #f5a15c, var(--accent));
+  color: #1b120c;
+}
+
+.reset-btn {
+  background: linear-gradient(135deg, #4aa0c8, var(--accent-cool));
+  color: #f8fbff;
+}
+
+.status {
+  margin-top: 18px;
+  font-size: 14px;
+  color: rgba(29, 26, 20, 0.7);
+  min-height: 20px;
+}

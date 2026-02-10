@@ -4,9 +4,9 @@
   "version": "1.0.0",
   "type": "module",
   "imports": {
-    "#handlers/*": "./src/spckets/handlers/*",
+    "#handlers/*": "./src/sockets/handlers/*",
     "#sockets/*": "./src/sockets/*",
-    "#endpoints/*": "./src/endpoint/*",
+    "#endpoints/*": "./src/endpoints/*",
     "#src/*": "./src/*"
   },
   "scripts": {
