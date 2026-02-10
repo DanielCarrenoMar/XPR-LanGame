@@ -19,8 +19,8 @@ export class BasePlayer extends GameObjects.Sprite
         frontModule: WeaponType,
         backModule: WeaponType,
     ) {
-        super(scene, x, y, "yoshi");
-        this.setDisplaySize(64, 64);
+        super(scene, x, y, "default");
+        this.setDisplaySize(130, 130);
 
         this.frontWeapon = createWeapon(scene, x, y, frontModule);
         this.backWeapon = createWeapon(scene, x, y, backModule);
@@ -29,7 +29,7 @@ export class BasePlayer extends GameObjects.Sprite
         scene.add.existing(this);
 
         const body = this.body as Phaser.Physics.Arcade.StaticBody;
-        body.setSize(320, 320);
+        body.setSize(305, 305);
 
         this.aimDot = scene.add.circle(x, y, 4, 0xffffff);
         this.playerIdText = scene.add.text(x, y - 48, "", {
