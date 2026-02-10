@@ -1,12 +1,12 @@
 import { Scene} from 'phaser';
 import { RemotePlayer } from '#player/RemotePlayer.ts';
 import { LocalPlayer } from '#player/LocalPlayer.ts';
-import { netClient } from '#net/netClient.ts';
-import { PlayerState } from '#net/netClient.ts';
 import { createBullet } from '#utils/factories.ts';
 import { BaseBullet } from '#entities/bullet/BaseBullet.ts';
 import { BasePlayer } from '#player/BasePlayer.ts';
 import BaseMelee from '#entities/melee/BaseMelee.ts';
+import { PlayerState } from '#sockets/types.ts';
+import { netClient } from '#sockets/netClient.ts';
 
 export default class Game extends Scene
 {
@@ -19,14 +19,6 @@ export default class Game extends Scene
     private bulletGroup!: Phaser.Physics.Arcade.Group;
     private meleeGroup!: Phaser.Physics.Arcade.Group;
     private shieldGroup!: Phaser.Physics.Arcade.StaticGroup;
-
-    // NET
-
-    private readonly SEND_INTERVAL_MS = 30;
-    private lastPositionSendMs = 0;
-    private lastSentX = NaN;
-    private lastSentY = NaN;
-    private lastSentAngle = NaN;
 
     constructor ()
     {
@@ -88,26 +80,11 @@ export default class Game extends Scene
         });
     }
 
-    update (time: number, delta: number)
+    update (_time: number, delta: number)
     {
         this.player.update(delta);
 
-        if (time - this.lastPositionSendMs < this.SEND_INTERVAL_MS) return;
-
-        const x = Math.floor(this.player.x * 1000) / 1000;
-        const y = Math.floor(this.player.y * 1000) / 1000;
-        const angle = Math.floor(this.player.currentAimAngle * 1000) / 1000;
-
-        if (x === this.lastSentX && y === this.lastSentY && angle === this.lastSentAngle) {
-            return;
-        }
-
-        this.lastPositionSendMs = time;
-        this.lastSentX = x;
-        this.lastSentY = y;
-        this.lastSentAngle = angle;
-
-        netClient.sendPlayerPosition(x, y, angle);
+        netClient.sendPlayerPosition(this.player.x, this.player.y, this.player.currentAimAngle);
     }
 
     private addRemoteBullet(x: number, y: number, angle: number, ownerId: number)

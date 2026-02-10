@@ -1,4 +1,4 @@
-import { netClient } from "#net/netClient.ts";
+import { netClient } from "#sockets/netClient.ts";
 import { createBullet } from "#utils/factories.ts";
 import BaseWeapon from "./BaseWeapon.ts";
 

@@ -1,14 +1,6 @@
 import { io, Socket } from "socket.io-client";
-import { Modificable, WeaponType } from "#src/modificable.ts";
-
-export type PlayerState = {
-    id: number;
-    x: number;
-    y: number;
-    angle: number;
-    frontModule: WeaponType;
-    backModule: WeaponType;
-};
+import { Modificable} from "#src/modificable.ts";
+import { PlayerState } from "./types.ts";
 
 
 type ClientHandlers = {

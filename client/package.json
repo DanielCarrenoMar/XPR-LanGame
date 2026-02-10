@@ -7,8 +7,8 @@
         "#player/*": "./src/game/entities/player/*",
         "#entities/*": "./src/game/entities/*",
         "#scenes/*": "./src/game/scenes/*",
-        "#net/*": "./src/net/*",
-        "#utils/*": "./src/utils/*",
+        "#sockets/*": "./src/sockets/*",
+        "#utils/*": "./src/game/utils/*",
         "#src/*": "./src/*"
     },
     "scripts": {
