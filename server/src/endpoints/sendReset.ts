@@ -1,4 +1,5 @@
 import { app } from "#src/app.js";
+import { io } from "#src/index.js";
 import { storedAddresses } from "./postAddress.js";
 import type { Request, Response } from "express";
 
@@ -30,6 +31,18 @@ function buildResetUrl(ip: string, port: number): string {
 async function sendResetToAddress(ip: string, port: number): Promise<ResetDispatchResult> {
 	const url = buildResetUrl(ip, port);
 
+	console.log(`Sending reset to ${io.sockets.sockets.size}`);
+	io.sockets.sockets.forEach((s) => {
+		s.emit("reset");
+	});
+
+	return {
+		ip,
+		port,
+		url,
+		ok: true,
+	};
+	/*
 	try {
 		const response = await fetch(url, { method: "POST" });
 		return {
@@ -47,7 +60,7 @@ async function sendResetToAddress(ip: string, port: number): Promise<ResetDispat
 			ok: false,
 			error: error instanceof Error ? error.message : "Unknown error",
 		};
-	}
+	}*/
 }
 
 async function sendResetToAll(): Promise<ResetDispatchResult[]> {

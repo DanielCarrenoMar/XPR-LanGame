@@ -33,8 +33,8 @@ class NetClient {
             return;
         }
 
-        const serverUrl = "https://xpr-langame.onrender.com/";
-        //const serverUrl = "http://localhost:8081";
+        //const serverUrl = "https://xpr-langame.onrender.com/";
+        const serverUrl = "http://localhost:8081";
         this.socket = io(serverUrl);
 
         this.socket.on("connect", () => {
@@ -87,6 +87,12 @@ class NetClient {
         this.socket.on("hit", (data: { fromId: number; targetId: number }) => {
             this.handlers.onPlayerHit?.(data);
         });
+
+        this.socket.on("reset", async () => {
+            console.log("Reset received from server");
+            const response = await fetch("http://localhost:8082/reset", { method: "POST" });
+            console.log("Reset response:", response.status, response.statusText);
+        })
     }
 
     disconnect(): void {
