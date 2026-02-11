@@ -28,6 +28,11 @@ class NetClient {
 
         this.socket = io(SERVER_URL);
 
+        if (!this.socket.connected) {
+            console.error("Failed to connect to server");
+            return;
+        }
+
         this.socket.on("connect", () => {
             this.socket?.emit("newplayer", {
                 frontModule: Modificable.frontModule,
@@ -79,6 +84,10 @@ class NetClient {
         this.socket.on("reset", () => {
             fetch("http://localhost:8082/reset", { method: "POST" });
         })
+    }
+
+    isConnected(): boolean {
+        return this.socket?.connected ?? false;
     }
 
     disconnect(): void {
