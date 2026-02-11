@@ -15,7 +15,7 @@ export default class ShotgunWeapon extends BaseWeapon {
         const ownerId = netClient.getLocalPlayerId();
 
         angles.forEach((a) => {
-            createBullet(this.scene, this.x, this.y, a, "BULLET", ownerId);
+            //createBullet(this.scene, this.x, this.y, a, "BULLET", ownerId);
             netClient.sendFire(this.x, this.y, a);
         });
     }

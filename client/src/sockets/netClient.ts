@@ -1,6 +1,6 @@
 import { io, Socket } from "socket.io-client";
 import { Modificable} from "#src/modificable.ts";
-import { PlayerState } from "./types.ts";
+import { PlayerState, SpawnBulletData } from "./types.ts";
 import { SERVER_URL } from "#src/config.ts";
 
 
@@ -9,7 +9,7 @@ type ClientHandlers = {
     onPlayerAdded?: (player: PlayerState) => void;
     onPlayerMoved?: (player: PlayerState) => void;
     onPlayerRemoved?: (playerId: number) => void;
-    onPlayerShoot?: (data: { id: number; x: number; y: number; angle: number }) => void;
+    onPlayerShoot?: (data: SpawnBulletData) => void;
     onLocalPlayerId?: (playerId: number) => void;
     onPlayerHit?: (data: { fromId: number; targetId: number }) => void;
 }
@@ -68,10 +68,7 @@ class NetClient {
             this.handlers.onPlayerRemoved?.(playerId);
         });
 
-        this.socket.on("fire", (data: { id: number; x: number; y: number; angle: number }) => {
-            if (this.isLocalPlayer(data.id)) {
-                return;
-            }
+        this.socket.on("spawnBullet", (data: SpawnBulletData) => {
             this.handlers.onPlayerShoot?.(data);
         });
 

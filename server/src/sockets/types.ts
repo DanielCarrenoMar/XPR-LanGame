@@ -20,8 +20,9 @@ export type PlayerMoveData = {
     angle: number;
 };
 
-export type FireData = {
+export type SpawnBulletData = {
     x: number;
     y: number;
     angle: number;
+    bulletType: string;
 };

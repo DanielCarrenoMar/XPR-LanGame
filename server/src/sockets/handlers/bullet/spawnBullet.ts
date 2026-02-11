@@ -1,9 +1,9 @@
 import type { Socket } from "socket.io";
-import type { FireData, Player } from "../../types.js";
+import type { SpawnBulletData, Player } from "../../types.js";
+import { sendToAllSockets } from "#sockets/manager.js";
 
-export function handleFire(socket: Socket, data: FireData): void {
+export function handleFire(socket: Socket, data: SpawnBulletData): void {
 	const player = socket.data.player as Player | undefined;
 	if (!player) return;
-
-	socket.broadcast.emit("fire", { id: player.id, ...data });
+	sendToAllSockets(socket, "spawnBullet", { id: player.id, ...data });
 }

@@ -40,6 +40,17 @@ function getAllPlayers(io: Server): Player[] {
 	return players;
 }
 
+export function sendToAllSockets(io: Server | Socket, event: string, data: any): void {
+	if ("sockets" in io) {
+		io.sockets.sockets.forEach((s) => {
+			s.emit(event, data);
+		});
+		return;
+	}
+	io.emit(event, data);
+	io.broadcast.emit(event, data);
+}
+
 function getNextPlayerId(): number {
 	const id = lastPlayerId;
 	lastPlayerId += 1;

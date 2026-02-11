@@ -2,6 +2,6 @@ export type WeaponType = "SHOTGUN" | "SWORD" | "SHIELD" | "NONE";
 
 export const Modificable = {
     playerColor: 0xFFFFFF,
-    frontModule: "SWORD" as WeaponType,
+    frontModule: "SHOTGUN" as WeaponType,
     backModule: "NONE" as WeaponType,
 };
