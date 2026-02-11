@@ -28,11 +28,6 @@ class NetClient {
 
         this.socket = io(SERVER_URL);
 
-        if (!this.socket.connected) {
-            console.error("Failed to connect to server");
-            return;
-        }
-
         this.socket.on("connect", () => {
             this.socket?.emit("newplayer", {
                 frontModule: Modificable.frontModule,
