@@ -1,13 +1,26 @@
 {
   "compilerOptions": {
     "target": "ES2022",
-    "module": "NodeNext",
+    "module": "nodenext",
     "rootDir": "src",
     "outDir": "dist",
     "strict": true,
     "esModuleInterop": true,
-    "moduleResolution": "NodeNext",
-    "skipLibCheck": true
+    "moduleResolution": "nodenext",
+    "skipLibCheck": true,
+    "paths": {
+      "src/*": ["./src/*"],
+      "#handlers/*": ["./src/sockets/handlers/*"],
+      "#sockets/*": ["./src/sockets/*"],
+      "#endpoints/*": ["./src/endpoints/*"],
+      "#src/*": ["./src/*"]
+    },
   },
-  "include": ["src"]
+  "include": [
+    "src/**/*.ts"
+  ],
+  "tsc-alias": {
+    "resolveFullPaths": true,
+    "verbose": false
+  }
 }

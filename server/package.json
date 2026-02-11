@@ -3,20 +3,15 @@
   "private": true,
   "version": "1.0.0",
   "type": "module",
-  "imports": {
-    "#handlers/*": "./src/sockets/handlers/*",
-    "#sockets/*": "./src/sockets/*",
-    "#endpoints/*": "./src/endpoints/*",
-    "#src/*": "./src/*"
-  },
   "scripts": {
     "dev": "pnpm tsx --watch src/index.ts",
-    "build": "pnpm i && tsc -p tsconfig.json",
+    "build": "pnpm i && tsc -p tsconfig.json & tsc-alias",
     "start": "node dist/index.js"
   },
   "dependencies": {
     "express": "^5.2.1",
     "socket.io": "^4.8.3",
+    "tsc-alias": "^1.8.16",
     "tsx": "^4.21.0"
   },
   "devDependencies": {

@@ -1,7 +1,9 @@
-import express, { Request, Response } from "express";
+import express, { Request, Response, Router } from "express";
 import { app } from "#src/app.js";
 import path from "path";
 import { fileURLToPath } from "url";
+
+const router = Router();
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -16,5 +18,7 @@ function getWebPageController(_req: Request, res: Response): void {
 	res.sendFile(getWebPagePath());
 }
 
-app.get("/", getWebPageController);
-app.use("/", express.static(webRoot));
+router.get("/", getWebPageController);
+router.use("/", express.static(webRoot));
+
+export default router;

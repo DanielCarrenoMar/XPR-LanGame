@@ -1,7 +1,4 @@
 import { server } from "./app.js";
-import "#endpoints/postAddress.js";
-import "#endpoints/sendReset.js";
-import "#endpoints/web.js";
 import { AddressInfo } from "net";
 import { initSockets } from "./sockets/index.js";
 import os from 'os';

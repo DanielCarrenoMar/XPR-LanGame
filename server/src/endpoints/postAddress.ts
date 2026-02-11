@@ -1,5 +1,7 @@
 import { app } from "#src/app.js";
-import { Request, Response } from "express";
+import { Request, Response, Router } from "express";
+
+const router = Router();
 
 type ServerAddress = {
 	ip: string;
@@ -33,4 +35,6 @@ function postAddressController(req: Request, res: Response): void {
 	res.status(201).json({ ok: true, data: record });
 }
 
-app.post("/postAddress", postAddressController);
+router.post("/postAddress", postAddressController);
+
+export default router;

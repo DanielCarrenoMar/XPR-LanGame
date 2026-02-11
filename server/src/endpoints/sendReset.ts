@@ -1,6 +1,8 @@
 import { app } from "#src/app.js";
 import { io } from "#src/index.js";
-import type { Request, Response } from "express";
+import { Router, type Request, type Response } from "express";
+
+const router = Router();
 
 type ResetDispatchResult = {
 	ip: string;
@@ -41,4 +43,6 @@ async function sendResetController(_req: Request, res: Response): Promise<void> 
 	});
 }
 
-app.post("/sendReset", sendResetController);
+router.post("/sendReset", sendResetController);
+
+export default router;
