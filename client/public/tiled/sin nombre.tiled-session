@@ -75,6 +75,7 @@
     "openFiles": [
     ],
     "project": "sin nombre.tiled-project",
+    "property.type": "bool",
     "recentFiles": [
         "tiledsets/Grass.tsx",
         "maps/mainMap.tmx",

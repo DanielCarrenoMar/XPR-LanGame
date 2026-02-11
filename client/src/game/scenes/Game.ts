@@ -1,4 +1,4 @@
-import { Scene} from 'phaser';
+import { Scene } from 'phaser';
 import { RemotePlayer } from '#player/RemotePlayer.ts';
 import { LocalPlayer } from '#player/LocalPlayer.ts';
 import { createBullet } from '#utils/factories.ts';
@@ -8,10 +8,9 @@ import BaseMelee from '#entities/melee/BaseMelee.ts';
 import { PlayerState } from '#sockets/types.ts';
 import { netClient } from '#sockets/netClient.ts';
 
-export default class Game extends Scene
-{
-    private  mapWidth: number;
-    private  mapHeight: number;
+export default class Game extends Scene {
+    private map: Phaser.Tilemaps.Tilemap;
+    private floorLayer: Phaser.Tilemaps.TilemapLayer;
     private camera: Phaser.Cameras.Scene2D.Camera;
     private player: LocalPlayer;
     private remotePlayers: Map<number, RemotePlayer>;
@@ -20,147 +19,61 @@ export default class Game extends Scene
     private meleeGroup!: Phaser.Physics.Arcade.Group;
     private shieldGroup!: Phaser.Physics.Arcade.StaticGroup;
 
-    constructor ()
-    {
+    constructor() {
         super('Game');
     }
 
-    create ()
-    {
-        const map = this.make.tilemap({ key: 'mainMap' });
-        const tileset = map.addTilesetImage('Grass', 'grassTiled');
+    create() {
+        this.setupMap()
+
+        let spawnX = 512;
+        let spawnY = 560;
+        this.map.getObjectLayer("PlayerSpawns")?.objects.forEach((spawn) => {
+            if (spawn.x !== undefined && spawn.y !== undefined) {
+                spawnX = spawn.x;
+                spawnY = spawn.y;
+            }
+        });
+        this.player = new LocalPlayer(this, spawnX, spawnY);
+
+        this.setupCollision()
+
+        this.camera = this.cameras.main;
+        this.camera.startFollow(this.player, false, 0.08, 0.08);
+
+        this.setupNet()
+    }
+
+    private setupMap() {
+        this.map = this.make.tilemap({ key: 'mainMap' });
+        const tileset = this.map.addTilesetImage('Grass', 'grassTiled');
 
         if (!tileset) {
             console.error('Tileset not found!');
             return;
         }
 
-        map.createLayer('Floor', tileset);
-
-        this.mapWidth = map.widthInPixels;
-        this.mapHeight = map.heightInPixels;
-
-        this.physics.world.setBounds(0, 0, this.mapWidth, this.mapHeight);
-
-        this.addColisions()
-
-        this.camera = this.cameras.main;;
-        this.player = new LocalPlayer(this, 512, 560);
-        this.camera.startFollow(this.player, false, 0.08, 0.08);
-        this.remotePlayers = new Map();
-
-        netClient.setHandlers({
-            onAllPlayers: (players) => {
-                this.syncRemotePlayers(players);
-            },
-            onPlayerAdded: (player) => {
-                this.addRemotePlayer(player);
-            },
-            onPlayerMoved: (player) => {
-                this.moveRemotePlayer(player);
-            },
-            onPlayerRemoved: (playerId) => {
-                this.removeRemotePlayer(playerId);
-            },
-            onPlayerShoot: (data) => {
-                this.addRemoteBullet(data.x, data.y, data.angle, data.id);
-            },
-            onLocalPlayerId: (playerId) => {
-                this.player.setPlayerId(playerId);
-            },
-            onPlayerHit: (data) => {
-                this.hitPlayer(data);
-            }
-        });
-
-        netClient.connect({ x: this.player.x, y: this.player.y });
-
-        this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => {
-            netClient.disconnect();
-        });
-    }
-
-    update (_time: number, delta: number)
-    {
-        this.player.update(delta);
-
-        netClient.sendPlayerPosition(this.player.x, this.player.y, this.player.currentAimAngle);
-    }
-
-    private addRemoteBullet(x: number, y: number, angle: number, ownerId: number)
-    {
-        createBullet(this, x, y, angle, 'BULLET', ownerId)
-    }
-
-    private syncRemotePlayers(players: PlayerState[]): void
-    {
-        const activeIds = new Set<number>();
-
-        players.forEach((player) => {
-            activeIds.add(player.id);
-            if (this.remotePlayers.has(player.id))
-            {
-                this.moveRemotePlayer(player);
-                return;
-            }
-            this.addRemotePlayer(player);
-        });
-
-        this.remotePlayers.forEach((_value, playerId) => {
-            if (!activeIds.has(playerId))
-            {
-                this.removeRemotePlayer(playerId);
-            }
-        });
-    }
-
-    private addRemotePlayer(player: PlayerState): void
-    {
-        if (this.remotePlayers.has(player.id))
-        {
-            return;
-        }
-        const other = new RemotePlayer(this, player.x, player.y, player.frontModule, player.backModule);
-        other.setPlayerId(player.id);
-        other.applyRemoteState(player.x, player.y, player.angle ?? 0);
-
-        this.remotePlayers.set(player.id, other);
-        this.remotePlayersGroup.add(other);
-    }
-
-    private moveRemotePlayer(player: PlayerState): void
-    {
-        const other = this.remotePlayers.get(player.id);
-        if (!other) return;
-        other.applyRemoteState(player.x, player.y, player.angle);
-    }
-
-    private removeRemotePlayer(playerId: number): void
-    {
-        const other = this.remotePlayers.get(playerId);
-        if (!other)
-        {
+        const floorLayer = this.map.createLayer('Floor', tileset);
+        if (!floorLayer) {
+            console.error('floor layer not found!');
             return;
         }
 
-        this.remotePlayersGroup.remove(other, false, false);
-        other.destroy();
-        this.remotePlayers.delete(playerId);
-    }
-
-    private hitPlayer(data: { fromId: number; targetId: number }): void {
-        if (data.targetId === this.player.getPlayerId()) {
-            this.player.setPosition(512, 560);
-            return
+        const collisionLayer = this.map.createLayer('Collisions', tileset);
+        if (!collisionLayer) {
+            console.error('Collision layer not found!');
+            return;
         }
 
-        const player = this.remotePlayers.get(data.targetId);
-        if (!player) return
+        this.floorLayer = floorLayer;
+        this.floorLayer.setCollisionByProperty({ collides: true });
 
-
+        this.physics.world.setBounds(0, 0, this.map.widthInPixels, this.map.heightInPixels);
     }
 
-    private addColisions(): void {
+    private setupCollision(): void {
+        this.physics.add.collider(this.player, this.floorLayer);
+
         this.remotePlayersGroup = this.physics.add.group();
         this.bulletGroup = this.physics.add.group();
         this.meleeGroup = this.physics.add.group();
@@ -199,6 +112,109 @@ export default class Game extends Scene
             undefined,
             this
         );
+    }
+
+    private setupNet() {
+        this.remotePlayers = new Map();
+        netClient.setHandlers({
+            onAllPlayers: (players) => {
+                this.syncRemotePlayers(players);
+            },
+            onPlayerAdded: (player) => {
+                this.addRemotePlayer(player);
+            },
+            onPlayerMoved: (player) => {
+                this.moveRemotePlayer(player);
+            },
+            onPlayerRemoved: (playerId) => {
+                this.removeRemotePlayer(playerId);
+            },
+            onPlayerShoot: (data) => {
+                this.addRemoteBullet(data.x, data.y, data.angle, data.id);
+            },
+            onLocalPlayerId: (playerId) => {
+                this.player.setPlayerId(playerId);
+            },
+            onPlayerHit: (data) => {
+                this.hitPlayer(data);
+            }
+        });
+
+        netClient.connect({ x: this.player.x, y: this.player.y });
+
+        this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => {
+            netClient.disconnect();
+        });
+    }
+
+    update(_time: number, delta: number) {
+        this.player.update(delta);
+
+        netClient.sendPlayerPosition(this.player.x, this.player.y, this.player.currentAimAngle);
+    }
+
+    private addRemoteBullet(x: number, y: number, angle: number, ownerId: number) {
+        createBullet(this, x, y, angle, 'BULLET', ownerId)
+    }
+
+    private syncRemotePlayers(players: PlayerState[]): void {
+        const activeIds = new Set<number>();
+
+        players.forEach((player) => {
+            activeIds.add(player.id);
+            if (this.remotePlayers.has(player.id)) {
+                this.moveRemotePlayer(player);
+                return;
+            }
+            this.addRemotePlayer(player);
+        });
+
+        this.remotePlayers.forEach((_value, playerId) => {
+            if (!activeIds.has(playerId)) {
+                this.removeRemotePlayer(playerId);
+            }
+        });
+    }
+
+    private addRemotePlayer(player: PlayerState): void {
+        if (this.remotePlayers.has(player.id)) {
+            return;
+        }
+        const other = new RemotePlayer(this, player.x, player.y, player.frontModule, player.backModule);
+        other.setPlayerId(player.id);
+        other.applyRemoteState(player.x, player.y, player.angle ?? 0);
+
+        this.remotePlayers.set(player.id, other);
+        this.remotePlayersGroup.add(other);
+    }
+
+    private moveRemotePlayer(player: PlayerState): void {
+        const other = this.remotePlayers.get(player.id);
+        if (!other) return;
+        other.applyRemoteState(player.x, player.y, player.angle);
+    }
+
+    private removeRemotePlayer(playerId: number): void {
+        const other = this.remotePlayers.get(playerId);
+        if (!other) {
+            return;
+        }
+
+        this.remotePlayersGroup.remove(other, false, false);
+        other.destroy();
+        this.remotePlayers.delete(playerId);
+    }
+
+    private hitPlayer(data: { fromId: number; targetId: number }): void {
+        if (data.targetId === this.player.getPlayerId()) {
+            this.player.setPosition(512, 560);
+            return
+        }
+
+        const player = this.remotePlayers.get(data.targetId);
+        if (!player) return
+
+
     }
 
     private handleBulletHit: Phaser.Types.Physics.Arcade.ArcadePhysicsCallback = (playerObj, bulletObj) => {
