@@ -7,6 +7,7 @@ import { BasePlayer } from '#player/BasePlayer.ts';
 import BaseMelee from '#entities/melee/BaseMelee.ts';
 import { PlayerState } from '#sockets/types.ts';
 import { netClient } from '#sockets/netClient.ts';
+import NamePrompt from '#scenes/componets/NamePrompt.ts';
 
 export default class Game extends Scene {
     private map: Phaser.Tilemaps.Tilemap;
@@ -18,6 +19,7 @@ export default class Game extends Scene {
     private bulletGroup!: Phaser.Physics.Arcade.Group;
     private meleeGroup!: Phaser.Physics.Arcade.Group;
     private shieldGroup!: Phaser.Physics.Arcade.StaticGroup;
+    private hasName = false;
 
     constructor() {
         super('Game');
@@ -26,22 +28,31 @@ export default class Game extends Scene {
     create() {
         this.setupMap()
 
-        let spawnX = 512;
-        let spawnY = 560;
-        this.map.getObjectLayer("PlayerSpawns")?.objects.forEach((spawn) => {
-            if (spawn.x !== undefined && spawn.y !== undefined) {
-                spawnX = spawn.x;
-                spawnY = spawn.y;
-            }
-        });
-        this.player = new LocalPlayer(this, spawnX, spawnY);
-
-        this.setupCollision()
+        const spawns = this.map.getObjectLayer("PlayerSpawns")?.objects
+        if (!spawns || spawns.length === 0) {
+            console.error("No player spawns found in the map!");
+            return;
+         }
+        const playerSpawn = spawns[Math.floor(Math.random() * spawns.length)];
+        const playerspawnX = playerSpawn.x ?? 512;
+        const playerspawnY = playerSpawn.y ?? 560;
 
         this.camera = this.cameras.main;
-        this.camera.startFollow(this.player, false, 0.08, 0.08);
+        this.camera.startFollow(playerSpawn, false, 0.08, 0.08);
+        
 
-        this.setupNet()
+        this.showNamePrompt((name) => {
+            this.player = new LocalPlayer(this, playerspawnX, playerspawnY);
+
+            this.setupCollision()
+
+            this.camera.startFollow(this.player, false, 0.08, 0.08);
+
+            this.setupNet()
+
+            this.hasName = true;
+            this.player.setPlayerName(name);
+        });
     }
 
     private setupMap() {
@@ -146,9 +157,21 @@ export default class Game extends Scene {
     }
 
     update(_time: number, delta: number) {
+        if (!this.hasName) {
+            return;
+        }
         this.player.update(delta);
 
         netClient.sendPlayerPosition(this.player.x, this.player.y, this.player.currentAimAngle);
+    }
+
+    private showNamePrompt(onSubmit: (name: string) => void): void {
+        const prompt = new NamePrompt(this, (name) => {
+            onSubmit(name);
+            prompt.destroy(true);
+        });
+
+        this.add.existing(prompt);
     }
 
     private addRemoteBullet(x: number, y: number, angle: number, ownerId: number) {
