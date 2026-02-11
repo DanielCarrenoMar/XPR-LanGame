@@ -40,16 +40,12 @@ export default class Game extends Scene {
         this.camera = this.cameras.main;
         this.camera.startFollow(playerSpawn, false, 0.08, 0.08);
         
+        this.player = new LocalPlayer(this, playerspawnX, playerspawnY);
+        this.camera.startFollow(this.player, false, 0.08, 0.08);
+        this.setupCollision()
+        this.setupNet()
 
         this.showNamePrompt((name) => {
-            this.player = new LocalPlayer(this, playerspawnX, playerspawnY);
-
-            this.setupCollision()
-
-            this.camera.startFollow(this.player, false, 0.08, 0.08);
-
-            this.setupNet()
-
             this.hasName = true;
             this.player.setPlayerName(name);
         });
