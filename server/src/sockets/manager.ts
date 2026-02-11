@@ -10,13 +10,14 @@ let lastPlayerId = 0;
 
 export function registerSocketHandlers(io: Server): void {
 	io.on("connection", (socket: Socket) => {
+		socket.emit("allplayers", getAllPlayers(io));
+			
 		socket.on("newplayer", (data: NewPlayerData) => {
 			const player = createPlayer(data, getNextPlayerId());
 			console.log(`Player connected: ${player.id}`);
 
 			socket.data.player = player;
 			emitPlayerId(socket, player.id);
-			socket.emit("allplayers", getAllPlayers(io));
 			socket.broadcast.emit("newplayer", player);
 
 			socket.on("posPlayer", (moveData) => handlePlayerMove(io, socket, moveData));
