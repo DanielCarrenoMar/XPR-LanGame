@@ -3,8 +3,35 @@ import { Scene } from 'phaser';
 type NamePromptCallback = (name: string) => void;
 
 export default class NamePrompt extends Phaser.GameObjects.Container {
+	private static readonly STORAGE_KEY = 'xpr.playerName';
+
 	private inputNode: HTMLInputElement;
 	private submitHandler: (event: KeyboardEvent) => void;
+
+	static getStoredName(): string | null {
+		try {
+			const name = localStorage.getItem(NamePrompt.STORAGE_KEY);
+			return name && name.trim() ? name : null;
+		} catch {
+			return null;
+		}
+	}
+
+	static saveName(name: string): void {
+		try {
+			localStorage.setItem(NamePrompt.STORAGE_KEY, name);
+		} catch {
+			// Ignore storage failures.
+		}
+	}
+
+    static clearStoredName(): void {
+        try {
+            localStorage.removeItem(NamePrompt.STORAGE_KEY);
+        } catch {
+            // Ignore storage failures.
+        }
+    }
 
 	constructor(scene: Scene, onSubmit: NamePromptCallback) {
 		super(scene, 0, 0);
@@ -46,6 +73,7 @@ export default class NamePrompt extends Phaser.GameObjects.Container {
 			if (!name) {
 				return;
 			}
+			NamePrompt.saveName(name);
 			onSubmit(name);
 		};
 

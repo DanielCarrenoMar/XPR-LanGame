@@ -165,6 +165,12 @@ export default class Game extends Scene {
     }
 
     private showNamePrompt(onSubmit: (name: string) => void): void {
+        const storedName = NamePrompt.getStoredName();
+        if (storedName) {
+            onSubmit(storedName);
+            return;
+        }
+
         const prompt = new NamePrompt(this, (name) => {
             onSubmit(name);
             prompt.destroy(true);
