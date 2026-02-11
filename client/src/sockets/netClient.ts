@@ -1,5 +1,5 @@
 import { io, Socket } from "socket.io-client";
-import { Modificable} from "#src/modificable.ts";
+import { Modificable } from "#src/modificable.ts";
 import { PlayerState, SpawnBulletData } from "./types.ts";
 import { SERVER_URL } from "#src/config.ts";
 
@@ -21,7 +21,7 @@ class NetClient {
     private lastSent: { x: number; y: number; angle: number } | null = null;
     private lastSentAt = 0;
 
-    connect(initialPosition?: { x: number; y: number }): void {
+    connect(): void {
         if (this.socket) {
             return;
         }
@@ -29,12 +29,12 @@ class NetClient {
         this.socket = io(SERVER_URL);
 
         this.socket.on("connect", () => {
-            this.socket?.emit("newplayer", {
+            /*this.socket?.emit("newplayer", {
                 frontModule: Modificable.frontModule,
                 backModule: Modificable.backModule,
                 x: initialPosition?.x,
                 y: initialPosition?.y
-            });
+            });*/
         });
 
         this.socket.on("playerId", (playerId: number) => {
@@ -96,6 +96,15 @@ class NetClient {
         this.handlers = handlers;
     }
 
+    sendNewPlayer(initialPosition: { x: number; y: number }): void {
+        this.socket?.emit("newplayer", {
+            frontModule: Modificable.frontModule,
+            backModule: Modificable.backModule,
+            x: initialPosition?.x,
+            y: initialPosition?.y
+        });
+    }
+
     sendPlayerPosition(x: number, y: number, angle: number): void {
         if (!this.socket || !this.socket.connected) {
             return;
@@ -111,7 +120,7 @@ class NetClient {
             const dy = y - this.lastSent.y;
             const distance = Math.hypot(dx, dy);
             const dAngle = Math.abs(angle - this.lastSent.angle);
-            
+
             if (distance < minDistance && dAngle < minAngle && now - this.lastSentAt < minIntervalMs) {
                 return;
             }
