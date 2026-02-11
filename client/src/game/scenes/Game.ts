@@ -59,12 +59,6 @@ export default class Game extends Scene {
             return;
         }
 
-        const collisionLayer = this.map.createLayer('Collisions', tileset);
-        if (!collisionLayer) {
-            console.error('Collision layer not found!');
-            return;
-        }
-
         this.floorLayer = floorLayer;
         this.floorLayer.setCollisionByProperty({ collides: true });
 

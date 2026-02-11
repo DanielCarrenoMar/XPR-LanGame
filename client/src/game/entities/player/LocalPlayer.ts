@@ -31,18 +31,24 @@ export class LocalPlayer extends BasePlayer
         if (!this.keys) {
             return;
         }
+        void delta;
 
-        const step = this.speed * (delta / 1000);
-        let nextX = this.x;
-        let nextY = this.y;
+        const body = this.body as Phaser.Physics.Arcade.Body;
 
-        if (this.keys.W.isDown) nextY -= step;
-        if (this.keys.S.isDown) nextY += step;
-        if (this.keys.A.isDown) nextX -= step;
-        if (this.keys.D.isDown) nextX += step;
+        let vx = 0;
+        let vy = 0;
 
-        this.x = nextX
-        this.y = nextY
+        if (this.keys.W.isDown) vy -= 1;
+        if (this.keys.S.isDown) vy += 1;
+        if (this.keys.A.isDown) vx -= 1;
+        if (this.keys.D.isDown) vx += 1;
+
+        if (vx !== 0 || vy !== 0) {
+            const vec = new PhaserMath.Vector2(vx, vy).normalize().scale(this.speed);
+            body.setVelocity(vec.x, vec.y);
+        } else {
+            body.setVelocity(0, 0);
+        }
         
         const pointer = this.scene.input.activePointer;
         const pointerPosition = pointer.positionToCamera(this.scene.cameras.main) as PhaserMath.Vector2;

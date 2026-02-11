@@ -32,11 +32,14 @@ export class BasePlayer extends GameObjects.Sprite
         this.frontWeapon = createWeapon(scene, x, y, frontModule);
         this.backWeapon = createWeapon(scene, x, y, backModule);
 
-        scene.physics.add.existing(this);
+        scene.physics.add.existing(this, false);
         scene.add.existing(this);
 
-        const body = this.body as Phaser.Physics.Arcade.StaticBody;
-        body.setCircle(75, 170, 170);
+        const body = this.body as Phaser.Physics.Arcade.Body;
+        const radius = 82;
+        body.setCircle(radius);
+        body.setOffset((this.width - radius * 2) / 2, (this.height - radius * 2) / 2);
+        body.setCollideWorldBounds(true);
 
         this.aimDot = scene.add.circle(x, y, 4, 0xffffff);
         this.playerIdText = scene.add.text(x, y - 48, "", {
