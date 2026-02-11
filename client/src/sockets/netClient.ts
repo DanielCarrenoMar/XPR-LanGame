@@ -1,6 +1,7 @@
 import { io, Socket } from "socket.io-client";
 import { Modificable} from "#src/modificable.ts";
 import { PlayerState } from "./types.ts";
+import { SERVER_URL } from "#src/config.ts";
 
 
 type ClientHandlers = {
@@ -25,9 +26,7 @@ class NetClient {
             return;
         }
 
-        //const serverUrl = "https://xpr-langame.onrender.com/";
-        const serverUrl = "http://localhost:8081";
-        this.socket = io(serverUrl);
+        this.socket = io(SERVER_URL);
 
         this.socket.on("connect", () => {
             this.socket?.emit("newplayer", {
@@ -80,10 +79,8 @@ class NetClient {
             this.handlers.onPlayerHit?.(data);
         });
 
-        this.socket.on("reset", async () => {
-            console.log("Reset received from server");
-            const response = await fetch("http://localhost:8082/reset", { method: "POST" });
-            console.log("Reset response:", response.status, response.statusText);
+        this.socket.on("reset", () => {
+            fetch("http://localhost:8082/reset", { method: "POST" });
         })
     }
 

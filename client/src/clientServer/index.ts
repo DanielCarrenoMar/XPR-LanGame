@@ -1,3 +1,4 @@
+import { SERVER_URL } from "#src/config.ts";
 import { server } from "./app.ts";
 import { AddressInfo } from "net";
 import os from 'os';
@@ -14,10 +15,8 @@ async function postAddress(baseUrl: string, ip: string, port: number): Promise<v
 }
 
 async function registerSelf(address: string,port: number): Promise<void> {
-    const baseUrl = `http://localhost:8081`;
-
     try {
-        await postAddress(baseUrl, address, port);
+        await postAddress(SERVER_URL, address, port);
     } catch (error) {
         console.error("Failed to POST /postAddress:", error);
     }
