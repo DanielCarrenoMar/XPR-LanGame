@@ -106,6 +106,10 @@ export default class Game extends Scene {
             undefined,
             this
         );
+        this.physics.add.collider(this.bulletGroup, this.floorLayer, (bulletObj, _layer) => {
+            const bullet = bulletObj as BaseBullet;
+            bullet.destroy();
+        });
     }
 
     private setupNet() {
