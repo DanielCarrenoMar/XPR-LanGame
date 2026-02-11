@@ -41,7 +41,7 @@ server.listen(8082, () => {
     }
 
     console.log(`Listening on http://localhost:${port}`);
-    console.log(`Network IP: ${ip}`);
+    console.log(`Network IP: ${ip}${port}`);
     
     void registerSelf(ip, port);
 });
