@@ -1,6 +1,6 @@
 import { Math as PhaserMath, Scene } from 'phaser';
 import { BasePlayer } from './BasePlayer.ts';
-import { WeaponType } from '#src/modificable.ts';
+import { PlayerState } from '#sockets/types.ts';
 
 export class RemotePlayer extends BasePlayer
 {
@@ -12,15 +12,12 @@ export class RemotePlayer extends BasePlayer
 
     constructor(
         scene: Scene,
-        x: number,
-        y: number,
-        frontModule: WeaponType,
-        backModule: WeaponType
+        playerState: PlayerState
     ) {
-        super(scene, x, y, frontModule, backModule);
-        this.targetX = x;
-        this.targetY = y;
-        this.targetAngle = 0;
+        super(scene, playerState.x, playerState.y, playerState.frontModule, playerState.backModule, playerState.name);
+        this.targetX = playerState.x;
+        this.targetY = playerState.y;
+        this.targetAngle = playerState.angle;
     }
 
     applyRemoteState(x: number, y: number, angle: number): void {

@@ -48,14 +48,13 @@ export default class Game extends Scene {
         this.setupNet()
 
         this.showNamePrompt((name) => {
-            this.player = new LocalPlayer(this, playerspawnX, playerspawnY);
+            this.player = new LocalPlayer(this, playerspawnX, playerspawnY, name);
             this.camera.startFollow(this.player, false, 0.08, 0.08);
             this.setupCollision()
 
-            netClient.sendNewPlayer({ x: this.player.x, y: this.player.y });
+            netClient.sendNewPlayer({ x: this.player.x, y: this.player.y, name });
 
             this.hasName = true;
-            this.player.setPlayerName(name);
         });
     }
 
@@ -201,7 +200,7 @@ export default class Game extends Scene {
         if (this.remotePlayers.has(player.id)) {
             return;
         }
-        const other = new RemotePlayer(this, player.x, player.y, player.frontModule, player.backModule);
+        const other = new RemotePlayer(this, player);
         other.setPlayerId(player.id);
         other.applyRemoteState(player.x, player.y, player.angle ?? 0);
 

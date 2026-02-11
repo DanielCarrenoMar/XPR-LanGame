@@ -25,12 +25,21 @@ export class BasePlayer extends GameObjects.Sprite
         y: number,
         frontModule: WeaponType,
         backModule: WeaponType,
+        name: string
     ) {
         super(scene, x, y, "default");
         this.setDisplaySize(130, 130);
 
+        this.aimDot = scene.add.circle(x, y, 4, 0xffffff);
+        this.playerIdText = scene.add.text(x, y - 48, "", {
+            fontFamily: "Arial",
+            fontSize: "12px",
+            color: "#ffffff"
+        }).setOrigin(0.5, 0.5);
+
         this.frontWeapon = createWeapon(scene, x, y, frontModule);
         this.backWeapon = createWeapon(scene, x, y, backModule);
+        this.setPlayerName(name);
 
         scene.physics.add.existing(this, false);
         scene.add.existing(this);
@@ -41,12 +50,7 @@ export class BasePlayer extends GameObjects.Sprite
         body.setOffset((this.width - radius * 2) / 2, (this.height - radius * 2) / 2);
         body.setCollideWorldBounds(true);
 
-        this.aimDot = scene.add.circle(x, y, 4, 0xffffff);
-        this.playerIdText = scene.add.text(x, y - 48, "", {
-            fontFamily: "Arial",
-            fontSize: "12px",
-            color: "#ffffff"
-        }).setOrigin(0.5, 0.5);
+        
         this.backAccessory = this.backWeapon ? scene.add.image(x, y, "conejo") : null;
         this.backAccessory?.setDisplaySize(128, 128);
         this.startBlinkLoop();
@@ -62,7 +66,7 @@ export class BasePlayer extends GameObjects.Sprite
         return this.playerId;
     }
 
-    public setPlayerName(name: string): void {
+    private setPlayerName(name: string): void {
         this.name = name;
         this.playerIdText.setText(name + String(this.playerId));
     }

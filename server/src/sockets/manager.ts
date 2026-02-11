@@ -1,10 +1,8 @@
 import type { Server, Socket } from "socket.io";
-import { createPlayer } from "./handlers/player/newPlayer.js";
-import { emitPlayerId } from "./handlers/player/playerId.js";
-import { handlePlayerMove } from "./handlers/player/actPlayer.js";
 import { handleFire } from "./handlers/bullet/spawnBullet.js";
 import { handlePlayerHit } from "./handlers/score/actScore.js";
 import type { NewPlayerData, Player } from "./types.js";
+import { createPlayer, handlePlayerMove } from "#handlers/playerHandlers.js";
 
 let lastPlayerId = 0;
 
@@ -17,7 +15,7 @@ export function registerSocketHandlers(io: Server): void {
 			console.log(`Player connected: ${player.id}`);
 			
 			socket.data.player = player;
-			emitPlayerId(socket, player.id);
+			socket.emit("playerId", player.id);
 			socket.broadcast.emit("newplayer", player);
 
 			socket.on("posPlayer", (moveData) => handlePlayerMove(io, socket, moveData));

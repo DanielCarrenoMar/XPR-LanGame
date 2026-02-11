@@ -1,6 +1,6 @@
 import { io, Socket } from "socket.io-client";
 import { Modificable } from "#src/modificable.ts";
-import { PlayerState, SpawnBulletData } from "./types.ts";
+import { NewPlayerData, PlayerState, SpawnBulletData } from "./types.ts";
 import { SERVER_URL } from "#src/config.ts";
 
 
@@ -91,13 +91,14 @@ class NetClient {
         this.handlers = handlers;
     }
 
-    sendNewPlayer(initialPosition: { x: number; y: number }): void {
+    sendNewPlayer(data: Omit<NewPlayerData, "frontModule" | "backModule">): void {
         this.socket?.emit("newplayer", {
+            name: data.name,
+            x: data.x,
+            y: data.y,
             frontModule: Modificable.frontModule,
             backModule: Modificable.backModule,
-            x: initialPosition?.x,
-            y: initialPosition?.y
-        });
+        } as NewPlayerData);
     }
 
     sendPlayerPosition(x: number, y: number, angle: number): void {

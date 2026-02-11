@@ -1,5 +1,6 @@
 export type Player = {
     id: number;
+    name: string;
     x: number;
     y: number;
     angle: number;
@@ -8,6 +9,7 @@ export type Player = {
 };
 
 export type NewPlayerData = {
+    name: string;
     frontModule: string;
     backModule: string;
     x: number;
