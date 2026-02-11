@@ -28,14 +28,9 @@ class NetClient {
 
         this.socket = io(SERVER_URL);
 
-        this.socket.on("connect", () => {
-            /*this.socket?.emit("newplayer", {
-                frontModule: Modificable.frontModule,
-                backModule: Modificable.backModule,
-                x: initialPosition?.x,
-                y: initialPosition?.y
-            });*/
-        });
+        /*this.socket.on("connect", () => {
+        
+        });*/
 
         this.socket.on("playerId", (playerId: number) => {
             this.localPlayerId = playerId;

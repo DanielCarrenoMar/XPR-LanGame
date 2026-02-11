@@ -26,26 +26,34 @@ export default class Game extends Scene {
     }
 
     create() {
+        this.remotePlayersGroup = this.physics.add.group();
+        this.bulletGroup = this.physics.add.group();
+        this.meleeGroup = this.physics.add.group();
+        this.shieldGroup = this.physics.add.staticGroup();
+
         this.setupMap()
 
         const spawns = this.map.getObjectLayer("PlayerSpawns")?.objects
         if (!spawns || spawns.length === 0) {
             console.error("No player spawns found in the map!");
             return;
-         }
+        }
         const playerSpawn = spawns[Math.floor(Math.random() * spawns.length)];
         const playerspawnX = playerSpawn.x ?? 512;
         const playerspawnY = playerSpawn.y ?? 560;
 
         this.camera = this.cameras.main;
         this.camera.startFollow(playerSpawn, false, 0.08, 0.08);
-        
-        this.player = new LocalPlayer(this, playerspawnX, playerspawnY);
-        this.camera.startFollow(this.player, false, 0.08, 0.08);
-        this.setupCollision()
+
         this.setupNet()
 
         this.showNamePrompt((name) => {
+            this.player = new LocalPlayer(this, playerspawnX, playerspawnY);
+            this.camera.startFollow(this.player, false, 0.08, 0.08);
+            this.setupCollision()
+
+            netClient.sendNewPlayer({ x: this.player.x, y: this.player.y });
+
             this.hasName = true;
             this.player.setPlayerName(name);
         });
@@ -73,13 +81,6 @@ export default class Game extends Scene {
     }
 
     private setupCollision(): void {
-        this.physics.add.collider(this.player, this.floorLayer);
-
-        this.remotePlayersGroup = this.physics.add.group();
-        this.bulletGroup = this.physics.add.group();
-        this.meleeGroup = this.physics.add.group();
-        this.shieldGroup = this.physics.add.staticGroup();
-
         this.events.on("bullet-created", (bullet: BaseBullet) => {
             this.bulletGroup.add(bullet);
             const body = bullet.body as Phaser.Physics.Arcade.Body;
@@ -113,6 +114,9 @@ export default class Game extends Scene {
             undefined,
             this
         );
+
+        this.physics.add.collider(this.player, this.floorLayer);
+
         this.physics.add.collider(this.bulletGroup, this.floorLayer, (bulletObj, _layer) => {
             const bullet = bulletObj as BaseBullet;
             bullet.destroy();
@@ -146,7 +150,6 @@ export default class Game extends Scene {
         });
 
         netClient.connect();
-        netClient.sendNewPlayer({ x: this.player.x, y: this.player.y });
 
         this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => {
             netClient.disconnect();
