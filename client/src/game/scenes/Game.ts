@@ -283,7 +283,7 @@ export default class Game extends Scene {
             return;
         }
 
-        if (bullet.ownerId === netClient.getLocalPlayerId()) {
+        if (bullet.ownerId === shield.ownerId) {
             return;
         }
 
