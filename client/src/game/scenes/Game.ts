@@ -8,6 +8,7 @@ import BaseMelee from '#entities/melee/BaseMelee.ts';
 import { PlayerState } from '#sockets/types.ts';
 import { netClient } from '#sockets/netClient.ts';
 import NamePrompt from '#scenes/componets/NamePrompt.ts';
+import BaseShield from '#entities/shield/BaseShield.ts';
 
 export default class Game extends Scene {
     private map: Phaser.Tilemaps.Tilemap;
@@ -26,10 +27,7 @@ export default class Game extends Scene {
     }
 
     create() {
-        this.remotePlayersGroup = this.physics.add.group();
-        this.bulletGroup = this.physics.add.group();
-        this.meleeGroup = this.physics.add.group();
-        this.shieldGroup = this.physics.add.staticGroup();
+        this.setupCollisionGroups()
 
         this.setupMap()
 
@@ -58,6 +56,23 @@ export default class Game extends Scene {
         });
     }
 
+    private setupCollisionGroups(): void {
+        this.remotePlayersGroup = this.physics.add.group();
+        this.bulletGroup = this.physics.add.group();
+        this.meleeGroup = this.physics.add.group();
+        this.shieldGroup = this.physics.add.staticGroup();
+
+        this.events.on("bullet-created", (bullet: BaseBullet) => {
+            this.bulletGroup.add(bullet);
+        });
+        this.events.on("melee-created", (melee: BaseMelee) => {
+            this.meleeGroup.add(melee);
+        });
+        this.events.on("shield-created", (shield: BaseShield) => {
+            this.shieldGroup.add(shield);
+        });
+    }
+
     private setupMap() {
         this.map = this.make.tilemap({ key: 'mainMap' });
         const tileset = this.map.addTilesetImage('Grass', 'grassTiled');
@@ -80,18 +95,6 @@ export default class Game extends Scene {
     }
 
     private setupCollision(): void {
-        this.events.on("bullet-created", (bullet: BaseBullet) => {
-            this.bulletGroup.add(bullet);
-            const body = bullet.body as Phaser.Physics.Arcade.Body;
-            body.setVelocity(bullet.spawnVelocity.x, bullet.spawnVelocity.y);
-        });
-        this.events.on("melee-created", (melee: BaseMelee) => {
-            this.meleeGroup.add(melee);
-        });
-        this.events.on("shield-created", (shield: Phaser.GameObjects.GameObject) => {
-            this.shieldGroup.add(shield);
-        });
-
         this.physics.add.overlap(
             this.remotePlayersGroup,
             this.bulletGroup,
@@ -251,6 +254,7 @@ export default class Game extends Scene {
             return;
         }
 
+
         if (bullet.ownerId === player.getPlayerId()) return
 
         bullet.destroy();
@@ -276,6 +280,10 @@ export default class Game extends Scene {
         const shield = (shieldObj as unknown) as Phaser.GameObjects.GameObject & { ownerId?: number | null, rotation?: number };
 
         if (!bullet || !shield || !bullet.active || !shield.active || !bullet.body) {
+            return;
+        }
+
+        if (bullet.ownerId === netClient.getLocalPlayerId()) {
             return;
         }
 

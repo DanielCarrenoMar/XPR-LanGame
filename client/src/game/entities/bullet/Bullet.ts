@@ -8,6 +8,8 @@ export default class Bullet extends BaseBullet {
         const velocity = new Phaser.Math.Vector2(Math.cos(angle), Math.sin(angle)).scale(300);
         super(scene, x, y, velocity, "BULLET", ownerId);
         scene.events.emit("bullet-created", this);
+        const body = this.body as Phaser.Physics.Arcade.Body;
+        body.setVelocity(this.spawnVelocity.x, this.spawnVelocity.y);
     }
 
     preUpdate(): void {
