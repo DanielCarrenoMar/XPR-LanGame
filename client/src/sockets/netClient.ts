@@ -2,8 +2,7 @@ import { io, Socket } from "socket.io-client";
 import { Modificable } from "#src/modificable.ts";
 import { NewPlayerData, PlayerState, SpawnBulletData } from "./types.ts";
 import { SERVER_URL } from "#src/config.ts";
-import NamePrompt from "#scenes/componets/NamePrompt.ts";
-
+import { repository } from "#utils/repository.ts";
 
 type ClientHandlers = {
     onAllPlayers?: (players: PlayerState[]) => void;
@@ -73,9 +72,7 @@ class NetClient {
         });
 
         this.socket.on("reset", () => {
-            console.log("Received reset event from server");
-            NamePrompt.clearStoredName()
-            fetch("http://localhost:8082/reset", { method: "POST" });
+            repository.resetAllVariables();
         })
     }
 
