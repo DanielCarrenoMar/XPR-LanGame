@@ -59,6 +59,8 @@ export class BasePlayer extends GameObjects.Sprite
 
     public setPlayerId(id: number): void {
         this.playerId = id;
+        this.frontWeapon?.setOwnerId(id);
+        this.backWeapon?.setOwnerId(id);
         this.playerIdText.setText(this.name + String(id));
     }
 

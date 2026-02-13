@@ -1,5 +1,5 @@
 export default abstract class BaseShield extends Phaser.GameObjects.Sprite {
-    public ownerId: number | null = null;
+    protected ownerId: number | null = null;
 
     constructor(scene: Phaser.Scene, x: number, y: number, texture: string, width: number = 64, height: number = 64) {
         super(scene, x, y, texture);
@@ -12,6 +12,10 @@ export default abstract class BaseShield extends Phaser.GameObjects.Sprite {
         if (body) {
             body.setSize(width, height, true);
         }
+    }
+
+    setOwnerId(id: number | null): void {
+        this.ownerId = id;
     }
 
     syncBody(): void {

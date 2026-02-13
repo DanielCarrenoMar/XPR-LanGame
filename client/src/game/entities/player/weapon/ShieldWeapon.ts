@@ -15,6 +15,11 @@ export default class ShieldWeapon extends BaseWeapon {
         this.shield.syncBody();
     }
 
+    override setOwnerId(id: number | null): void {
+        super.setOwnerId(id);
+        this.shield.setOwnerId(id);
+    }
+
     override setActive(value: boolean): this {
         super.setActive(value);
         this.shield.setActive(value);
