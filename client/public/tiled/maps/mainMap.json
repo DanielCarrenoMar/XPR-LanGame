@@ -18,6 +18,65 @@
         }, 
         {
          "draworder":"topdown",
+         "id":4,
+         "name":"Structures",
+         "objects":[
+                {
+                 "gid":6,
+                 "height":160,
+                 "id":10,
+                 "name":"",
+                 "rotation":0,
+                 "type":"BRUSH",
+                 "visible":true,
+                 "width":160,
+                 "x":778.30303030303,
+                 "y":1102.42424242424
+                }, 
+                {
+                 "gid":6,
+                 "height":105.454545454545,
+                 "id":11,
+                 "name":"",
+                 "rotation":0,
+                 "type":"BRUSH",
+                 "visible":true,
+                 "width":105.454545454545,
+                 "x":1047.27272727273,
+                 "y":1507.87878787879
+                }, 
+                {
+                 "gid":6,
+                 "height":160,
+                 "id":12,
+                 "name":"",
+                 "rotation":0,
+                 "type":"BRUSH",
+                 "visible":true,
+                 "width":160,
+                 "x":1726.06060606061,
+                 "y":1107.87878787879
+                }, 
+                {
+                 "gid":6,
+                 "height":241.818181818182,
+                 "id":13,
+                 "name":"",
+                 "rotation":0,
+                 "type":"BRUSH",
+                 "visible":true,
+                 "width":241.818181818182,
+                 "x":1641.21212121212,
+                 "y":1726.06060606061
+                }],
+         "opacity":1,
+         "type":"objectgroup",
+         "visible":true,
+         "x":0,
+         "y":0
+        }, 
+        {
+         "draworder":"topdown",
          "id":2,
          "name":"PlayerSpawns",
          "objects":[
@@ -71,8 +130,8 @@
          "x":0,
          "y":0
         }],
- "nextlayerid":4,
- "nextobjectid":7,
+ "nextlayerid":5,
+ "nextobjectid":14,
  "orientation":"orthogonal",
  "renderorder":"right-down",
  "tiledversion":"1.11.2",
@@ -95,7 +154,6 @@
                  "objectgroup":
                     {
                      "draworder":"index",
-                     "id":2,
                      "name":"",
                      "objects":[
                             {
@@ -159,6 +217,29 @@
                         }]
                 }],
          "tilewidth":32
+        }, 
+        {
+         "columns":0,
+         "firstgid":6,
+         "grid":
+            {
+             "height":1,
+             "orientation":"orthogonal",
+             "width":1
+            },
+         "margin":0,
+         "name":"Structs",
+         "spacing":0,
+         "tilecount":1,
+         "tileheight":500,
+         "tiles":[
+                {
+                 "id":0,
+                 "image":"..\/..\/assets\/bush.png",
+                 "imageheight":500,
+                 "imagewidth":500
+                }],
+         "tilewidth":500
         }],
  "tilewidth":32,
  "type":"map",

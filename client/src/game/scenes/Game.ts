@@ -11,6 +11,7 @@ import BaseShield from '#entities/shield/BaseShield.ts';
 import { repository } from '#utils/repository.ts';
 import InputNameMenu from '#componets/menus/InputNameMenu.ts';
 import PauseMenu from '#componets/menus/PauseMenu.ts';
+import { loadStructureFromTiledMap } from '#utils/mapObjectLoader.ts';
 
 export default class Game extends Scene {
     private map: Phaser.Tilemaps.Tilemap;
@@ -113,6 +114,8 @@ export default class Game extends Scene {
         this.floorLayer.setCollisionByProperty({ collides: true });
 
         this.physics.world.setBounds(0, 0, this.map.widthInPixels, this.map.heightInPixels);
+
+        loadStructureFromTiledMap(this, this.map, "Structures")
     }
 
     private setupCollision(): void {

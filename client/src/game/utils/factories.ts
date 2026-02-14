@@ -8,12 +8,12 @@ import { WeaponType } from "#src/modificable.ts";
 import Bush from "#entities/structs/Bush.ts";
 import { Struct, StructType } from "#entities/structs/Struct.ts";
 
-export function createStruct(scene: Phaser.Scene, x: number, y: number, type: StructType): Struct {
+export function createStruct(scene: Phaser.Scene, x: number, y: number, width: number, height: number, type: StructType): Struct {
     switch (type) {
         case 'BRUSH':
-            return new Bush(scene, x, y);
+            return new Bush(scene, x, y, width, height);
         case 'WALL':
-            return new Bush(scene, x, y);
+            return new Bush(scene, x, y, width, height);
         default:
             throw new Error(`Unknown struct type: ${type}`);
     }

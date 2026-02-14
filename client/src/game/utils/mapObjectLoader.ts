@@ -9,10 +9,10 @@ export function loadStructureFromTiledMap(scene: Phaser.Scene, map: Phaser.Tilem
     }
 
     layer.objects.forEach(obj => {
-        if (!obj.type || !obj.x || !obj.y) {
-            console.warn(`Object ${obj.name} has missing required properties (type, x, y).`);
+        if (!obj.type || !obj.x || !obj.y || !obj.width || !obj.height) {
+            console.warn(`Object ${obj.name} has missing required properties (type, x, y, width, height).`);
         } else {
-            scene.add.existing(createStruct(scene, obj.x ?? 0, obj.y ?? 0, obj.type as StructType));
+            scene.add.existing(createStruct(scene, obj.x, obj.y, obj.width, obj.height, obj.type as StructType));
         }
     });
 }
