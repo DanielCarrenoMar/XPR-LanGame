@@ -5,6 +5,19 @@ import ShotgunWeapon from "#player/weapon/ShotgunWeapon.ts";
 import ShieldWeapon from "#player/weapon/ShieldWeapon.ts";
 import SwordWeapon from "#player/weapon/SwordWeapon.ts";
 import { WeaponType } from "#src/modificable.ts";
+import Bush from "#entities/structs/Bush.ts";
+import { Struct, StructType } from "#entities/structs/Struct.ts";
+
+export function createStruct(scene: Phaser.Scene, x: number, y: number, type: StructType): Struct {
+    switch (type) {
+        case 'BRUSH':
+            return new Bush(scene, x, y);
+        case 'WALL':
+            return new Bush(scene, x, y);
+        default:
+            throw new Error(`Unknown struct type: ${type}`);
+    }
+}
 
 export function createBullet(scene: Phaser.Scene, x: number, y: number, angle: number, type: BulletType, ownerId: number | null): BaseBullet {
     switch (type) {
