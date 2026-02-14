@@ -8,9 +8,9 @@ import BaseMelee from '#entities/melee/BaseMelee.ts';
 import { PlayerState } from '#sockets/types.ts';
 import { netClient } from '#sockets/netClient.ts';
 import BaseShield from '#entities/shield/BaseShield.ts';
-import PauseMenu from '#scenes/componets/menus/PauseMenu.ts';
-import InputNameMenu from './componets/menus/inputNameMenu.ts';
 import { repository } from '#utils/repository.ts';
+import InputNameMenu from '#componets/menus/InputNameMenu.ts';
+import PauseMenu from '#componets/menus/PauseMenu.ts';
 
 export default class Game extends Scene {
     private map: Phaser.Tilemaps.Tilemap;
@@ -66,7 +66,6 @@ export default class Game extends Scene {
         }
 
         this.input.keyboard?.on('keydown-ESC', () => {
-            console.log(this.activeMenu);
             if (this.activeMenu) {
                 if (this.activeMenu instanceof PauseMenu) {
                     this.setMenu(null);
@@ -75,8 +74,6 @@ export default class Game extends Scene {
             }
 
             this.setMenu(new PauseMenu(this));
-            console.log('Pause menu opened');
-
         });
     }
 
@@ -194,7 +191,7 @@ export default class Game extends Scene {
             this.activeMenu.destroy(true);
         }
         this.activeMenu = menu;
-        this.player.setActive(this.activeMenu === null && this.playerHasName);
+        //this.player.setActive(this.activeMenu === null && this.playerHasName);
     }
 
     update(_time: number, delta: number) {

@@ -20,10 +20,10 @@ export default class Button extends Phaser.GameObjects.Container {
 	private onClick?: ButtonHandler;
 	private baseColor: number;
 	private hoverColor: number;
-	private enabled = true;
 
 	constructor(scene: Scene, x: number, y: number, options: ButtonOptions = {}) {
 		super(scene, x, y);
+        this.setDepth(1001);
 
 		const {
 			width = 160,
@@ -53,19 +53,19 @@ export default class Button extends Phaser.GameObjects.Container {
 
 		this.background.setInteractive({ useHandCursor: true });
 		this.background.on(Phaser.Input.Events.POINTER_OVER, () => {
-			if (!this.enabled) {
+			if (!this.active) {
 				return;
 			}
 			this.background.setFillStyle(this.hoverColor);
 		});
 		this.background.on(Phaser.Input.Events.POINTER_OUT, () => {
-			if (!this.enabled) {
+			if (!this.active) {
 				return;
 			}
 			this.background.setFillStyle(this.baseColor);
 		});
 		this.background.on(Phaser.Input.Events.POINTER_DOWN, () => {
-			if (!this.enabled) {
+			if (!this.active) {
 				return;
 			}
 			this.onClick?.();
@@ -82,10 +82,18 @@ export default class Button extends Phaser.GameObjects.Container {
 		return this;
 	}
 
-	setEnabled(enabled: boolean): this {
-		this.enabled = enabled;
-		this.background.setFillStyle(enabled ? this.baseColor : 0x1b1b1b);
-		this.background.setInteractive({ useHandCursor: enabled });
+    override setActive(value: boolean): this {
+        super.setActive(value);
+        this.background.setFillStyle(value ? this.baseColor : 0x1b1b1b);
+		if (value) {
+			if (this.background.input) {
+				this.background.input.enabled = true;
+			} else {
+				this.background.setInteractive({ useHandCursor: true });
+			}
+		} else {
+			this.background.disableInteractive();
+		}
 		return this;
-	}
+    }
 }

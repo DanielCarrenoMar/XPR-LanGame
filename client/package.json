@@ -6,6 +6,7 @@
     "imports": {
         "#player/*": "./src/game/entities/player/*",
         "#entities/*": "./src/game/entities/*",
+        "#componets/*": "./src/game/scenes/componets/*",
         "#scenes/*": "./src/game/scenes/*",
         "#sockets/*": "./src/sockets/*",
         "#utils/*": "./src/game/utils/*",

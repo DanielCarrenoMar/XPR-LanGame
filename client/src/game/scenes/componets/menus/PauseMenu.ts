@@ -8,7 +8,7 @@ export default class PauseMenu extends Menu {
 
         const { width, height } = scene.scale;
 
-        const overlay = scene.add.rectangle(0, 0, width, height, 0x000000, 0.65).setOrigin(0, 0);
+        const overlay = scene.add.rectangle(-50, -50, width+100, height+100, 0x000000, 0.65).setOrigin(0, 0);
         const tutorialText = scene.add.text(width / 2, height / 2 - 70, 'Mover con W A S D\n Disparar con click Izquierdo \n Menu de opcciones con Escape', {
             fontFamily: 'Arial',
             fontSize: '16px',
