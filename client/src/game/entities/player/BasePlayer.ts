@@ -5,8 +5,8 @@ import BaseWeapon from './weapon/BaseWeapon.ts';
 
 export class BasePlayer extends GameObjects.Sprite
 {
-    private readonly defaultTextureKey = "default";
-    private readonly blinkTextureKey = "parpadeo";
+    private readonly defaultTextureKey = "player";
+    private readonly blinkTextureKey = "player_blink";
     private readonly blinkMinIntervalMs = 3000;
     private readonly blinkMaxIntervalMs = 10000;
     private readonly blinkDurationMs = 120;
@@ -27,7 +27,7 @@ export class BasePlayer extends GameObjects.Sprite
         backModule: WeaponType,
         name: string
     ) {
-        super(scene, x, y, "default");
+        super(scene, x, y, "player");
         this.setDisplaySize(130, 130);
 
         this.aimDot = scene.add.circle(x, y, 4, 0xffffff);
@@ -51,7 +51,7 @@ export class BasePlayer extends GameObjects.Sprite
         body.setCollideWorldBounds(true);
 
         
-        this.backAccessory = this.backWeapon ? scene.add.image(x, y, "conejo") : null;
+        this.backAccessory = this.backWeapon ? scene.add.image(x, y, "player_bunny") : null;
         this.backAccessory?.setDisplaySize(128, 128);
         this.startBlinkLoop();
         this.updateVisuals();
@@ -96,7 +96,7 @@ export class BasePlayer extends GameObjects.Sprite
         this.backWeapon?.setRotation(this.currentAimAngle + Math.PI);
         if (this.backWeapon) {
             if (!this.backAccessory) {
-                this.backAccessory = this.scene.add.image(this.x, this.y, "conejo");
+                this.backAccessory = this.scene.add.image(this.x, this.y, "player_bunny");
                 this.backAccessory.setDisplaySize(64, 64);
             }
             this.backAccessory.setPosition(this.x - backX, this.y - backY);

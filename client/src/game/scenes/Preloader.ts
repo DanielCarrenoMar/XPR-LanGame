@@ -34,12 +34,16 @@ export class Preloader extends Scene
         this.load.image('logo', 'logo.png');
         this.load.image('yoshi', 'yoshi.jpg');
 
-        this.load.setPath('assets/sprites');
-        this.load.image('default', 'default.png');
-        this.load.image('parpadeo', 'parpadeo.png');
-        this.load.image('bigote', 'bigote.png');
-        this.load.image('conejo', 'conejo.png');
-        this.load.image('vendas', 'vendas.png');
+        this.load.setPath('assets/player');
+        this.load.image('player', 'player.png');
+        this.load.image("player_blink", 'player_blink.png');
+        this.load.image('player_bunny', 'player_bunny.png');
+
+        this.load.setPath('assets/player/decorations');
+        this.load.image('deco_moustache', 'deco_moustache.png');
+        this.load.image('deco_bandage', 'deco_bandage.png');
+
+        this.load.setPath('assets/weapons');
         this.load.image('shield', 'shield.jpg');
         this.load.image('shotgun', 'shotgun.png');
         this.load.image('sword', 'sword.webp');
