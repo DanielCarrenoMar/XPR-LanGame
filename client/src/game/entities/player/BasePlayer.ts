@@ -18,6 +18,14 @@ export class BasePlayer extends GameObjects.Sprite
     private playerId: number = -1;
     public currentAimAngle = 0;
     private readonly backAccessoryOffset = 1;
+    private readonly weaponBobAmplitude = 2.5;
+    private readonly weaponBobFrequency = 0.01;
+    private readonly movementThresholdPx = 0.1;
+    private weaponBobTime = 0;
+    private readonly weaponBobDirectionX: number;
+    private readonly weaponBobDirectionY: number;
+    private previousX: number;
+    private previousY: number;
     
     constructor(
         scene: Scene,
@@ -29,6 +37,11 @@ export class BasePlayer extends GameObjects.Sprite
     ) {
         super(scene, x, y, "player");
         this.setDisplaySize(130, 130);
+        const randomDirection = Phaser.Math.FloatBetween(0, Math.PI * 2);
+        this.weaponBobDirectionX = Math.cos(randomDirection);
+        this.weaponBobDirectionY = Math.sin(randomDirection);
+        this.previousX = x;
+        this.previousY = y;
 
         this.aimDot = scene.add.circle(x, y, 4, 0xffffff);
         this.playerIdText = scene.add.text(x, y - 48, "", {
@@ -78,6 +91,17 @@ export class BasePlayer extends GameObjects.Sprite
     }
 
     protected updateVisuals(): void {
+        const movedDistance = Phaser.Math.Distance.Between(this.x, this.y, this.previousX, this.previousY);
+        const isMoving = movedDistance > this.movementThresholdPx;
+        if (isMoving) {
+            this.weaponBobTime += this.scene.game.loop.delta;
+        }
+        const bobAmount = isMoving
+            ? Math.sin(this.weaponBobTime * this.weaponBobFrequency) * this.weaponBobAmplitude
+            : 0;
+        const bobOffsetX = bobAmount * this.weaponBobDirectionX;
+        const bobOffsetY = bobAmount * this.weaponBobDirectionY;
+
         const aimDistance = this.width / 2;
         this.aimDot.x = this.x + Math.cos(this.currentAimAngle) * aimDistance;
         this.aimDot.y = this.y + Math.sin(this.currentAimAngle) * aimDistance;
@@ -89,10 +113,10 @@ export class BasePlayer extends GameObjects.Sprite
         const backX = Math.cos(this.currentAimAngle) * this.backAccessoryOffset;
         const backY = Math.sin(this.currentAimAngle) * this.backAccessoryOffset;
 
-        this.frontWeapon?.setPosition(this.x + aimX, this.y + aimY);
+        this.frontWeapon?.setPosition(this.x + aimX + bobOffsetX, this.y + aimY + bobOffsetY);
         this.frontWeapon?.setRotation(this.currentAimAngle);
 
-        this.backWeapon?.setPosition(this.x - aimX, this.y - aimY);
+        this.backWeapon?.setPosition(this.x - aimX + bobOffsetX, this.y - aimY + bobOffsetY);
         this.backWeapon?.setRotation(this.currentAimAngle + Math.PI);
         if (this.backWeapon) {
             if (!this.backAccessory) {
@@ -106,6 +130,8 @@ export class BasePlayer extends GameObjects.Sprite
             this.backAccessory = null;
         }
         this.playerIdText.setPosition(this.x, this.y - 48);
+        this.previousX = this.x;
+        this.previousY = this.y;
     }
 
     override destroy(fromScene?: boolean): void {
