@@ -1,13 +1,12 @@
 import { repository } from '#utils/repository.ts';
 import { Scene } from 'phaser';
+import Menu from './Menu.ts';
 
 type RepositoryCallback = (name: string) => void;
 
-export default class Repository extends Phaser.GameObjects.Container {
+export default class InputNameMenu extends Menu {
 	private inputNode: HTMLInputElement;
 	private submitHandler: (event: KeyboardEvent) => void;
-
-	
 
 	constructor(scene: Scene, onSubmit: RepositoryCallback) {
 		super(scene, 0, 0);
@@ -39,8 +38,6 @@ export default class Repository extends Phaser.GameObjects.Container {
 
 		this.add([overlay, title, input, hint]);
 		this.setSize(width, height);
-		this.setScrollFactor(0, 0);
-		this.setDepth(1000);
 
 		this.inputNode = inputNode;
 
@@ -64,8 +61,12 @@ export default class Repository extends Phaser.GameObjects.Container {
 		this.inputNode.addEventListener('keydown', this.submitHandler);
 		scene.time.delayedCall(0, () => this.inputNode.focus());
 
-		this.once(Phaser.GameObjects.Events.DESTROY, () => {
-			this.inputNode.removeEventListener('keydown', this.submitHandler);
-		});
+		scene.add.existing(this);
+	}
+
+	destroy(fromScene?: boolean): void {
+		super.destroy(fromScene);
+
+		this.inputNode.removeEventListener('keydown', this.submitHandler);
 	}
 }

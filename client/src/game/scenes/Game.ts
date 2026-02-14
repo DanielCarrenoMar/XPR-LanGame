@@ -7,8 +7,10 @@ import { BasePlayer } from '#player/BasePlayer.ts';
 import BaseMelee from '#entities/melee/BaseMelee.ts';
 import { PlayerState } from '#sockets/types.ts';
 import { netClient } from '#sockets/netClient.ts';
-import NamePrompt from '#scenes/componets/NamePrompt.ts';
 import BaseShield from '#entities/shield/BaseShield.ts';
+import PauseMenu from '#scenes/componets/menus/PauseMenu.ts';
+import InputNameMenu from './componets/menus/inputNameMenu.ts';
+import { repository } from '#utils/repository.ts';
 
 export default class Game extends Scene {
     private map: Phaser.Tilemaps.Tilemap;
@@ -20,7 +22,8 @@ export default class Game extends Scene {
     private bulletGroup!: Phaser.Physics.Arcade.Group;
     private meleeGroup!: Phaser.Physics.Arcade.Group;
     private shieldGroup!: Phaser.Physics.Arcade.StaticGroup;
-    private hasName = false;
+    private playerHasName = false;
+    private activeMenu: Phaser.GameObjects.Container | null = null;
 
     constructor() {
         super('Game');
@@ -37,22 +40,43 @@ export default class Game extends Scene {
             return;
         }
         const playerSpawn = spawns[Math.floor(Math.random() * spawns.length)];
-        const playerspawnX = playerSpawn.x ?? 512;
-        const playerspawnY = playerSpawn.y ?? 560;
+        const playerSpawnX = playerSpawn.x ?? 512;
+        const playerSpawnY = playerSpawn.y ?? 560;
 
         this.camera = this.cameras.main;
         this.camera.startFollow(playerSpawn, false, 0.08, 0.08);
 
         this.setupNet()
 
-        this.showNamePrompt((name) => {
-            this.player = new LocalPlayer(this, playerspawnX, playerspawnY, name);
-            this.camera.startFollow(this.player, false, 0.08, 0.08);
+        const storedName = repository.getStoredName();
+        if (!storedName) {
+            this.setMenu(
+                new InputNameMenu(this, (name) => {
+                    this.setupPlayer(playerSpawnX, playerSpawnY, name)
+                    this.setupCollision()
+
+                    this.setMenu(null);
+                    this.playerHasName = true;
+                })
+            )
+        } else {
+            this.setupPlayer(playerSpawnX, playerSpawnY, storedName)
             this.setupCollision()
+            this.playerHasName = true;
+        }
 
-            netClient.sendNewPlayer({ x: this.player.x, y: this.player.y, name });
+        this.input.keyboard?.on('keydown-ESC', () => {
+            console.log(this.activeMenu);
+            if (this.activeMenu) {
+                if (this.activeMenu instanceof PauseMenu) {
+                    this.setMenu(null);
+                }
+                return;
+            }
 
-            this.hasName = true;
+            this.setMenu(new PauseMenu(this));
+            console.log('Pause menu opened');
+
         });
     }
 
@@ -158,28 +182,25 @@ export default class Game extends Scene {
         });
     }
 
-    update(_time: number, delta: number) {
-        if (!this.hasName) {
-            return;
-        }
-        this.player.update(delta);
+    private setupPlayer(playerSpawnX: number, playerSpawnY: number, name: string = 'Player') {
+        this.player = new LocalPlayer(this, playerSpawnX, playerSpawnY, name);
+        this.camera.startFollow(this.player, false, 0.08, 0.08);
 
-        netClient.sendPlayerPosition(this.player.x, this.player.y, this.player.currentAimAngle);
+        netClient.sendNewPlayer({ x: this.player.x, y: this.player.y, name });
     }
 
-    private showNamePrompt(onSubmit: (name: string) => void): void {
-        const storedName = NamePrompt.getStoredName();
-        if (storedName) {
-            onSubmit(storedName);
-            return;
+    private setMenu(menu: Phaser.GameObjects.Container | null): void {
+        if (this.activeMenu) {
+            this.activeMenu.destroy(true);
         }
+        this.activeMenu = menu;
+        this.player.setActive(this.activeMenu === null && this.playerHasName);
+    }
 
-        const prompt = new NamePrompt(this, (name) => {
-            onSubmit(name);
-            prompt.destroy(true);
-        });
-
-        this.add.existing(prompt);
+    update(_time: number, delta: number) {
+        if (!this.playerHasName) return;
+        this.player.update(delta);
+        netClient.sendPlayerPosition(this.player.x, this.player.y, this.player.currentAimAngle);
     }
 
     private addRemoteBullet(x: number, y: number, angle: number, ownerId: number) {
