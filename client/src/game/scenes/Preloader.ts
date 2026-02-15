@@ -44,6 +44,10 @@ export class Preloader extends Scene
         this.load.image('deco_moustache', 'deco_moustache.png');
         this.load.image('deco_bandage', 'deco_bandage.png');
 
+        this.load.setPath('assets/player/life');
+        this.load.image('vida', 'vida.png');
+        this.load.image('vidant', "vidan't.png");
+
         this.load.setPath('assets/weapons');
         this.load.image('shield', 'shield.jpg');
         this.load.image('shotgun', 'shotgun.png');

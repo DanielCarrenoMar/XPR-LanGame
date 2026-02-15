@@ -21,6 +21,8 @@ export class BasePlayer extends GameObjects.Sprite
     private readonly weaponBobAmplitude = 2.5;
     private readonly weaponBobFrequency = 0.01;
     private readonly movementThresholdPx = 0.1;
+    private readonly maxLives = 3;
+    private lives = this.maxLives;
     private weaponBobTime = 0;
     private readonly weaponBobDirectionX: number;
     private readonly weaponBobDirectionY: number;
@@ -88,6 +90,27 @@ export class BasePlayer extends GameObjects.Sprite
 
     public getPlayerName(): string {
         return this.name;
+    }
+
+    public getLives(): number {
+        return this.lives;
+    }
+
+    public getMaxLives(): number {
+        return this.maxLives;
+    }
+
+    public resetLives(): void {
+        this.lives = this.maxLives;
+    }
+
+    public takeHit(): boolean {
+        if (this.lives <= 0) {
+            return true;
+        }
+
+        this.lives -= 1;
+        return this.lives <= 0;
     }
 
     protected updateVisuals(): void {

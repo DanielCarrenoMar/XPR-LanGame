@@ -12,6 +12,7 @@ import { repository } from '#utils/repository.ts';
 import InputNameMenu from '#componets/menus/InputNameMenu.ts';
 import PauseMenu from '#componets/menus/PauseMenu.ts';
 import { loadStructureFromTiledMap } from '#utils/mapObjectLoader.ts';
+import LifeBar from '#player/life.ts';
 
 export default class Game extends Scene {
     private map: Phaser.Tilemaps.Tilemap;
@@ -25,6 +26,7 @@ export default class Game extends Scene {
     private shieldGroup!: Phaser.Physics.Arcade.StaticGroup;
     private playerHasName = false;
     private activeMenu: Phaser.GameObjects.Container | null = null;
+    private lifeBar: LifeBar | null = null;
 
     constructor() {
         super('Game');
@@ -186,6 +188,14 @@ export default class Game extends Scene {
         this.player = new LocalPlayer(this, playerSpawnX, playerSpawnY, name);
         this.camera.startFollow(this.player, false, 0.08, 0.08);
 
+        if (!this.lifeBar) {
+            this.lifeBar = new LifeBar(this, this.player.getMaxLives());
+        } else {
+            this.lifeBar.setLives(this.player.getLives(), this.player.getMaxLives());
+        }
+        this.player.resetLives();
+        this.lifeBar.setLives(this.player.getLives(), this.player.getMaxLives());
+
         netClient.sendNewPlayer({ x: this.player.x, y: this.player.y, name });
     }
 
@@ -257,8 +267,14 @@ export default class Game extends Scene {
 
     private hitPlayer(data: { fromId: number; targetId: number }): void {
         if (data.targetId === this.player.getPlayerId()) {
-            this.player.setPosition(512, 560);
-            return
+            const died = this.player.takeHit();
+            this.lifeBar?.setLives(this.player.getLives(), this.player.getMaxLives());
+            if (died) {
+                this.player.setPosition(512, 560);
+                this.player.resetLives();
+                this.lifeBar?.setLives(this.player.getLives(), this.player.getMaxLives());
+            }
+            return;
         }
 
         const player = this.remotePlayers.get(data.targetId);
