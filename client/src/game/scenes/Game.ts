@@ -268,6 +268,7 @@ export default class Game extends Scene {
     private hitPlayer(data: { fromId: number; targetId: number }): void {
         if (data.targetId === this.player.getPlayerId()) {
             const died = this.player.takeHit();
+            this.applyDamageCameraShake();
             this.lifeBar?.setLives(this.player.getLives(), this.player.getMaxLives());
             if (died) {
                 this.player.setPosition(512, 560);
@@ -281,6 +282,12 @@ export default class Game extends Scene {
         if (!player) return
 
 
+    }
+
+    private applyDamageCameraShake(): void {
+        if (!this.camera) return;
+        if (this.camera.shakeEffect?.isRunning) return;
+        this.camera.shake(120, 0.002);
     }
 
     private handleBulletHit: Phaser.Types.Physics.Arcade.ArcadePhysicsCallback = (playerObj, bulletObj) => {
