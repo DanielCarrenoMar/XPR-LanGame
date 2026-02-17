@@ -12,7 +12,7 @@ import { repository } from '#utils/repository.ts';
 import InputNameMenu from '#componets/menus/InputNameMenu.ts';
 import PauseMenu from '#componets/menus/PauseMenu.ts';
 import { loadStructureFromTiledMap } from '#utils/mapObjectLoader.ts';
-import LifeBar from '#player/life.ts';
+import LifeBar from '#componets/LifeBar.ts';
 
 export default class Game extends Scene {
     private map: Phaser.Tilemaps.Tilemap;
