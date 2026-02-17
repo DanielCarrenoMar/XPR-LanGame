@@ -20,7 +20,7 @@ export default class Game extends Scene {
     private camera: Phaser.Cameras.Scene2D.Camera;
     private player: LocalPlayer;
     private remotePlayers: Map<number, RemotePlayer>;
-    private remotePlayersGroup!: Phaser.Physics.Arcade.Group;
+    private playersGroup!: Phaser.Physics.Arcade.Group;
     private bulletGroup!: Phaser.Physics.Arcade.Group;
     private meleeGroup!: Phaser.Physics.Arcade.Group;
     private shieldGroup!: Phaser.Physics.Arcade.StaticGroup;
@@ -81,7 +81,7 @@ export default class Game extends Scene {
     }
 
     private setupCollisionGroups(): void {
-        this.remotePlayersGroup = this.physics.add.group();
+        this.playersGroup = this.physics.add.group();
         this.bulletGroup = this.physics.add.group();
         this.meleeGroup = this.physics.add.group();
         this.shieldGroup = this.physics.add.staticGroup();
@@ -122,14 +122,14 @@ export default class Game extends Scene {
 
     private setupCollision(): void {
         this.physics.add.overlap(
-            this.remotePlayersGroup,
+            this.playersGroup,
             this.bulletGroup,
             this.handleBulletHit as Phaser.Types.Physics.Arcade.ArcadePhysicsCallback,
             undefined,
             this
         );
         this.physics.add.overlap(
-            this.remotePlayersGroup,
+            this.playersGroup,
             this.meleeGroup,
             this.handleMeleeHit as Phaser.Types.Physics.Arcade.ArcadePhysicsCallback,
             undefined,
@@ -186,6 +186,7 @@ export default class Game extends Scene {
 
     private setupPlayer(playerSpawnX: number, playerSpawnY: number, name: string = 'Player') {
         this.player = new LocalPlayer(this, playerSpawnX, playerSpawnY, name);
+        this.playersGroup.add(this.player);
         this.camera.startFollow(this.player, false, 0.08, 0.08);
 
         if (!this.lifeBar) {
@@ -245,7 +246,7 @@ export default class Game extends Scene {
         other.applyRemoteState(player.x, player.y, player.angle ?? 0);
 
         this.remotePlayers.set(player.id, other);
-        this.remotePlayersGroup.add(other);
+        this.playersGroup.add(other);
     }
 
     private moveRemotePlayer(player: PlayerState): void {
@@ -260,7 +261,7 @@ export default class Game extends Scene {
             return;
         }
 
-        this.remotePlayersGroup.remove(other, false, false);
+        this.playersGroup.remove(other, false, false);
         other.destroy();
         this.remotePlayers.delete(playerId);
     }
