@@ -1,26 +1,6 @@
-import { SERVER_URL } from "#src/config.ts";
 import { server } from "./app.ts";
 import { AddressInfo } from "net";
 import os from 'os';
-
-async function postAddress(baseUrl: string, ip: string, port: number): Promise<void> {
-    const url = new URL("/postAddress", baseUrl).toString();
-    await fetch(url, {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ ip, port }),
-    });
-}
-
-async function registerSelf(address: string,port: number): Promise<void> {
-    try {
-        await postAddress(SERVER_URL, address, port);
-    } catch (error) {
-        console.error("Failed to POST /postAddress:", error);
-    }
-}
 
 server.listen(8082, () => {
 	const address = server.address() as AddressInfo;
@@ -42,6 +22,4 @@ server.listen(8082, () => {
 
     console.log(`Listening on http://localhost:${port}`);
     console.log(`Network IP: ${ip}${port}`);
-    
-    void registerSelf(ip, port);
 });

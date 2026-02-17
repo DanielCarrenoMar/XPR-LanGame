@@ -1,9 +1,12 @@
 const STORAGE_KEY = 'xpr.playerName';
 
 class Repository {
-    resetAllVariables() {
+    async resetAllVariables() {
         this.clearStoredName()
-        fetch("http://localhost:8082/reset", { method: "POST" });
+        const res = await fetch("http://localhost:8082/reset", { method: "POST" });
+        if (!res.ok) {
+            throw new Error(`Failed to reset variables: ${res.statusText}`);
+        }
     }
 
     getStoredName(): string | null {
