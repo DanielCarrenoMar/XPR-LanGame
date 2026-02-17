@@ -13,6 +13,8 @@ export class LocalPlayer extends BasePlayer
 {
     private keys: WasdKeys | null;
     private speed: number;
+    private readonly maxLives = 3;
+    private lives = this.maxLives;
 
     constructor(
         scene: Scene,
@@ -26,6 +28,25 @@ export class LocalPlayer extends BasePlayer
         this.keys = scene.input.keyboard?.addKeys('W,A,S,D') as WasdKeys | null;
 
         scene.input.on('pointerdown', this.handleShoot, this);
+    }
+
+    public getLives(): number {
+        return this.lives;
+    }
+
+    public getMaxLives(): number {
+        return this.maxLives;
+    }
+
+    public resetLives(): void {
+        this.lives = this.maxLives;
+    }
+
+    override onHit(): void {
+        if (this.isInvulnerable()) return;
+        if (this.lives <= 0) return;
+        this.lives -= 1;
+        super.onHit();
     }
 
     update(delta: number): void {

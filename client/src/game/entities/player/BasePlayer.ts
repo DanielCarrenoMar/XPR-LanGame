@@ -21,13 +21,13 @@ export class BasePlayer extends GameObjects.Sprite
     private readonly weaponBobAmplitude = 2.5;
     private readonly weaponBobFrequency = 0.01;
     private readonly movementThresholdPx = 0.1;
-    private readonly maxLives = 3;
-    private lives = this.maxLives;
     private weaponBobTime = 0;
     private readonly weaponBobDirectionX: number;
     private readonly weaponBobDirectionY: number;
     private previousX: number;
     private previousY: number;
+    private readonly invulnerabilityDurationMs = 1000;
+    private invunerableTime = 0;
     
     constructor(
         scene: Scene,
@@ -92,25 +92,26 @@ export class BasePlayer extends GameObjects.Sprite
         return this.name;
     }
 
-    public getLives(): number {
-        return this.lives;
+    public isInvulnerable(): boolean {
+        return this.invunerableTime > 0;
     }
 
-    public getMaxLives(): number {
-        return this.maxLives;
+    public onHit(): void {
+        if (this.isInvulnerable()) return;
+        this.invunerableTime = this.invulnerabilityDurationMs;
+        
     }
 
-    public resetLives(): void {
-        this.lives = this.maxLives;
-    }
+    protected preUpdate(time: number, delta: number): void {
+        super.preUpdate(time, delta);
 
-    public takeHit(): boolean {
-        if (this.lives <= 0) {
-            return true;
+        if (this.invunerableTime > 0) {
+            this.invunerableTime -= delta;
+            const alpha = 0.5 + 0.5 * Math.sin((this.invulnerabilityDurationMs - this.invunerableTime) * 0.02);
+            this.setAlpha(alpha);
+        } else {
+            this.setAlpha(1);
         }
-
-        this.lives -= 1;
-        return this.lives <= 0;
     }
 
     protected updateVisuals(): void {

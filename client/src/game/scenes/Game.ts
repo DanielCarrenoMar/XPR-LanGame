@@ -268,10 +268,11 @@ export default class Game extends Scene {
 
     private hitPlayer(data: { fromId: number; targetId: number }): void {
         if (data.targetId === this.player.getPlayerId()) {
-            const died = this.player.takeHit();
+            this.player.onHit();
+            const isDead = this.player.getLives() <= 0;
             this.applyDamageCameraShake();
             this.lifeBar?.setLives(this.player.getLives(), this.player.getMaxLives());
-            if (died) {
+            if (isDead) {
                 this.player.setPosition(512, 560);
                 this.player.resetLives();
                 this.lifeBar?.setLives(this.player.getLives(), this.player.getMaxLives());
@@ -303,6 +304,7 @@ export default class Game extends Scene {
         if (bullet.ownerId === player.getPlayerId()) return
 
         bullet.destroy();
+        player.onHit();
         netClient.sendPlayerHit(player.getPlayerId());
     }
 
