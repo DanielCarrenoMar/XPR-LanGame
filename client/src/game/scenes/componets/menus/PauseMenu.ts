@@ -3,7 +3,7 @@ import Button from "../Button.ts";
 import Menu from "./Menu.ts";
 
 export default class PauseMenu extends Menu {
-    constructor(scene: Phaser.Scene) {
+    constructor(scene: Phaser.Scene, onResetVar?: (error: Error) => void) {
         super(scene, 0, 0);
 
         const { width, height } = scene.scale;
@@ -25,7 +25,9 @@ export default class PauseMenu extends Menu {
         const resetButton = new Button(scene, width / 2, height / 2 + 120, {
             label: 'Reiniciar Partida',
             onClick: () => {
-                repository.resetAllVariables()
+                repository.resetAllVariables().catch(err => {
+                    onResetVar?.(err);
+                })
             }
         });
 

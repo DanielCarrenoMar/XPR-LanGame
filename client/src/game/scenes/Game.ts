@@ -13,6 +13,7 @@ import InputNameMenu from '#componets/menus/InputNameMenu.ts';
 import PauseMenu from '#componets/menus/PauseMenu.ts';
 import { loadStructureFromTiledMap } from '#utils/mapObjectLoader.ts';
 import LifeBar from '#componets/LifeBar.ts';
+import AlertText from '#componets/AlertText.ts';
 
 export default class Game extends Scene {
     private map: Phaser.Tilemaps.Tilemap;
@@ -27,6 +28,7 @@ export default class Game extends Scene {
     private playerHasName = false;
     private activeMenu: Phaser.GameObjects.Container | null = null;
     private lifeBar: LifeBar | null = null;
+    private alertText: AlertText | null = null;
 
     constructor() {
         super('Game');
@@ -36,6 +38,7 @@ export default class Game extends Scene {
         this.setupCollisionGroups()
 
         this.setupMap()
+        this.alertText = new AlertText(this);
 
         const spawns = this.map.getObjectLayer("PlayerSpawns")?.objects
         if (!spawns || spawns.length === 0) {
@@ -76,7 +79,7 @@ export default class Game extends Scene {
                 return;
             }
 
-            this.setMenu(new PauseMenu(this));
+            this.setMenu(new PauseMenu(this, (err) => {this.showErrorAlert("Error al reiniciar variables: " + err.message)}));
         });
     }
 
@@ -206,6 +209,14 @@ export default class Game extends Scene {
         }
         this.activeMenu = menu;
         //this.player.setActive(this.activeMenu === null && this.playerHasName);
+    }
+
+    public showErrorAlert(message: string): void {
+        this.alertText?.showError(message);
+    }
+
+    public showInfoAlert(message: string): void {
+        this.alertText?.showInfo(message);
     }
 
     update(_time: number, delta: number) {
