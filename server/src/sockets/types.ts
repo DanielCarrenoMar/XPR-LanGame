@@ -22,6 +22,11 @@ export type PlayerMoveData = {
     angle: number;
 };
 
+export type PlayerHitData = {
+    fromId: number;
+    targetId: number;
+};
+
 export type SpawnBulletData = {
     x: number;
     y: number;

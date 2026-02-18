@@ -1,6 +1,6 @@
 import { io, Socket } from "socket.io-client";
 import { Modificable } from "#src/modificable.ts";
-import { NewPlayerData, PlayerState, SpawnBulletData } from "./types.ts";
+import { NewPlayerData, PlayerHitData, PlayerState, SpawnBulletData } from "./types.ts";
 import { SERVER_URL } from "#src/config.ts";
 import { repository } from "#utils/repository.ts";
 
@@ -11,7 +11,7 @@ type ClientHandlers = {
     onPlayerRemoved?: (playerId: number) => void;
     onPlayerShoot?: (data: SpawnBulletData) => void;
     onLocalPlayerId?: (playerId: number) => void;
-    onPlayerHit?: (data: { fromId: number; targetId: number }) => void;
+    onPlayerHit?: (data: PlayerHitData) => void;
 }
 
 class NetClient {
@@ -67,7 +67,7 @@ class NetClient {
             this.handlers.onPlayerShoot?.(data);
         });
 
-        this.socket.on("hit", (data: { fromId: number; targetId: number }) => {
+        this.socket.on("hit", (data: PlayerHitData) => {
             this.handlers.onPlayerHit?.(data);
         });
 

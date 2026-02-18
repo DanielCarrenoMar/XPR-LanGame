@@ -19,6 +19,11 @@ export type NewPlayerData = {
     y: number;
 }
 
+export type PlayerHitData = {
+	fromId: number;
+	targetId: number;
+}
+
 export type SpawnBulletData = {
     id: number;
     x: number;

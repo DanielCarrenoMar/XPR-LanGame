@@ -1,8 +1,7 @@
 import type { Server, Socket } from "socket.io";
 import { handleFire } from "./handlers/bullet/spawnBullet.js";
-import { handlePlayerHit } from "./handlers/score/actScore.js";
 import type { NewPlayerData, Player } from "./types.js";
-import { createPlayer, handlePlayerMove } from "#handlers/playerHandlers.js";
+import { createPlayer, handlePlayerHit, handlePlayerMove } from "#handlers/playerHandlers.js";
 
 let lastPlayerId = 0;
 
