@@ -14,6 +14,7 @@ import PauseMenu from '#componets/menus/PauseMenu.ts';
 import { loadStructureFromTiledMap } from '#utils/mapObjectLoader.ts';
 import LifeBar from '#componets/LifeBar.ts';
 import AlertText from '#componets/AlertText.ts';
+import SpawnMenu from '#componets/menus/SpawnMenu.ts';
 
 export default class Game extends Scene {
     private map: Phaser.Tilemaps.Tilemap;
@@ -208,7 +209,6 @@ export default class Game extends Scene {
             this.activeMenu.destroy(true);
         }
         this.activeMenu = menu;
-        //this.player.setActive(this.activeMenu === null && this.playerHasName);
     }
 
     public showErrorAlert(message: string): void {
@@ -284,7 +284,11 @@ export default class Game extends Scene {
             this.applyDamageCameraShake();
             this.lifeBar?.setLives(this.player.getLives(), this.player.getMaxLives());
             if (isDead) {
-                this.player.setPosition(512, 560);
+                this.setMenu(new SpawnMenu(this, this.remotePlayers.get(data.fromId)?.getPlayerName() ?? "Unknown", () => {
+                    this.setMenu(null);
+                    this.player.setPosition(512, 560);
+                }));
+                this.player.setPosition(0, 0);
                 this.player.resetLives();
                 this.lifeBar?.setLives(this.player.getLives(), this.player.getMaxLives());
             }
