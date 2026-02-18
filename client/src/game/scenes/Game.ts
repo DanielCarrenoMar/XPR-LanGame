@@ -311,7 +311,6 @@ export default class Game extends Scene {
             return;
         }
 
-
         if (bullet.ownerId === player.getPlayerId()) return
 
         bullet.destroy();

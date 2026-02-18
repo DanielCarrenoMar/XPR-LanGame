@@ -3,13 +3,13 @@ export type BulletType = "BULLET";
 export abstract class BaseBullet extends Phaser.GameObjects.Arc
 {
     public type: BulletType;
-    public ownerId: number | null;
+    public ownerId: number;
     public readonly spawnVelocity: Phaser.Math.Vector2;
 
     constructor(scene: Phaser.Scene, x: number, y: number, velocity: Phaser.Math.Vector2, type: BulletType, ownerId: number | null) {
         super(scene, x, y, 4, 0, 360, false, 0xff0000);
         this.type = type;
-        this.ownerId = ownerId;
+        this.ownerId = ownerId ?? -1;
         this.spawnVelocity = velocity.clone();
         scene.physics.add.existing(this);
         scene.add.existing(this);
