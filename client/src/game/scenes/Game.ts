@@ -322,7 +322,6 @@ export default class Game extends Scene {
         bullet.destroy();
         player.onHit();
         netClient.sendPlayerHit(player.getPlayerId());
-        console.log(`Player ${player.getPlayerId()} hit by bullet from player ${bullet.ownerId}`);
     }
 
     private handleMeleeHit: Phaser.Types.Physics.Arcade.ArcadePhysicsCallback = (playerObj, meleeObj) => {
@@ -337,7 +336,6 @@ export default class Game extends Scene {
 
         melee.onHit();
         netClient.sendPlayerHit(player.getPlayerId());
-        console.log(`Player ${player.getPlayerId()} hit by melee from player ${localPlayerId}`);
     }
 
     private handleShieldBlock: Phaser.Types.Physics.Arcade.ArcadePhysicsCallback = (bulletObj, shieldObj) => {

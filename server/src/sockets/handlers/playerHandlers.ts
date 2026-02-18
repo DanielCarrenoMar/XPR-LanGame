@@ -28,12 +28,9 @@ export function handlePlayerHit(io: Server, socket: Socket, targetId: number): v
 	const attacker = socket.data.player as Player | undefined;
 	if (!attacker) return;
 
-	console.log(`Player ${attacker.id} hit player ${targetId}`);
-
 	io.sockets.sockets.forEach((s) => {
 		const player = s.data.player as Player | undefined;
 		if (player && player.id === targetId) {
-			console.log(`Player ${targetId} hit by player ${attacker.id}`);
 			s.emit("hit", { fromId: attacker.id, targetId } as PlayerHitData);
 		}
 	});
