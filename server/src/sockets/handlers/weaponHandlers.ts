@@ -1,5 +1,5 @@
 import type { Socket } from "socket.io";
-import type { SpawnBulletData, Player } from "../../types.js";
+import type { SpawnBulletData, Player } from "../types.js";
 import { sendToAllSockets } from "#sockets/manager.js";
 
 export function handleFire(socket: Socket, data: SpawnBulletData): void {

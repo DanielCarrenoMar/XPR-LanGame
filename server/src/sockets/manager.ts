@@ -1,5 +1,5 @@
 import type { Server, Socket } from "socket.io";
-import { handleFire } from "./handlers/bullet/spawnBullet.js";
+import { handleFire } from "./handlers/weaponHandlers.js";
 import type {
 	NewPlayerData,
 	Player,
