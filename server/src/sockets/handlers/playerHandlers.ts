@@ -1,7 +1,13 @@
-import { NewPlayerData, Player, PlayerHitData, PlayerMoveData } from "#sockets/types.js";
+import {
+	NewPlayerData,
+	Player,
+	PlayerHitData,
+	PlayerMoveData,
+	ServerPlayerData,
+} from "#sockets/types.js";
 import { Server, Socket } from "socket.io";
 
-export function createPlayer(data: NewPlayerData, id: number): Player {
+export function createPlayer(data: NewPlayerData, id: number, lastError = ""): ServerPlayerData {
 	return {
 		id,
         name: data.name,
@@ -10,6 +16,19 @@ export function createPlayer(data: NewPlayerData, id: number): Player {
 		angle: 0,
 		frontModule: data.frontModule,
 		backModule: data.backModule,
+		lastError,
+	};
+}
+
+export function toPublicPlayer(player: ServerPlayerData): Player {
+	return {
+		id: player.id,
+		name: player.name,
+		x: player.x,
+		y: player.y,
+		angle: player.angle,
+		frontModule: player.frontModule,
+		backModule: player.backModule,
 	};
 }
 

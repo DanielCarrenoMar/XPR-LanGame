@@ -3,33 +3,27 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Dashboard - Admin Server</title>
+    <title>Jugadores conectados - Admin Server</title>
     <link rel="stylesheet" href="/style.css" />
   </head>
   <body>
     <main class="container">
       <header class="topbar">
-        <h1>Dashboard</h1>
+        <h1>Jugadores conectados</h1>
         <nav class="nav">
-          <a class="nav-link active" href="/">Dashboard</a>
-          <a class="nav-link" href="/connected.html">Jugadores conectados</a>
+          <a class="nav-link" href="/">Dashboard</a>
+          <a class="nav-link active" href="/connected.html">Jugadores conectados</a>
           <a class="nav-link" href="/leaderboard.html">LeaderBoard</a>
         </nav>
       </header>
 
       <section class="card">
-        <h2>Control de partida</h2>
-        <div class="actions">
-          <button class="battle-btn" id="battle-btn" type="button">Iniciar partida</button>
-          <button class="reset-btn" id="reset-btn" type="button">Reiniciar variables</button>
-        </div>
-        <p class="timer" id="battle-timer">Tiempo activo: 00:00</p>
-        <p class="status" id="status"></p>
+        <p class="meta" id="count-connected">Cantidad conectados: 0</p>
+        <p class="meta" id="count-ok">Jugadores OK: 0</p>
+        <p class="meta" id="count-error">Jugadores con error: 0</p>
       </section>
 
       <section class="card">
-        <h2>Jugadores conectados</h2>
-        <p class="meta" id="connected-count">Conectados: 0</p>
         <div class="table-wrap">
           <table>
             <thead>
@@ -38,14 +32,15 @@
                 <th>FrontModule</th>
                 <th>BackModule</th>
                 <th>Estado</th>
+                <th>Detalle error</th>
               </tr>
             </thead>
-            <tbody id="players-body"></tbody>
+            <tbody id="connected-body"></tbody>
           </table>
         </div>
       </section>
     </main>
 
-    <script src="/main.js"></script>
+    <script src="/connected.js"></script>
   </body>
 </html>

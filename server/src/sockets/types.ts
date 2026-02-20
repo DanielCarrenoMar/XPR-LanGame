@@ -8,6 +8,10 @@ export type Player = {
     backModule: string;
 };
 
+export type ServerPlayerData = Player & {
+    lastError: string;
+};
+
 export type NewPlayerData = {
     name: string;
     frontModule: string;

@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>LeaderBoard - Admin Server</title>
+    <link rel="stylesheet" href="/style.css" />
+  </head>
+  <body>
+    <main class="container">
+      <header class="topbar">
+        <h1>LeaderBoard</h1>
+        <nav class="nav">
+          <a class="nav-link" href="/">Dashboard</a>
+          <a class="nav-link" href="/connected.html">Jugadores conectados</a>
+          <a class="nav-link active" href="/leaderboard.html">LeaderBoard</a>
+        </nav>
+      </header>
+
+      <section class="card">
+        <p class="meta" id="leader-count">Jugadores en ranking: 0</p>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Nombre</th>
+                <th>Puntuación</th>
+                <th>FrontModule</th>
+                <th>BackModule</th>
+              </tr>
+            </thead>
+            <tbody id="leaderboard-body"></tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+
+    <script src="/leaderboard.js"></script>
+  </body>
+</html>
