@@ -32,6 +32,13 @@ export function toPublicPlayer(player: ServerPlayerData): Player {
 	};
 }
 
+export function handlePlayerDisconnect(io: Server, socket: Socket): void {
+	const player = socket.data.player as ServerPlayerData | undefined;
+	if (!player) return;
+	io.emit("remove", player.id);
+}
+
+
 export function handlePlayerMove(io: Server, socket: Socket, data: PlayerMoveData): void {
 	const player = socket.data.player as Player | undefined;
 	if (!player) return;
