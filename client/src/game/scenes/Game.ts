@@ -202,6 +202,9 @@ export default class Game extends Scene {
             },
             onAllLifeStructs: (structLifes) => {
                 this.syncStructLifes(structLifes);
+            },
+            onError: (message) => {
+                this.showErrorAlert(message);
             }
         });
 

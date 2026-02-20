@@ -14,6 +14,7 @@ type ClientHandlers = {
     onPlayerHit?: (data: PlayerHitData) => void;
     onStructHit?: (data: StructHitData) => void;
     onAllLifeStructs?: (structLifes: StructLifeMap) => void;
+    onError?: (message: string) => void;
 }
 
 class NetClient {
@@ -87,6 +88,7 @@ class NetClient {
             } catch (error) {
                 const message = error instanceof Error ? error.message : "Unknown reset error";
                 this.sendError(message);
+                this.handlers.onError?.(message);
             }
         });
     }
