@@ -341,17 +341,17 @@ export default class Game extends Scene {
             return;
         }
 
-        wall.setLife(data.life);
+        wall.setDamage(data.damage);
     }
 
     private syncStructLifes(structLifes: StructLifeMap): void {
-        Object.entries(structLifes).forEach(([structureId, life]) => {
+        Object.entries(structLifes).forEach(([structureId, damage]) => {
             const parsedId = Number(structureId);
             const wall = this.wallsById.get(parsedId);
             if (!wall) {
                 return;
             }
-            wall.setLife(life);
+            wall.setDamage(damage);
         });
 
         this.wallsById.forEach((wall) => {

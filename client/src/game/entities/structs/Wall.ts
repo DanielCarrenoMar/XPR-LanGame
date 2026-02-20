@@ -2,7 +2,8 @@ import { GameObjects, Scene } from "phaser";
 
 export default class Wall extends GameObjects.Sprite {
 	private static nextStructureId = 0;
-	private life = 20;
+	private static readonly BASE_LIFE = 20;
+	private life = Wall.BASE_LIFE;
 	public readonly structureId: number;
 
 	public static resetStructureIds(): void {
@@ -28,9 +29,14 @@ export default class Wall extends GameObjects.Sprite {
 		return this.life;
 	}
 
-	public setLife(life: number): void {
+	private setLife(life: number): void {
 		this.life = Math.max(0, life);
-        
+		if (this.life === 0) this.destroy();
+	}
+
+	public setDamage(damage: number): void {
+		const safeDamage = Number.isFinite(damage) ? Math.max(0, Math.floor(damage)) : 0;
+		this.setLife(Wall.BASE_LIFE - safeDamage);
 	}
 
 	public getLife(): number {

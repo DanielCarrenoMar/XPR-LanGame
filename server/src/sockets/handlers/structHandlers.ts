@@ -1,11 +1,10 @@
 import type { Server, Socket } from "socket.io";
 import type { Player, StructHitData, StructLifeMap } from "#sockets/types.js";
 
-const DEFAULT_STRUCT_LIFE = 5;
-const structLifes: StructLifeMap = {};
+const structDamages: StructLifeMap = {};
 
 export function getAllStructLifes(): StructLifeMap {
-	return { ...structLifes };
+	return { ...structDamages };
 }
 
 export function handleStructHit(socket: Socket, structureId: number): void {
@@ -14,13 +13,13 @@ export function handleStructHit(socket: Socket, structureId: number): void {
 		return;
 	}
 
-	const currentLife = structLifes[structureId] ?? DEFAULT_STRUCT_LIFE;
-	const nextLife = Math.max(0, currentLife - 1);
-	structLifes[structureId] = nextLife;
+	const currentDamage = structDamages[structureId] ?? 0;
+	const nextDamage = currentDamage + 1;
+	structDamages[structureId] = nextDamage;
 
 	socket.broadcast.emit("hitStruct", {
 		structureId,
-		life: nextLife,
+		damage: nextDamage,
 	} as StructHitData);
 }
 

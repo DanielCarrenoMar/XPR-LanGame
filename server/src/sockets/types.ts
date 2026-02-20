@@ -40,7 +40,7 @@ export type SpawnBulletData = {
 
 export type StructHitData = {
     structureId: number;
-    life: number;
+    damage: number;
 };
 
 export type StructLifeMap = Record<number, number>;
