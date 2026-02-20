@@ -8,6 +8,7 @@ import type {
 import {
 	createPlayer,
 	handlePlayerDisconnect,
+	handlePlayerError,
 	handlePlayerHit,
 	handlePlayerMove,
 	toPublicPlayer,
@@ -38,6 +39,7 @@ export function registerSocketHandlers(io: Server): void {
 			socket.on("fire", (fireData) => handleFire(socket, fireData));
 			socket.on("playerHit", (targetId) => handlePlayerHit(io, socket, targetId));
 			socket.on("hitStruct", (structureId) => handleStructHit(socket, structureId));
+			socket.on("error", (errorMessage: unknown) => handlePlayerError(socket, errorMessage));
 			socket.on("disconnect", () => handlePlayerDisconnect(io, socket));
 		});
 

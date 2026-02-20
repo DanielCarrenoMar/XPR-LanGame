@@ -61,3 +61,11 @@ export function handlePlayerHit(io: Server, socket: Socket, targetId: number): v
 		}
 	});
 }
+
+export function handlePlayerError(socket: Socket, errorMessage: unknown): void {
+	const player = socket.data.player as ServerPlayerData | undefined;
+	if (!player) return;
+
+	const parsedError = typeof errorMessage === "string" ? errorMessage : JSON.stringify(errorMessage);
+	player.lastError = parsedError.trim();
+}

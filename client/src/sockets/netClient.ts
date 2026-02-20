@@ -81,9 +81,14 @@ class NetClient {
             this.handlers.onAllLifeStructs?.(structLifes);
         });
 
-        this.socket.on("reset", () => {
-            repository.resetAllVariables();
-        })
+        this.socket.on("reset", async () => {
+            try {
+                await repository.resetAllVariables();
+            } catch (error) {
+                const message = error instanceof Error ? error.message : "Unknown reset error";
+                this.sendError(message);
+            }
+        });
     }
 
     isConnected(): boolean {
@@ -150,6 +155,11 @@ class NetClient {
     sendHitStruct(structureId: number): void {
         if (!this.socket || !this.socket.connected) return;
         this.socket.emit("hitStruct", structureId);
+    }
+
+    sendError(message: string): void {
+        if (!this.socket || !this.socket.connected) return;
+        this.socket.emit("error", message);
     }
 
     getLocalPlayerId(): number | null {
