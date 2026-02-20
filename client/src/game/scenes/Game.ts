@@ -342,7 +342,6 @@ export default class Game extends Scene {
     }
 
     private syncStructLifes(structLifes: StructLifeMap): void {
-        console.log("Syncing structure lifes:", structLifes);
         Object.entries(structLifes).forEach(([structureId, life]) => {
             const parsedId = Number(structureId);
             const wall = this.wallsById.get(parsedId);
