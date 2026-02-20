@@ -1,6 +1,6 @@
 import { io, Socket } from "socket.io-client";
 import { Modificable } from "#src/modificable.ts";
-import { NewPlayerData, PlayerHitData, PlayerState, SpawnBulletData } from "./types.ts";
+import { NewPlayerData, PlayerHitData, PlayerState, SpawnBulletData, StructHitData, StructLifeMap } from "./types.ts";
 import { SERVER_URL } from "#src/config.ts";
 import { repository } from "#utils/repository.ts";
 
@@ -12,6 +12,8 @@ type ClientHandlers = {
     onPlayerShoot?: (data: SpawnBulletData) => void;
     onLocalPlayerId?: (playerId: number) => void;
     onPlayerHit?: (data: PlayerHitData) => void;
+    onStructHit?: (data: StructHitData) => void;
+    onAllLifeStructs?: (structLifes: StructLifeMap) => void;
 }
 
 class NetClient {
@@ -69,6 +71,14 @@ class NetClient {
 
         this.socket.on("hit", (data: PlayerHitData) => {
             this.handlers.onPlayerHit?.(data);
+        });
+
+        this.socket.on("hitStruct", (data: StructHitData) => {
+            this.handlers.onStructHit?.(data);
+        });
+
+        this.socket.on("allLifeStructs", (structLifes: StructLifeMap) => {
+            this.handlers.onAllLifeStructs?.(structLifes);
         });
 
         this.socket.on("reset", () => {
@@ -135,6 +145,11 @@ class NetClient {
     sendPlayerHit(targetId: number): void {
         if (!this.socket || !this.socket.connected) return;
         this.socket.emit("playerHit", targetId);
+    }
+
+    sendHitStruct(structureId: number): void {
+        if (!this.socket || !this.socket.connected) return;
+        this.socket.emit("hitStruct", structureId);
     }
 
     getLocalPlayerId(): number | null {

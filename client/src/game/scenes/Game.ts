@@ -15,6 +15,8 @@ import { loadStructureFromTiledMap } from '#utils/mapObjectLoader.ts';
 import LifeBar from '#componets/LifeBar.ts';
 import AlertText from '#componets/AlertText.ts';
 import SpawnMenu from '#componets/menus/SpawnMenu.ts';
+import Wall from '#entities/structs/Wall.ts';
+import { StructHitData, StructLifeMap } from '#sockets/types.ts';
 
 export default class Game extends Scene {
     private map: Phaser.Tilemaps.Tilemap;
@@ -26,10 +28,12 @@ export default class Game extends Scene {
     private bulletGroup!: Phaser.Physics.Arcade.Group;
     private meleeGroup!: Phaser.Physics.Arcade.Group;
     private shieldGroup!: Phaser.Physics.Arcade.StaticGroup;
+    private structGroup!: Phaser.Physics.Arcade.StaticGroup;
     private playerHasName = false;
     private activeMenu: Phaser.GameObjects.Container | null = null;
     private lifeBar: LifeBar | null = null;
     private alertText: AlertText | null = null;
+    private wallsById: Map<number, Wall> = new Map();
 
     constructor() {
         super('Game');
@@ -89,6 +93,7 @@ export default class Game extends Scene {
         this.bulletGroup = this.physics.add.group();
         this.meleeGroup = this.physics.add.group();
         this.shieldGroup = this.physics.add.staticGroup();
+        this.structGroup = this.physics.add.staticGroup();
 
         this.events.on("bullet-created", (bullet: BaseBullet) => {
             this.bulletGroup.add(bullet);
@@ -98,6 +103,10 @@ export default class Game extends Scene {
         });
         this.events.on("shield-created", (shield: BaseShield) => {
             this.shieldGroup.add(shield);
+        });
+        this.events.on("struct-created", (struct: Wall) => {
+            this.wallsById.set(struct.structureId, struct);
+            this.structGroup.add(struct);
         });
     }
 
@@ -148,6 +157,15 @@ export default class Game extends Scene {
         );
 
         this.physics.add.collider(this.player, this.floorLayer);
+        this.physics.add.collider(this.playersGroup, this.structGroup);
+
+        this.physics.add.overlap(
+            this.bulletGroup,
+            this.structGroup,
+            this.handleStructHit as Phaser.Types.Physics.Arcade.ArcadePhysicsCallback,
+            undefined,
+            this
+        );
 
         this.physics.add.collider(this.bulletGroup, this.floorLayer, (bulletObj, _layer) => {
             const bullet = bulletObj as BaseBullet;
@@ -178,6 +196,12 @@ export default class Game extends Scene {
             },
             onPlayerHit: (data) => {
                 this.hitPlayer(data);
+            },
+            onStructHit: (data) => {
+                this.hitStruct(data);
+            },
+            onAllLifeStructs: (structLifes) => {
+                this.syncStructLifes(structLifes);
             }
         });
 
@@ -308,6 +332,31 @@ export default class Game extends Scene {
         this.camera.shake(120, 0.002);
     }
 
+    private hitStruct(data: StructHitData): void {
+        const wall = this.wallsById.get(data.structureId);
+        if (!wall) {
+            return;
+        }
+
+        wall.setLife(data.life);
+    }
+
+    private syncStructLifes(structLifes: StructLifeMap): void {
+        console.log("Syncing structure lifes:", structLifes);
+        Object.entries(structLifes).forEach(([structureId, life]) => {
+            const parsedId = Number(structureId);
+            const wall = this.wallsById.get(parsedId);
+            if (!wall) {
+                return;
+            }
+            wall.setLife(life);
+        });
+
+        this.wallsById.forEach((wall) => {
+            wall.onSyncServer();
+        })
+    }
+
     private handleBulletHit: Phaser.Types.Physics.Arcade.ArcadePhysicsCallback = (playerObj, bulletObj) => {
         const player = (playerObj as unknown) as BasePlayer;
         const bullet = (bulletObj as unknown) as BaseBullet;
@@ -350,6 +399,19 @@ export default class Game extends Scene {
             return;
         }
 
+        bullet.destroy();
+    }
+
+    private handleStructHit: Phaser.Types.Physics.Arcade.ArcadePhysicsCallback = (bulletObj, structObj) => {
+        const bullet = bulletObj as BaseBullet;
+        const wall = structObj as Wall;
+
+        if (!bullet || !wall || !bullet.active || !wall.active) {
+            return;
+        }
+
+        wall.onHit();
+        netClient.sendHitStruct(wall.structureId);
         bullet.destroy();
     }
 }

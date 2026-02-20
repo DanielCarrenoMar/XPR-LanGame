@@ -33,3 +33,10 @@ export type SpawnBulletData = {
     angle: number;
     bulletType: string;
 };
+
+export type StructHitData = {
+    structureId: number;
+    life: number;
+};
+
+export type StructLifeMap = Record<number, number>;

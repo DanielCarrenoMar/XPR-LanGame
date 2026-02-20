@@ -2,12 +2,14 @@ import type { Server, Socket } from "socket.io";
 import { handleFire } from "./handlers/bullet/spawnBullet.js";
 import type { NewPlayerData, Player } from "./types.js";
 import { createPlayer, handlePlayerHit, handlePlayerMove } from "#handlers/playerHandlers.js";
+import { getAllStructLifes, handleStructHit } from "#handlers/structHandlers.js";
 
 let lastPlayerId = 0;
 
 export function registerSocketHandlers(io: Server): void {
 	io.on("connection", (socket: Socket) => {
 		socket.emit("allplayers", getAllPlayers(io));
+		socket.emit("allLifeStructs", getAllStructLifes());
 		
 		socket.on("newplayer", (data: NewPlayerData) => {
 			const player = createPlayer(data, getNextPlayerId());
@@ -20,10 +22,11 @@ export function registerSocketHandlers(io: Server): void {
 			socket.on("posPlayer", (moveData) => handlePlayerMove(io, socket, moveData));
 			socket.on("fire", (fireData) => handleFire(socket, fireData));
 			socket.on("playerHit", (targetId) => handlePlayerHit(io, socket, targetId));
+			socket.on("hitStruct", (structureId) => handleStructHit(socket, structureId));
 			socket.on("disconnect", () => handleDisconnect(io, socket));
 		});
 
-		socket.on("test", () => {
+		socket.on("test", () => { 
 			console.log("test received");
 		});
 	});

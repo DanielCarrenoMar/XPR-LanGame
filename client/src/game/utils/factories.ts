@@ -7,13 +7,14 @@ import SwordWeapon from "#player/weapon/SwordWeapon.ts";
 import { WeaponType } from "#src/modificable.ts";
 import Bush from "#entities/structs/Bush.ts";
 import { Struct, StructType } from "#entities/structs/Struct.ts";
+import Wall from "#entities/structs/Wall.ts";
 
 export function createStruct(scene: Phaser.Scene, x: number, y: number, width: number, height: number, type: StructType): Struct {
     switch (type) {
         case 'BRUSH':
             return new Bush(scene, x, y, width, height);
         case 'WALL':
-            return new Bush(scene, x, y, width, height);
+            return new Wall(scene, x, y, width, height);
         default:
             throw new Error(`Unknown struct type: ${type}`);
     }
