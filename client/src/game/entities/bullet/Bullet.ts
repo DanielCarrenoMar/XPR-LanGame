@@ -13,6 +13,7 @@ export default class Bullet extends BaseBullet {
     }
 
     preUpdate(): void {
+        super.preUpdate();
         this.timer += this.scene.game.loop.delta;
 
         if (this.body) {
