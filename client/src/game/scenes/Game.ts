@@ -34,6 +34,7 @@ export default class Game extends Scene {
     private lifeBar: LifeBar | null = null;
     private alertText: AlertText | null = null;
     private wallsById: Map<number, Wall> = new Map();
+    private isBattleMode = false;
 
     constructor() {
         super('Game');
@@ -45,14 +46,11 @@ export default class Game extends Scene {
         this.setupMap()
         this.alertText = new AlertText(this);
 
-        const spawns = this.map.getObjectLayer("PlayerSpawns")?.objects
-        if (!spawns || spawns.length === 0) {
-            console.error("No player spawns found in the map!");
-            return;
-        }
-        const playerSpawn = spawns[Math.floor(Math.random() * spawns.length)];
-        const playerSpawnX = playerSpawn.x ?? 512;
-        const playerSpawnY = playerSpawn.y ?? 560;
+        this.isBattleMode = repository.getStoredBattleMode();
+
+        const playerSpawn = this.getRandomSpawnPoint();
+        const playerSpawnX = playerSpawn.x;
+        const playerSpawnY = playerSpawn.y;
 
         this.camera = this.cameras.main;
         this.camera.startFollow(playerSpawn, false, 0.08, 0.08);
@@ -84,7 +82,7 @@ export default class Game extends Scene {
                 return;
             }
 
-            this.setMenu(new PauseMenu(this, (err) => {this.showErrorAlert("Error al reiniciar variables: " + err.message)}));
+            this.setMenu(new PauseMenu(this, (err) => { this.showErrorAlert("Error al reiniciar variables: " + err.message) }));
         });
     }
 
@@ -205,6 +203,10 @@ export default class Game extends Scene {
             },
             onError: (message) => {
                 this.showErrorAlert(message);
+            },
+            onBattleMode: (active) => {
+                this.setBattleMode(active);
+                this.showInfoAlert(`Battle mode ${active ? "activated" : "deactivated"}!`);
             }
         });
 
@@ -238,12 +240,36 @@ export default class Game extends Scene {
         this.activeMenu = menu;
     }
 
+    private setBattleMode(active: boolean): void {
+        this.isBattleMode = active;
+        repository.saveBattleMode(active);
+        const playerSpawn = this.getRandomSpawnPoint();
+        this.player.setPosition(playerSpawn.x, playerSpawn.y);
+    }
+
     public showErrorAlert(message: string): void {
         this.alertText?.showError(message);
     }
 
     public showInfoAlert(message: string): void {
         this.alertText?.showInfo(message);
+    }
+
+    private getRandomSpawnPoint(): { x: number; y: number} {
+        let layerName = this.isBattleMode ? "PlayerSpawnsBattle" : "PlayerSpawns";
+        const defaultSpawn = { x: 512, y: 512 };
+
+        const spawns = this.map.getObjectLayer(layerName)?.objects
+        if (!spawns || spawns.length === 0) {
+            console.error("No player spawns found in the map!");
+            return defaultSpawn;
+        }
+        const playerSpawn = spawns[Math.floor(Math.random() * spawns.length)];
+        if (!playerSpawn || playerSpawn.x === undefined || playerSpawn.y === undefined) {
+            console.error("Invalid player spawn point found!");
+            return defaultSpawn;
+        }
+        return { x: playerSpawn.x, y: playerSpawn.y };
     }
 
     update(_time: number, delta: number) {

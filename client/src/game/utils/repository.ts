@@ -1,8 +1,10 @@
 const STORAGE_KEY = 'xpr.playerName';
+const BATTLE_MODE_STORAGE_KEY = 'xpr.isBattleMode';
 
 class Repository {
     async resetAllVariables() {
         this.clearStoredName()
+        this.clearStoredBattleMode()
         try {
             const res = await fetch("http://localhost:8082/reset", { method: "POST" });
             if (!res.ok) {
@@ -33,6 +35,33 @@ class Repository {
     clearStoredName(): void {
         try {
             localStorage.removeItem(STORAGE_KEY);
+        } catch {
+            // Ignore storage failures.
+        }
+    }
+
+    getStoredBattleMode(): boolean {
+        try {
+            const value = localStorage.getItem(BATTLE_MODE_STORAGE_KEY);
+            if (value === 'true') return true;
+            if (value === 'false') return false;
+            return false;
+        } catch {
+            return false;
+        }
+    }
+
+    saveBattleMode(active: boolean): void {
+        try {
+            localStorage.setItem(BATTLE_MODE_STORAGE_KEY, String(active));
+        } catch {
+            // Ignore storage failures.
+        }
+    }
+
+    clearStoredBattleMode(): void {
+        try {
+            localStorage.removeItem(BATTLE_MODE_STORAGE_KEY);
         } catch {
             // Ignore storage failures.
         }

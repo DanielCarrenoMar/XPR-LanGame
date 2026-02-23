@@ -29,9 +29,9 @@ export function stopBattle(): BattleStatus {
 	return getBattleStatus();
 }
 
-export function toggleBattle(): BattleStatus {
-	if (isBattleActive) {
-		return stopBattle();
+export function setBattleActive(active: boolean): BattleStatus {
+	if (active) {
+		return startBattle();
 	}
-	return startBattle();
+	return stopBattle();
 }

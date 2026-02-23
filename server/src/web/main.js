@@ -86,7 +86,14 @@ resetButton.addEventListener("click", async () => {
 battleButton.addEventListener("click", async () => {
   setStatus("Actualizando estado de partida...");
   try {
-    const response = await fetch("/api/admin/battle/toggle", { method: "POST" });
+    const nextActive = !Boolean(startedAt);
+    const response = await fetch("/api/admin/battle", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ active: nextActive }),
+    });
     if (!response.ok) {
       throw new Error(`HTTP ${response.status}`);
     }

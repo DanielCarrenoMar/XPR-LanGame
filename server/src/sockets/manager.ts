@@ -14,6 +14,7 @@ import {
 	toPublicPlayer,
 } from "#handlers/playerHandlers.js";
 import { getAllStructLifes, handleStructHit } from "#handlers/structHandlers.js";
+import { getBattleStatus } from "src/endpoints/adminState.js";
 
 let lastPlayerId = 0;
 
@@ -21,6 +22,7 @@ export function registerSocketHandlers(io: Server): void {
 	io.on("connection", (socket: Socket) => {
 		socket.emit("allplayers", getAllPlayers(io));
 		socket.emit("allLifeStructs", getAllStructLifes());
+		socket.emit("battleMode", getBattleStatus().active);
 		
 		socket.on("newplayer", (data: NewPlayerData) => {
 			const playerName = data.name.trim();

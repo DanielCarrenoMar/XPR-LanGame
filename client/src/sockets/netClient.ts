@@ -15,6 +15,7 @@ type ClientHandlers = {
     onStructHit?: (data: StructHitData) => void;
     onAllLifeStructs?: (structLifes: StructLifeMap) => void;
     onError?: (message: string) => void;
+    onBattleMode?: (active: boolean) => void;
 }
 
 class NetClient {
@@ -90,6 +91,10 @@ class NetClient {
                 this.sendError(message);
                 this.handlers.onError?.(message);
             }
+        });
+
+        this.socket.on("battleMode", (active: boolean) => {
+            this.handlers.onBattleMode?.(active);
         });
     }
 
