@@ -14,6 +14,7 @@ import {
 	toPublicPlayer,
 } from "#handlers/playerHandlers.js";
 import { getAllStructLifes, handleStructHit } from "#handlers/structHandlers.js";
+import { handlePlayerKill } from "#handlers/scoreHandlers.js";
 import { getBattleStatus } from "src/endpoints/adminState.js";
 
 let lastPlayerId = 0;
@@ -40,6 +41,7 @@ export function registerSocketHandlers(io: Server): void {
 			socket.on("posPlayer", (moveData) => handlePlayerMove(io, socket, moveData));
 			socket.on("fire", (fireData) => handleFire(socket, fireData));
 			socket.on("playerHit", (targetId) => handlePlayerHit(io, socket, targetId));
+			socket.on("kill", (killData) => handlePlayerKill(io, socket, killData));
 			socket.on("hitStruct", (structureId) => handleStructHit(socket, structureId));
 			socket.on("error", (errorMessage: unknown) => handlePlayerError(socket, errorMessage));
 			socket.on("disconnect", () => handlePlayerDisconnect(io, socket));

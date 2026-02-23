@@ -1,6 +1,6 @@
 import { io, Socket } from "socket.io-client";
 import { Modificable } from "#src/modificable.ts";
-import { NewPlayerData, PlayerHitData, PlayerState, SpawnBulletData, StructHitData, StructLifeMap } from "./types.ts";
+import { KillData, NewPlayerData, PlayerHitData, PlayerState, ScoreKillData, SpawnBulletData, StructHitData, StructLifeMap } from "./types.ts";
 import { SERVER_URL } from "#src/config.ts";
 import { repository } from "#utils/repository.ts";
 
@@ -14,6 +14,7 @@ type ClientHandlers = {
     onPlayerHit?: (data: PlayerHitData) => void;
     onStructHit?: (data: StructHitData) => void;
     onAllLifeStructs?: (structLifes: StructLifeMap) => void;
+    onScoreKill?: (data: ScoreKillData) => void;
     onError?: (message: string) => void;
     onBattleMode?: (active: boolean) => void;
 }
@@ -96,6 +97,10 @@ class NetClient {
         this.socket.on("battleMode", (active: boolean) => {
             this.handlers.onBattleMode?.(active);
         });
+
+        this.socket.on("scoreKill", (data: ScoreKillData) => {
+            this.handlers.onScoreKill?.(data);
+        });
     }
 
     isConnected(): boolean {
@@ -157,6 +162,11 @@ class NetClient {
     sendPlayerHit(targetId: number): void {
         if (!this.socket || !this.socket.connected) return;
         this.socket.emit("playerHit", targetId);
+    }
+
+    sendKill(killerId: number): void {
+        if (!this.socket || !this.socket.connected) return;
+        this.socket.emit("kill", { killerId } as KillData);
     }
 
     sendHitStruct(structureId: number): void {

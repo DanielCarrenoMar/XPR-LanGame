@@ -10,6 +10,7 @@ export type Player = {
 
 export type ServerPlayerData = Player & {
     lastError: string;
+    score: number;
 };
 
 export type NewPlayerData = {
@@ -44,3 +45,15 @@ export type StructHitData = {
 };
 
 export type StructLifeMap = Record<number, number>;
+
+export type KillData = {
+    killerId: number;
+};
+
+export type ScoreKillData = {
+    killerName: string;
+    targetName: string;
+    frontModule: string;
+    backModule: string;
+    score: number;
+};

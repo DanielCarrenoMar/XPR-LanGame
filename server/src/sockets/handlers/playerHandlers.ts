@@ -17,6 +17,7 @@ export function createPlayer(data: NewPlayerData, id: number, lastError = ""): S
 		frontModule: data.frontModule,
 		backModule: data.backModule,
 		lastError,
+		score: 0,
 	};
 }
 

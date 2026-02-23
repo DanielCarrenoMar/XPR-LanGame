@@ -38,3 +38,15 @@ export type StructHitData = {
 };
 
 export type StructLifeMap = Record<number, number>;
+
+export type KillData = {
+    killerId: number;
+};
+
+export type ScoreKillData = {
+    killerName: string;
+    targetName: string;
+    frontModule: WeaponType;
+    backModule: WeaponType;
+    score: number;
+};

@@ -11,7 +11,7 @@ function renderConnected(data) {
   countError.textContent = `Jugadores con error: ${data.playersWithError ?? 0}`;
 
   if (players.length === 0) {
-    connectedBody.innerHTML = '<tr><td colspan="5">No hay jugadores conectados.</td></tr>';
+    connectedBody.innerHTML = '<tr><td colspan="6">No hay jugadores conectados.</td></tr>';
     return;
   }
 
@@ -19,6 +19,7 @@ function renderConnected(data) {
     .map(
       (player) => `
       <tr>
+        <td>${player.id}</td>
         <td>${player.name}</td>
         <td>${player.frontModule}</td>
         <td>${player.backModule}</td>
@@ -36,7 +37,7 @@ async function loadConnectedPlayers() {
     const data = await response.json();
     renderConnected(data);
   } catch (error) {
-    connectedBody.innerHTML = '<tr><td colspan="5">Error cargando jugadores.</td></tr>';
+    connectedBody.innerHTML = '<tr><td colspan="6">Error cargando jugadores.</td></tr>';
     console.error(error);
   }
 }

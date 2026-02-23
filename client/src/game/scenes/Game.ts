@@ -16,7 +16,7 @@ import LifeBar from '#componets/LifeBar.ts';
 import AlertText from '#componets/AlertText.ts';
 import SpawnMenu from '#componets/menus/SpawnMenu.ts';
 import Wall from '#entities/structs/Wall.ts';
-import { StructHitData, StructLifeMap } from '#sockets/types.ts';
+import { ScoreKillData, StructHitData, StructLifeMap } from '#sockets/types.ts';
 
 export default class Game extends Scene {
     private map: Phaser.Tilemaps.Tilemap;
@@ -204,6 +204,9 @@ export default class Game extends Scene {
             onError: (message) => {
                 this.showErrorAlert(message);
             },
+            onScoreKill: (data) => {
+                this.handleScoreKill(data);
+            },
             onBattleMode: (active) => {
                 this.setBattleMode(active);
                 this.showInfoAlert(`Battle mode ${active ? "activated" : "deactivated"}!`);
@@ -243,8 +246,15 @@ export default class Game extends Scene {
     private setBattleMode(active: boolean): void {
         this.isBattleMode = active;
         repository.saveBattleMode(active);
+        if (!this.player) {
+            return;
+        }
         const playerSpawn = this.getRandomSpawnPoint();
         this.player.setPosition(playerSpawn.x, playerSpawn.y);
+    }
+
+    private handleScoreKill(data: ScoreKillData): void {
+        this.showInfoAlert(`${data.killerName} killed ${data.targetName} [${data.frontModule} | ${data.backModule}] +100 (${data.score})`);
     }
 
     public showErrorAlert(message: string): void {
@@ -338,9 +348,11 @@ export default class Game extends Scene {
             this.applyDamageCameraShake();
             this.lifeBar?.setLives(this.player.getLives(), this.player.getMaxLives());
             if (isDead) {
+                netClient.sendKill(data.fromId);
                 this.setMenu(new SpawnMenu(this, this.remotePlayers.get(data.fromId)?.getPlayerName() ?? "Unknown", () => {
                     this.setMenu(null);
-                    this.player.setPosition(512, 560);
+                    const spawnPoint = this.getRandomSpawnPoint();
+                    this.player.setPosition(spawnPoint.x, spawnPoint.y);
                 }));
                 this.player.setPosition(0, 0);
                 this.player.resetLives();

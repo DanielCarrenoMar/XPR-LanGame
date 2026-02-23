@@ -11,7 +11,7 @@ export function getLeaderboardMock(io: Server): PlayerLeaderboardItem[] {
 		.map((player) => ({
 			id: player.id,
 			name: player.name,
-			score: 100 + player.id * 15,
+			score: player.score,
 			frontModule: player.frontModule,
 			backModule: player.backModule,
 		}))
@@ -23,8 +23,7 @@ function getLeaderboardController(_req: Request, res: Response): void {
 	res.status(200).json({
 		ok: true,
 		count: leaderboard.length,
-		leaderboard,
-		source: "mock",
+		leaderboard
 	});
 }
 
