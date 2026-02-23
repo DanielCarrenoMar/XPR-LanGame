@@ -3,7 +3,7 @@
         "height": 4300,
         "width": 2
     },
-    "activeFile": "",
+    "activeFile": "maps/mainMap.json",
     "expandedProjectPaths": [
         "maps",
         "."
@@ -19,10 +19,10 @@
         },
         "maps/mainMap.json": {
             "scale": 0.25,
-            "selectedLayer": -1,
+            "selectedLayer": 1,
             "viewCenter": {
-                "x": 1828,
-                "y": 1880
+                "x": 1242,
+                "y": 3536
             }
         },
         "maps/mainMap.json#Grass": {
@@ -31,7 +31,8 @@
             "scaleInEditor": 1
         },
         "maps/mainMap.json#Structs": {
-            "dynamicWrapping": true
+            "dynamicWrapping": true,
+            "scaleInDock": 1
         },
         "maps/mainMap.tmj": {
             "scale": 0.3265625,
