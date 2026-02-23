@@ -341,7 +341,6 @@ export default class Game extends Scene {
     }
 
     private hitPlayer(data: { fromId: number; targetId: number }): void {
-        console.log(`Player ${data.targetId} hit by player ${data.fromId}`);
         if (data.targetId === this.player.getPlayerId()) {
             this.player.onHit();
             const isDead = this.player.getLives() <= 0;
