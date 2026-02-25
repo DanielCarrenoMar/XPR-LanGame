@@ -52,8 +52,8 @@ export class BasePlayer extends GameObjects.Sprite
             color: "#ffffff"
         }).setOrigin(0.5, 0.5);
 
-        this.frontWeapon = createWeapon(scene, x, y, frontModule);
-        this.backWeapon = createWeapon(scene, x, y, backModule);
+        this.frontWeapon = createWeapon(scene, x, y, frontModule, this);
+        this.backWeapon = createWeapon(scene, x, y, backModule, this);
         this.setPlayerName(name);
 
         scene.physics.add.existing(this, false);

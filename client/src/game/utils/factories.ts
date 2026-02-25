@@ -1,8 +1,11 @@
 import { BaseProyectil, ProyectilType } from "#entities/proyectil/BaseProyectil.ts";
 import Bullet from "#entities/proyectil/Bullet.ts";
 import Grenade from "#entities/proyectil/Grenade.ts";
+import Jojo from "#entities/proyectil/Jojo.ts";
+import type { BasePlayer } from "#player/BasePlayer.ts";
 import BaseWeapon from "#player/weapon/BaseWeapon.ts";
 import GrenadeWeapon from "#player/weapon/GrenadeWeapon.ts";
+import JojoWeapon from "#player/weapon/JojoWeapon.ts";
 import ShotgunWeapon from "#player/weapon/ShotgunWeapon.ts";
 import ShieldWeapon from "#player/weapon/ShieldWeapon.ts";
 import SwordWeapon from "#player/weapon/SwordWeapon.ts";
@@ -32,21 +35,25 @@ export function createProyectil(scene: Phaser.Scene, x: number, y: number, angle
             return bullet;
         case "GRENADE":
             return new Grenade(scene, x, y, angle, ownerId);
+        case "JOJO":
+            return new Jojo(scene, x, y, ownerId);
         default:
             throw new Error(`Unknown proyectil type: ${type}`);
     }
 }
 
-export function createWeapon(scene: Phaser.Scene, x: number, y: number, moduleType: WeaponType): BaseWeapon | null {
+export function createWeapon(scene: Phaser.Scene, x: number, y: number, moduleType: WeaponType, player: BasePlayer): BaseWeapon | null {
     switch (moduleType) {
         case "GRENADE":
-            return new GrenadeWeapon(scene, x, y);
+            return new GrenadeWeapon(scene, x, y, player);
         case "SHOTGUN":
-            return new ShotgunWeapon(scene, x, y);
+            return new ShotgunWeapon(scene, x, y, player);
         case "SHIELD":
-            return new ShieldWeapon(scene, x, y);
+            return new ShieldWeapon(scene, x, y, player);
         case "SWORD":
-            return new SwordWeapon(scene, x, y);
+            return new SwordWeapon(scene, x, y, player);
+        case "JOJO":
+            return new JojoWeapon(scene, x, y, player);
         case "NONE":
             return null;
         default:

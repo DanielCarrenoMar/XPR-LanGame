@@ -26,8 +26,6 @@ export class LocalPlayer extends BasePlayer
 
         this.speed = 220;
         this.keys = scene.input.keyboard?.addKeys('W,A,S,D') as WasdKeys | null;
-
-        scene.input.on('pointerdown', this.handleShoot, this);
     }
 
     public getLives(): number {
@@ -77,19 +75,21 @@ export class LocalPlayer extends BasePlayer
         
         this.currentAimAngle = PhaserMath.Angle.Between(this.x, this.y, pointerPosition.x, pointerPosition.y);
 
+        this.handleShoot(pointer);
+
         this.updateVisuals();
     }
 
     private handleShoot(pointer: Phaser.Input.Pointer): void {
-        if (pointer.button !== 0) {
+        if (!pointer.isDown || !pointer.leftButtonDown()) {
             return;
         }
-        const playerPos = new PhaserMath.Vector2(this.x, this.y);
         const targetPos = pointer.positionToCamera(this.scene.cameras.main) as PhaserMath.Vector2;
+        const playerPos = new PhaserMath.Vector2(this.x, this.y);
         const targetMirror = targetPos.clone().subtract(playerPos).scale(-1).add(playerPos);
 
-        this.frontWeapon?.fire(playerPos, targetPos);
-        this.backWeapon?.fire(playerPos, targetMirror);
+        this.frontWeapon?.fire(targetPos);
+        this.backWeapon?.fire(targetMirror);
     }
 
 }
