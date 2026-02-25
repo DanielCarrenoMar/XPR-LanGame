@@ -6,6 +6,7 @@ import type { BasePlayer } from "#player/BasePlayer.ts";
 import BaseWeapon from "#player/weapon/BaseWeapon.ts";
 import GrenadeWeapon from "#player/weapon/GrenadeWeapon.ts";
 import JojoWeapon from "#player/weapon/JojoWeapon.ts";
+import PropulsorWeapon from "#player/weapon/PropulsorWeapon.ts";
 import ShotgunWeapon from "#player/weapon/ShotgunWeapon.ts";
 import ShieldWeapon from "#player/weapon/ShieldWeapon.ts";
 import SwordWeapon from "#player/weapon/SwordWeapon.ts";
@@ -54,6 +55,8 @@ export function createWeapon(scene: Phaser.Scene, x: number, y: number, moduleTy
             return new SwordWeapon(scene, x, y, player);
         case "JOJO":
             return new JojoWeapon(scene, x, y, player);
+        case "PROPULSOR":
+            return new PropulsorWeapon(scene, x, y, player);
         case "NONE":
             return null;
         default:
