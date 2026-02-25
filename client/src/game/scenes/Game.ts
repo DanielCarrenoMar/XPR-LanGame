@@ -1,8 +1,8 @@
 import { Scene } from 'phaser';
 import { RemotePlayer } from '#player/RemotePlayer.ts';
 import { LocalPlayer } from '#player/LocalPlayer.ts';
-import { createBullet } from '#utils/factories.ts';
-import { BaseBullet } from '#entities/bullet/BaseBullet.ts';
+import { createProyectil } from '#utils/factories.ts';
+import { BaseProyectil } from '#entities/proyectil/BaseProyectil.ts';
 import { BasePlayer } from '#player/BasePlayer.ts';
 import BaseMelee from '#entities/melee/BaseMelee.ts';
 import { PlayerState } from '#sockets/types.ts';
@@ -93,7 +93,7 @@ export default class Game extends Scene {
         this.shieldGroup = this.physics.add.staticGroup();
         this.structGroup = this.physics.add.staticGroup();
 
-        this.events.on("bullet-created", (bullet: BaseBullet) => {
+        this.events.on("bullet-created", (bullet: BaseProyectil) => {
             this.bulletGroup.add(bullet);
         });
         this.events.on("melee-created", (melee: BaseMelee) => {
@@ -166,7 +166,7 @@ export default class Game extends Scene {
         );
 
         this.physics.add.collider(this.bulletGroup, this.floorLayer, (bulletObj, _layer) => {
-            const bullet = bulletObj as BaseBullet;
+            const bullet = bulletObj as BaseProyectil;
             bullet.destroy();
         });
     }
@@ -187,7 +187,7 @@ export default class Game extends Scene {
                 this.removeRemotePlayer(playerId);
             },
             onPlayerShoot: (data) => {
-                this.addRemoteBullet(data.x, data.y, data.angle, data.id);
+                this.addRemoteBullet(data.x, data.y, data.angle, data.bulletType, data.id);
             },
             onLocalPlayerId: (playerId) => {
                 this.player.setPlayerId(playerId);
@@ -288,8 +288,8 @@ export default class Game extends Scene {
         netClient.sendPlayerPosition(this.player.x, this.player.y, this.player.currentAimAngle);
     }
 
-    private addRemoteBullet(x: number, y: number, angle: number, ownerId: number) {
-        createBullet(this, x, y, angle, 'BULLET', ownerId)
+    private addRemoteBullet(x: number, y: number, angle: number, bulletType: BaseProyectil["type"], ownerId: number) {
+        createProyectil(this, x, y, angle, bulletType, ownerId)
     }
 
     private syncRemotePlayers(players: PlayerState[]): void {
@@ -398,7 +398,7 @@ export default class Game extends Scene {
 
     private handleBulletHit: Phaser.Types.Physics.Arcade.ArcadePhysicsCallback = (playerObj, bulletObj) => {
         const player = (playerObj as unknown) as BasePlayer;
-        const bullet = (bulletObj as unknown) as BaseBullet;
+        const bullet = (bulletObj as unknown) as BaseProyectil;
 
         if (!player || !bullet || !player.active || !bullet.active) {
             return;
@@ -427,7 +427,7 @@ export default class Game extends Scene {
     }
 
     private handleShieldBlock: Phaser.Types.Physics.Arcade.ArcadePhysicsCallback = (bulletObj, shieldObj) => {
-        const bullet = (bulletObj as unknown) as BaseBullet;
+        const bullet = (bulletObj as unknown) as BaseProyectil;
         const shield = (shieldObj as unknown) as Phaser.GameObjects.GameObject & { ownerId?: number | null, rotation?: number };
 
         if (!bullet || !shield || !bullet.active || !shield.active || !bullet.body) {
@@ -442,7 +442,7 @@ export default class Game extends Scene {
     }
 
     private handleStructHit: Phaser.Types.Physics.Arcade.ArcadePhysicsCallback = (bulletObj, structObj) => {
-        const bullet = bulletObj as BaseBullet;
+        const bullet = bulletObj as BaseProyectil;
         const wall = structObj as Wall;
 
         if (!bullet || !wall || !bullet.active || !wall.active) {

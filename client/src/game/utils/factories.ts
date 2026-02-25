@@ -1,6 +1,8 @@
-import { BaseBullet, BulletType } from "#entities/bullet/BaseBullet.ts";
-import Bullet from "#entities/bullet/Bullet.ts";
+import { BaseProyectil, ProyectilType } from "#entities/proyectil/BaseProyectil.ts";
+import Bullet from "#entities/proyectil/Bullet.ts";
+import Grenade from "#entities/proyectil/Grenade.ts";
 import BaseWeapon from "#player/weapon/BaseWeapon.ts";
+import GrenadeWeapon from "#player/weapon/GrenadeWeapon.ts";
 import ShotgunWeapon from "#player/weapon/ShotgunWeapon.ts";
 import ShieldWeapon from "#player/weapon/ShieldWeapon.ts";
 import SwordWeapon from "#player/weapon/SwordWeapon.ts";
@@ -23,18 +25,22 @@ export function createStruct(scene: Phaser.Scene, x: number, y: number, width: n
     }
 }
 
-export function createBullet(scene: Phaser.Scene, x: number, y: number, angle: number, type: BulletType, ownerId: number | null): BaseBullet {
+export function createProyectil(scene: Phaser.Scene, x: number, y: number, angle: number, type: ProyectilType, ownerId: number | null): BaseProyectil {
     switch (type) {
         case "BULLET":
             const bullet = new Bullet(scene, x, y, angle, ownerId);
             return bullet;
+        case "GRENADE":
+            return new Grenade(scene, x, y, angle, ownerId);
         default:
-            throw new Error(`Unknown bullet type: ${type}`);
+            throw new Error(`Unknown proyectil type: ${type}`);
     }
 }
 
 export function createWeapon(scene: Phaser.Scene, x: number, y: number, moduleType: WeaponType): BaseWeapon | null {
     switch (moduleType) {
+        case "GRENADE":
+            return new GrenadeWeapon(scene, x, y);
         case "SHOTGUN":
             return new ShotgunWeapon(scene, x, y);
         case "SHIELD":

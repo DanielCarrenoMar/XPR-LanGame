@@ -1,19 +1,19 @@
-export type BulletType = "BULLET";
+export type ProyectilType = "BULLET" | "GRENADE";
 
-export abstract class BaseBullet extends Phaser.GameObjects.Arc
+export abstract class BaseProyectil extends Phaser.GameObjects.Arc
 {
     private static readonly TRAIL_DOTS = 16;
     private static readonly TRAIL_SPACING = 3;
     private static readonly TRAIL_ALPHA = 0.45;
 
-    public type: BulletType;
+    public type: ProyectilType;
     public ownerId: number;
     public readonly spawnVelocity: Phaser.Math.Vector2;
     private trailDots: Phaser.GameObjects.Arc[] = [];
     private trailPositions: Phaser.Math.Vector2[] = [];
     private lastTrailSample: Phaser.Math.Vector2;
 
-    constructor(scene: Phaser.Scene, x: number, y: number, velocity: Phaser.Math.Vector2, type: BulletType, ownerId: number | null) {
+    constructor(scene: Phaser.Scene, x: number, y: number, velocity: Phaser.Math.Vector2, type: ProyectilType, ownerId: number | null) {
         super(scene, x, y, 4, 0, 360, false, 0xff0000);
         this.type = type;
         this.ownerId = ownerId ?? -1;
@@ -41,8 +41,8 @@ export abstract class BaseBullet extends Phaser.GameObjects.Arc
     }
 
     private initTrail(): void {
-        for (let i = 0; i < BaseBullet.TRAIL_DOTS; i++) {
-            const alpha = BaseBullet.TRAIL_ALPHA * (1 - i / BaseBullet.TRAIL_DOTS);
+        for (let i = 0; i < BaseProyectil.TRAIL_DOTS; i++) {
+            const alpha = BaseProyectil.TRAIL_ALPHA * (1 - i / BaseProyectil.TRAIL_DOTS);
             const dot = this.scene.add.arc(this.x, this.y, this.radius, this.fillColor, alpha);
             dot.setDepth(this.depth - 1);
             dot.setVisible(false);
@@ -62,7 +62,7 @@ export abstract class BaseBullet extends Phaser.GameObjects.Arc
             this.y,
         );
 
-        while (distanceToCurrent >= BaseBullet.TRAIL_SPACING) {
+        while (distanceToCurrent >= BaseProyectil.TRAIL_SPACING) {
             const direction = new Phaser.Math.Vector2(
                 this.x - this.lastTrailSample.x,
                 this.y - this.lastTrailSample.y,
@@ -70,7 +70,7 @@ export abstract class BaseBullet extends Phaser.GameObjects.Arc
 
             this.lastTrailSample = this.lastTrailSample
                 .clone()
-                .add(direction.scale(BaseBullet.TRAIL_SPACING));
+                .add(direction.scale(BaseProyectil.TRAIL_SPACING));
 
             this.trailPositions.unshift(this.lastTrailSample.clone());
             if (this.trailPositions.length > this.trailDots.length) {
@@ -94,7 +94,7 @@ export abstract class BaseBullet extends Phaser.GameObjects.Arc
                 continue;
             }
 
-            const alpha = BaseBullet.TRAIL_ALPHA * (1 - i / this.trailDots.length);
+            const alpha = BaseProyectil.TRAIL_ALPHA * (1 - i / this.trailDots.length);
 
             dot.setVisible(true);
             dot.setPosition(trailPos.x, trailPos.y);

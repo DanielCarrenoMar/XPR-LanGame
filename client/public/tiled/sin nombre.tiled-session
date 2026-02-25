@@ -5,8 +5,8 @@
     },
     "activeFile": "maps/mainMap.json",
     "expandedProjectPaths": [
-        "maps",
-        "."
+        ".",
+        "maps"
     ],
     "fileStates": {
         "mainMap.tmx": {
@@ -22,7 +22,7 @@
             "selectedLayer": 1,
             "viewCenter": {
                 "x": 1242,
-                "y": 3536
+                "y": 1856
             }
         },
         "maps/mainMap.json#Grass": {

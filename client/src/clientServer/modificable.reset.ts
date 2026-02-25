@@ -1,4 +1,4 @@
-export type WeaponType = "SHOTGUN" | "SWORD" | "SHIELD" | "NONE";
+export type WeaponType = "SHOTGUN" | "SWORD" | "SHIELD" | "GRENADE" | "NONE";
 
 export const Modificable = {
     playerColor: 0xFFFFFF,

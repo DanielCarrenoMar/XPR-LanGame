@@ -1,5 +1,6 @@
 import { io, Socket } from "socket.io-client";
 import { Modificable } from "#src/modificable.ts";
+import { ProyectilType } from "#entities/proyectil/BaseProyectil.ts";
 import { KillData, NewPlayerData, PlayerHitData, PlayerState, ScoreKillData, SpawnBulletData, StructHitData, StructLifeMap } from "./types.ts";
 import { SERVER_URL } from "#src/config.ts";
 import { repository } from "#utils/repository.ts";
@@ -154,9 +155,9 @@ class NetClient {
         this.socket.emit("posPlayer", { x, y, angle });
     }
 
-    sendFire(x: number, y: number, angle: number): void {
+    sendFire(x: number, y: number, angle: number, bulletType: ProyectilType): void {
         if (!this.socket || !this.socket.connected) return;
-        this.socket.emit("fire", { x, y, angle });
+        this.socket.emit("fire", { x, y, angle, bulletType });
     }
 
     sendPlayerHit(targetId: number): void {

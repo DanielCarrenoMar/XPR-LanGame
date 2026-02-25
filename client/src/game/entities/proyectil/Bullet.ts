@@ -1,6 +1,6 @@
-import {BaseBullet} from "./BaseBullet.ts";
+import {BaseProyectil} from "./BaseProyectil.ts";
 
-export default class Bullet extends BaseBullet {
+export default class Bullet extends BaseProyectil {
     private static readonly TIME = 2500;
     private timer: number = 0;
 

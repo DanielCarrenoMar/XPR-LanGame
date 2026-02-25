@@ -1,4 +1,4 @@
-import { BulletType } from "#entities/bullet/BaseBullet.ts";
+import { ProyectilType } from "#entities/proyectil/BaseProyectil.ts";
 import { WeaponType } from "#src/modificable.ts";
 
 export type PlayerState = {
@@ -29,7 +29,7 @@ export type SpawnBulletData = {
     x: number;
     y: number;
     angle: number;
-    bulletType: BulletType;
+    bulletType: ProyectilType;
 };
 
 export type StructHitData = {
