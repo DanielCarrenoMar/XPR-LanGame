@@ -1,7 +1,3 @@
-import { BaseProyectil, ProyectilType } from "#entities/proyectil/BaseProyectil.ts";
-import Bullet from "#entities/proyectil/Bullet.ts";
-import Grenade from "#entities/proyectil/Grenade.ts";
-import Jojo from "#entities/proyectil/Jojo.ts";
 import type { BasePlayer } from "#player/BasePlayer.ts";
 import BaseWeapon from "#player/weapon/BaseWeapon.ts";
 import GrenadeWeapon from "#player/weapon/GrenadeWeapon.ts";
@@ -26,20 +22,6 @@ export function createStruct(scene: Phaser.Scene, x: number, y: number, width: n
             return new Target(scene, x, y, width, height);
         default:
             throw new Error(`Unknown struct type: ${type}`);
-    }
-}
-
-export function createProyectil(scene: Phaser.Scene, x: number, y: number, angle: number, type: ProyectilType, ownerId: number | null): BaseProyectil {
-    switch (type) {
-        case "BULLET":
-            const bullet = new Bullet(scene, x, y, angle, ownerId);
-            return bullet;
-        case "GRENADE":
-            return new Grenade(scene, x, y, angle, ownerId);
-        case "JOJO":
-            return new Jojo(scene, x, y, ownerId);
-        default:
-            throw new Error(`Unknown proyectil type: ${type}`);
     }
 }
 

@@ -1,4 +1,4 @@
-import { createProyectil } from "#utils/factories.ts";
+import Bullet from "#entities/proyectil/Bullet.ts";
 import BaseWeapon from "./BaseWeapon.ts";
 import type { BasePlayer } from "../BasePlayer.ts";
 
@@ -14,7 +14,7 @@ export default class ShotgunWeapon extends BaseWeapon {
         const angles = [angle - spread, angle, angle + spread];
 
         angles.forEach((a) => {
-            createProyectil(this.scene, this.player.x, this.player.y, a, "BULLET", this.ownerId);
+            new Bullet(this.scene, this.player.x, this.player.y, a, this.ownerId);
         });
     }
 }
