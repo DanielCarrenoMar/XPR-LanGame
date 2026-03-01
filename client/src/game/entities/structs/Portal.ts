@@ -7,9 +7,7 @@ export default class Portal extends IdStruct {
     private linkedPortalStructureId: number | null = null;
 
     constructor(scene: Phaser.Scene, x: number, y: number, tintColor: number, texture: string = "shield") {
-        super(scene, x, y, texture);
-
-        this.setDisplaySize(68, 68);
+        super(scene, x, y, 68, 68, texture);
 
         this.setAlpha(0.85);
 

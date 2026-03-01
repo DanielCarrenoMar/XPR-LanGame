@@ -7,10 +7,9 @@ export default class HitStruct extends IdStruct {
     private life;
 
 	constructor(scene: Scene, x: number, y: number, texture: string, width: number, height: number, maxLife: number) {
-		super(scene, x, y, texture);
+		super(scene, x, y, width, height, texture);
         this.maxLife = maxLife;
         this.life = maxLife;
-        this.setDisplaySize(width, height);
         this.setVisible(false); // Se volvera visible al sincronizar con el server
 
 		this.scene.events.emit(createdEvents.HIT_STRUCT_CREATED, this);

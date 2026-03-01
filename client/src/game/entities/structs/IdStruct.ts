@@ -8,8 +8,10 @@ export default class IdStruct extends GameObjects.Sprite {
 		IdStruct.nextStructureId = 0;
 	}
 
-	constructor(scene: Scene, x: number, y: number, texture: string) {
+	constructor(scene: Scene, x: number, y: number, width: number, height: number, texture: string) {
 		super(scene, x, y, texture);
+
+		this.setDisplaySize(width, height);
 
 		this.structureId = IdStruct.nextStructureId;
 		IdStruct.nextStructureId += 1;
