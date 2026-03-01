@@ -6,7 +6,7 @@ export default class Bullet extends BaseProyectil {
     private timer: number = 0;
 
     constructor(scene: Phaser.Scene, x: number, y: number, angle: number, ownerId: number | null) {
-        const velocity = new Phaser.Math.Vector2(Math.cos(angle), Math.sin(angle)).scale(300);
+        const velocity = new Phaser.Math.Vector2(Math.cos(angle), Math.sin(angle)).scale(500);
         super(scene, x, y, velocity, "BULLET", ownerId);
         scene.events.emit(createdEvents.BULLET_CREATED, this);
         const body = this.body as Phaser.Physics.Arcade.Body;
