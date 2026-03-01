@@ -11,8 +11,21 @@ export default class PortalGunWeapon extends BaseWeapon {
     constructor(scene: Phaser.Scene, x: number, y: number, player: BasePlayer) {
         super(scene, x, y, player, "shotgun", 220);
 
-        this.primaryPortal = new Portal(scene, -2000, -2000, 0x4ea8ff);
-        this.secondPortal = new Portal(scene, -2000, -2000, 0xff8f3d);
+        const ramdonColor = [0xFF0000,
+            0xFF7F00,
+            0xFFFF00,
+            0x7FFF00,
+            0x00FF00,
+            0x00FF7F,
+            0x00FFFF,
+            0x007FFF,
+            0x0000FF,
+            0x7F00FF,
+            0xFF00FF,
+            0xFF007F][Math.floor(Math.random() * 2)];
+
+        this.primaryPortal = new Portal(scene, -2000, -2000, ramdonColor);
+        this.secondPortal = new Portal(scene, -2000, -2000, ramdonColor);
 
         this.primaryPortal.setLinkedPortal(this.secondPortal);
         this.secondPortal.setLinkedPortal(this.primaryPortal);
