@@ -2,6 +2,7 @@ import type { BasePlayer } from "#player/BasePlayer.ts";
 import BaseWeapon from "#player/weapon/BaseWeapon.ts";
 import GrenadeWeapon from "#player/weapon/GrenadeWeapon.ts";
 import JojoWeapon from "#player/weapon/JojoWeapon.ts";
+import PortalGunWeapon from "#player/weapon/PortalGunWeapon.ts";
 import PropulsorWeapon from "#player/weapon/PropulsorWeapon.ts";
 import ShotgunWeapon from "#player/weapon/ShotgunWeapon.ts";
 import ShieldWeapon from "#player/weapon/ShieldWeapon.ts";
@@ -9,6 +10,7 @@ import SwordWeapon from "#player/weapon/SwordWeapon.ts";
 import { WeaponType } from "#src/modificable.ts";
 import Bush from "#entities/structs/Bush.ts";
 import { Struct, StructType } from "#entities/structs/Struct.ts";
+import Portal from "#entities/structs/Portal.ts";
 import Wall from "#entities/structs/Wall.ts";
 import Target from "#entities/structs/Target.ts";
 
@@ -20,6 +22,12 @@ export function createStruct(scene: Phaser.Scene, x: number, y: number, width: n
             return new Wall(scene, x, y, width, height);
         case 'TARGET':
             return new Target(scene, x, y, width, height);
+        case 'PORTAL': {
+            const portal = new Portal(scene, x, y, 0x4ea8ff);
+            portal.setDisplaySize(width, height);
+            portal.placeAt(x, y);
+            return portal;
+        }
         default:
             throw new Error(`Unknown struct type: ${type}`);
     }
@@ -37,6 +45,8 @@ export function createWeapon(scene: Phaser.Scene, x: number, y: number, moduleTy
             return new SwordWeapon(scene, x, y, player);
         case "JOJO":
             return new JojoWeapon(scene, x, y, player);
+        case "PORTAL_GUN":
+            return new PortalGunWeapon(scene, x, y, player);
         case "PROPULSOR":
             return new PropulsorWeapon(scene, x, y, player);
         case "NONE":

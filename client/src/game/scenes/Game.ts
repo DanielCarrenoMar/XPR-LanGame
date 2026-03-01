@@ -15,6 +15,7 @@ import LifeBar from '#componets/LifeBar.ts';
 import AlertText from '#componets/AlertText.ts';
 import SpawnMenu from '#componets/menus/SpawnMenu.ts';
 import Wall from '#entities/structs/Wall.ts';
+import Portal from '#entities/structs/Portal.ts';
 import { ScoreKillData, StructHitData, StructLifeMap } from '#sockets/types.ts';
 
 export default class Game extends Scene {
@@ -28,6 +29,7 @@ export default class Game extends Scene {
     private meleeGroup!: Phaser.Physics.Arcade.Group;
     private shieldGroup!: Phaser.Physics.Arcade.StaticGroup;
     private structGroup!: Phaser.Physics.Arcade.StaticGroup;
+    private portalGroup!: Phaser.Physics.Arcade.StaticGroup;
     private playerHasName = false;
     private activeMenu: Phaser.GameObjects.Container | null = null;
     private lifeBar: LifeBar | null = null;
@@ -91,6 +93,7 @@ export default class Game extends Scene {
         this.meleeGroup = this.physics.add.group();
         this.shieldGroup = this.physics.add.staticGroup();
         this.structGroup = this.physics.add.staticGroup();
+        this.portalGroup = this.physics.add.staticGroup();
 
         this.events.on("bullet-created", (bullet: BaseProyectil) => {
             this.bulletGroup.add(bullet);
@@ -104,6 +107,9 @@ export default class Game extends Scene {
         this.events.on("struct-created", (struct: Wall) => {
             this.wallsById.set(struct.structureId, struct);
             this.structGroup.add(struct);
+        });
+        this.events.on("portal-created", (portal: Portal) => {
+            this.portalGroup.add(portal);
         });
     }
 
@@ -160,6 +166,22 @@ export default class Game extends Scene {
             this.bulletGroup,
             this.structGroup,
             this.handleStructHit as Phaser.Types.Physics.Arcade.ArcadePhysicsCallback,
+            undefined,
+            this
+        );
+
+        this.physics.add.overlap(
+            this.playersGroup,
+            this.portalGroup,
+            this.handlePortalTeleport as Phaser.Types.Physics.Arcade.ArcadePhysicsCallback,
+            undefined,
+            this
+        );
+
+        this.physics.add.overlap(
+            this.bulletGroup,
+            this.portalGroup,
+            this.handlePortalTeleport as Phaser.Types.Physics.Arcade.ArcadePhysicsCallback,
             undefined,
             this
         );
@@ -466,5 +488,44 @@ export default class Game extends Scene {
         wall.onHit();
         netClient.sendHitStruct(wall.structureId);
         bullet.destroy();
+    }
+
+    private handlePortalTeleport: Phaser.Types.Physics.Arcade.ArcadePhysicsCallback = (objA, objB) => {
+        const firstObj = this.resolveCollisionGameObject(objA);
+        const secondObj = this.resolveCollisionGameObject(objB);
+
+        const portal = firstObj instanceof Portal
+            ? firstObj
+            : secondObj instanceof Portal
+                ? secondObj
+                : null;
+
+        if (!portal) {
+            return;
+        }
+
+        const collidedObject = portal === firstObj ? secondObj : firstObj;
+        if (!collidedObject || collidedObject === portal || !collidedObject.active) {
+            return;
+        }
+
+        portal.teleport(collidedObject);
+    }
+
+    private resolveCollisionGameObject(
+        collisionObject: Phaser.Physics.Arcade.Body | Phaser.Physics.Arcade.StaticBody | Phaser.Tilemaps.Tile | Phaser.Types.Physics.Arcade.GameObjectWithBody,
+    ): Phaser.GameObjects.GameObject | null {
+        if (collisionObject instanceof Phaser.GameObjects.GameObject) {
+            return collisionObject;
+        }
+
+        if (
+            "gameObject" in collisionObject
+            && collisionObject.gameObject instanceof Phaser.GameObjects.GameObject
+        ) {
+            return collisionObject.gameObject;
+        }
+
+        return null;
     }
 }

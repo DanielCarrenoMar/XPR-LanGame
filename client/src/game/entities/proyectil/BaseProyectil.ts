@@ -1,4 +1,4 @@
-export type ProyectilType = "BULLET" | "GRENADE" | "JOJO";
+export type ProyectilType = "BULLET" | "GRENADE" | "JOJO" | "PORTAL_BULLET";
 
 export abstract class BaseProyectil extends Phaser.GameObjects.Arc
 {
