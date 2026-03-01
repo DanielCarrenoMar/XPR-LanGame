@@ -142,14 +142,14 @@ export default class Game extends Scene {
         this.physics.add.overlap(
             this.playersGroup,
             this.bulletGroup,
-            this.handleBulletHit as Phaser.Types.Physics.Arcade.ArcadePhysicsCallback,
+            this.handleDamageEntityHit as Phaser.Types.Physics.Arcade.ArcadePhysicsCallback,
             undefined,
             this
         );
         this.physics.add.overlap(
             this.playersGroup,
             this.meleeGroup,
-            this.handleMeleeHit as Phaser.Types.Physics.Arcade.ArcadePhysicsCallback,
+            this.handleDamageEntityHit as Phaser.Types.Physics.Arcade.ArcadePhysicsCallback,
             undefined,
             this
         );
@@ -426,36 +426,12 @@ export default class Game extends Scene {
         })
     }
 
-    private handleBulletHit: Phaser.Types.Physics.Arcade.ArcadePhysicsCallback = (playerObj, bulletObj) => {
-        const player = (playerObj as unknown) as BasePlayer;
-        const bullet = (bulletObj as unknown) as BaseProyectil;
-
-        if (!player || !bullet || !player.active || !bullet.active) {
-            return;
-        }
-
-        if (!bullet.isDamageable()) return
-        if (bullet.getOwnerId() === player.getPlayerId()) return
+    private handleDamageEntityHit(player: BasePlayer, damageEntity: Phaser.GameObjects.GameObject & OnHitInterface): void {
+        if (!damageEntity.isDamageable()) return
+        if (damageEntity.getOwnerId() === player.getPlayerId()) return
         if (player.getPlayerId() === netClient.getLocalPlayerId()) return
 
-        bullet.destroy();
-        player.onHit();
-        netClient.sendPlayerHit(player.getPlayerId());
-    }
-
-    private handleMeleeHit: Phaser.Types.Physics.Arcade.ArcadePhysicsCallback = (playerObj, meleeObj) => {
-        const player = playerObj as BasePlayer;
-        const melee = meleeObj as (GameObjects.GameObject & OnHitInterface);
-
-        if (!player || !melee || !player.active || !melee.active) {
-            return;
-        }
-        
-        if (!melee.isDamageable()) return
-        if (melee.getOwnerId() === player.getPlayerId()) return
-        if (player.getPlayerId() === netClient.getLocalPlayerId()) return
-
-        melee.onHit();
+        damageEntity.onHit();
         player.onHit();
         netClient.sendPlayerHit(player.getPlayerId());
     }
