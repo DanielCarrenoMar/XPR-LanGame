@@ -492,42 +492,14 @@ export default class Game extends Scene {
         bullet.destroy();
     }
 
-    private handlePortalTeleport: Phaser.Types.Physics.Arcade.ArcadePhysicsCallback = (objA, objB) => {
-        const firstObj = this.resolveCollisionGameObject(objA);
-        const secondObj = this.resolveCollisionGameObject(objB);
+    private handlePortalTeleport: Phaser.Types.Physics.Arcade.ArcadePhysicsCallback = (objA, portalObj) => {
+        const firstObj = objA as Phaser.GameObjects.GameObject;
+        const portal = portalObj as Portal
 
-        const portal = firstObj instanceof Portal
-            ? firstObj
-            : secondObj instanceof Portal
-                ? secondObj
-                : null;
-
-        if (!portal) {
+        if (!portal || !firstObj || !firstObj.active || !portal.active) {
             return;
         }
 
-        const collidedObject = portal === firstObj ? secondObj : firstObj;
-        if (!collidedObject || collidedObject === portal || !collidedObject.active) {
-            return;
-        }
-
-        portal.teleport(collidedObject);
-    }
-
-    private resolveCollisionGameObject(
-        collisionObject: Phaser.Physics.Arcade.Body | Phaser.Physics.Arcade.StaticBody | Phaser.Tilemaps.Tile | Phaser.Types.Physics.Arcade.GameObjectWithBody,
-    ): Phaser.GameObjects.GameObject | null {
-        if (collisionObject instanceof Phaser.GameObjects.GameObject) {
-            return collisionObject;
-        }
-
-        if (
-            "gameObject" in collisionObject
-            && collisionObject.gameObject instanceof Phaser.GameObjects.GameObject
-        ) {
-            return collisionObject.gameObject;
-        }
-
-        return null;
+        portal.teleport(firstObj);
     }
 }
