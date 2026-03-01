@@ -1,6 +1,7 @@
+import OnHitInterface from "#entities/OnHitInterface.ts";
 import { createdEvents } from "#utils/eventsDefinitions.ts";
 
-export default abstract class BaseMelee extends Phaser.GameObjects.Sprite {
+export default abstract class BaseMelee extends Phaser.GameObjects.Sprite implements OnHitInterface {
     private hitDelay: number;
 
     constructor(scene: Phaser.Scene, x: number, y: number, texture: string, hitDelay: number = 180) {

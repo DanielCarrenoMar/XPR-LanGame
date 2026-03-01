@@ -1,4 +1,4 @@
-import { Scene } from 'phaser';
+import { GameObjects, Scene } from 'phaser';
 import { RemotePlayer } from '#player/RemotePlayer.ts';
 import { LocalPlayer } from '#player/LocalPlayer.ts';
 import { BaseProyectil } from '#entities/proyectil/BaseProyectil.ts';
@@ -18,6 +18,7 @@ import Wall from '#entities/structs/Wall.ts';
 import Portal from '#entities/structs/Portal.ts';
 import { ScoreKillData, StructHitData, StructLifeMap } from '#sockets/types.ts';
 import { createdEvents } from '#utils/eventsDefinitions.ts';
+import OnHitInterface from '#entities/OnHitInterface.ts';
 
 export default class Game extends Scene {
     private map: Phaser.Tilemaps.Tilemap;
@@ -451,7 +452,7 @@ export default class Game extends Scene {
 
     private handleMeleeHit: Phaser.Types.Physics.Arcade.ArcadePhysicsCallback = (playerObj, meleeObj) => {
         const player = playerObj as BasePlayer;
-        const melee = meleeObj as BaseMelee;
+        const melee = meleeObj as (GameObjects.GameObject & OnHitInterface);
 
         if (!player || !melee || !player.active || !melee.active) {
             return;

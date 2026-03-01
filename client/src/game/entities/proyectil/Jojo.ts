@@ -1,8 +1,11 @@
+import OnHitInterface from "#entities/OnHitInterface.ts";
+import { createdEvents } from "#utils/eventsDefinitions.ts";
 import { BaseProyectil } from "./BaseProyectil.ts";
 
-export default class Jojo extends BaseProyectil {
+export default class Jojo extends BaseProyectil implements OnHitInterface {
     private static readonly INTERPOLATION_SPEED = 850;
     private targetPosition: Phaser.Math.Vector2;
+    private hitDelay: number;
 
     constructor(scene: Phaser.Scene, x: number, y: number, ownerId: number | null) {
         super(scene, x, y, new Phaser.Math.Vector2(0, 0), "JOJO", ownerId);
@@ -14,7 +17,14 @@ export default class Jojo extends BaseProyectil {
         body.setCircle(10);
         body.setVelocity(0, 0);
 
-        //scene.events.emit(createdEvents.MELEE_CREATED, this);
+        scene.events.emit(createdEvents.MELEE_CREATED, this);
+    }
+    onHit(): void {
+        this.setActive(false);
+
+        this.scene.time.delayedCall(this.hitDelay, () => {
+            this.setActive(true);
+        });
     }
 
     setTargetPosition(targetPos: Readonly<Phaser.Math.Vector2>): void {
