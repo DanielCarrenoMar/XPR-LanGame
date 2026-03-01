@@ -18,7 +18,7 @@ import Wall from '#entities/structs/Wall.ts';
 import Portal from '#entities/structs/Portal.ts';
 import { ScoreKillData, StructHitData, StructLifeMap } from '#sockets/types.ts';
 import { createdEvents } from '#utils/eventsDefinitions.ts';
-import OnHitInterface from '#entities/OnHitInterface.ts';
+import OnHitInterface from '#entities/DamageEntityInterface.ts';
 
 export default class Game extends Scene {
     private map: Phaser.Tilemaps.Tilemap;
@@ -434,7 +434,8 @@ export default class Game extends Scene {
             return;
         }
 
-        if (bullet.ownerId === player.getPlayerId()) return
+        if (!bullet.isDamageable()) return
+        if (bullet.getOwnerId() === player.getPlayerId()) return
         if (player.getPlayerId() === netClient.getLocalPlayerId()) return
 
         bullet.destroy();
@@ -449,10 +450,13 @@ export default class Game extends Scene {
         if (!player || !melee || !player.active || !melee.active) {
             return;
         }
-        const localPlayerId = netClient.getLocalPlayerId()
-        if (localPlayerId && localPlayerId === player.getPlayerId()) return
+        
+        if (!melee.isDamageable()) return
+        if (melee.getOwnerId() === player.getPlayerId()) return
+        if (player.getPlayerId() === netClient.getLocalPlayerId()) return
 
         melee.onHit();
+        player.onHit();
         netClient.sendPlayerHit(player.getPlayerId());
     }
 
@@ -464,7 +468,7 @@ export default class Game extends Scene {
             return;
         }
 
-        if (bullet.ownerId === shield.ownerId) {
+        if (bullet.getOwnerId() === shield.ownerId) {
             return;
         }
 
@@ -476,6 +480,10 @@ export default class Game extends Scene {
         const wall = structObj as Wall;
 
         if (!bullet || !wall || !bullet.active || !wall.active) {
+            return;
+        }
+
+        if (!bullet.isDamageable()) {
             return;
         }
 

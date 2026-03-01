@@ -9,15 +9,16 @@ export default class JojoWeapon extends BaseWeapon {
 
     constructor(scene: Phaser.Scene, x: number, y: number, player: BasePlayer) {
         super(scene, x, y, player, "sword", 10);
-        this.jojo = new Jojo(scene, player.x, player.y, this.ownerId);
+        this.jojo = new Jojo(scene, this.x, this.y, this.ownerId);
     }
 
     protected preUpdate(time: number, delta: number): void {
         super.preUpdate(time, delta);
 
-        if (this.scene.time.now - this.lastFireAt > this.idleReturnDelayMs) {
-            this.jojo.setTargetPosition(new Phaser.Math.Vector2(this.x, this.y));
-        }
+        if (!(this.scene.time.now - this.lastFireAt > this.idleReturnDelayMs)) return
+
+        this.jojo.setTargetPosition(new Phaser.Math.Vector2(this.x, this.y));
+
     }
 
     protected doFire(targetPos: Readonly<Phaser.Math.Vector2>): void {
@@ -25,9 +26,9 @@ export default class JojoWeapon extends BaseWeapon {
         this.jojo.setTargetPosition(targetPos);
     }
 
-    override setOwnerId(id: number | null): void {
+    override setOwnerId(id: number): void {
         super.setOwnerId(id);
-        this.jojo.ownerId = id ?? -1;
+        this.jojo.setOwnerId(id);
     }
 
     override setActive(value: boolean): this {

@@ -12,7 +12,7 @@ export default class SwordWeapon extends BaseWeapon {
 
     protected doFire(_targetPos: Readonly<Phaser.Math.Vector2>): void {
         if (this.isSwinging) return;
-        const swordHitBox =  new SwordMelee(this.scene, this.player.x, this.player.y)
+        const swordHitBox =  new SwordMelee(this.scene, this.player.x, this.player.y, this.ownerId ?? -1)
         this.isSwinging = true;
 
         this.scene.time.delayedCall(180, () => {

@@ -1,4 +1,4 @@
-import OnHitInterface from "#entities/OnHitInterface.ts";
+import OnHitInterface from "#entities/DamageEntityInterface.ts";
 import { createdEvents } from "#utils/eventsDefinitions.ts";
 import { BaseProyectil } from "./BaseProyectil.ts";
 
@@ -21,10 +21,10 @@ export default class Jojo extends BaseProyectil implements OnHitInterface {
     }
 
     onHit(): void {
-        this.setActive(false);
+        this.setDamageable(false);
 
         this.scene.time.delayedCall(Jojo.HITDELAY, () => {
-            this.setActive(true);
+            this.setDamageable(true);
         });
     }
 
