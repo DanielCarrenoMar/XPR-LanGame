@@ -355,11 +355,17 @@ export default class Game extends Scene {
             this.applyDamageCameraShake();
             this.lifeBar?.setLives(this.player.getLives(), this.player.getMaxLives());
             if (isDead) {
+                const killerPlayer = this.remotePlayers.get(data.fromId);
+                if (killerPlayer) {
+                    this.camera.startFollow(killerPlayer, false, 0.08, 0.08);
+                }
+
                 netClient.sendKill(data.fromId);
                 this.setMenu(new SpawnMenu(this, this.remotePlayers.get(data.fromId)?.getPlayerName() ?? "Unknown", () => {
                     this.setMenu(null);
                     const spawnPoint = this.getRandomSpawnPoint();
                     this.player.setPosition(spawnPoint.x, spawnPoint.y);
+                    this.camera.startFollow(this.player, false, 0.08, 0.08);
                 }));
                 this.player.setPosition(0, 0);
                 this.player.resetLives();
