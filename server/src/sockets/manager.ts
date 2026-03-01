@@ -1,6 +1,7 @@
 import type { Server, Socket } from "socket.io";
 import { handleFire } from "./handlers/weaponHandlers.js";
 import type {
+	FireData,
 	NewPlayerData,
 	Player,
 	ServerPlayerData,
@@ -39,7 +40,7 @@ export function registerSocketHandlers(io: Server): void {
 			socket.broadcast.emit("newplayer", toPublicPlayer(player));
 
 			socket.on("posPlayer", (moveData) => handlePlayerMove(io, socket, moveData));
-			socket.on("fire", (fireData) => handleFire(socket, fireData));
+			socket.on("fire", (fireData: FireData) => handleFire(socket, fireData));
 			socket.on("playerHit", (targetId) => handlePlayerHit(io, socket, targetId));
 			socket.on("kill", (killData) => handlePlayerKill(io, socket, killData));
 			socket.on("hitStruct", (structureId) => handleStructHit(socket, structureId));

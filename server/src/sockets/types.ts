@@ -32,11 +32,13 @@ export type PlayerHitData = {
     targetId: number;
 };
 
-export type SpawnBulletData = {
-    x: number;
-    y: number;
-    angle: number;
-    bulletType: string;
+export type FireData = {
+    targetX: number;
+    targetY: number;
+};
+
+export type PlayerFireData = FireData & {
+    id: number;
 };
 
 export type StructHitData = {

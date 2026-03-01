@@ -1,4 +1,5 @@
 import type { BasePlayer } from "#player/BasePlayer.ts";
+import { netClient } from "#sockets/netClient.ts";
 
 export default abstract class BaseWeapon extends Phaser.GameObjects.Sprite {
     protected ownerId: number | null = null;
@@ -16,6 +17,10 @@ export default abstract class BaseWeapon extends Phaser.GameObjects.Sprite {
 
     setOwnerId(id: number | null): void {
         this.ownerId = id;
+    }
+
+    isLocalPlayerWeapon(): boolean {
+        return this.ownerId === netClient.getLocalPlayerId()
     }
 
     fire(targetPos: Readonly<Phaser.Math.Vector2>): void {

@@ -1,7 +1,6 @@
 import { Scene } from 'phaser';
 import { RemotePlayer } from '#player/RemotePlayer.ts';
 import { LocalPlayer } from '#player/LocalPlayer.ts';
-import { createProyectil } from '#utils/factories.ts';
 import { BaseProyectil } from '#entities/proyectil/BaseProyectil.ts';
 import { BasePlayer } from '#player/BasePlayer.ts';
 import BaseMelee from '#entities/melee/BaseMelee.ts';
@@ -186,8 +185,8 @@ export default class Game extends Scene {
             onPlayerRemoved: (playerId) => {
                 this.removeRemotePlayer(playerId);
             },
-            onPlayerShoot: (data) => {
-                this.addRemoteBullet(data.x, data.y, data.angle, data.bulletType, data.id);
+            onPlayerFire: (data) => {
+                this.handleRemoteFire(data.id, data.targetX, data.targetY);
             },
             onLocalPlayerId: (playerId) => {
                 this.player.setPlayerId(playerId);
@@ -288,8 +287,17 @@ export default class Game extends Scene {
         netClient.sendPlayerPosition(this.player.x, this.player.y, this.player.currentAimAngle);
     }
 
-    private addRemoteBullet(x: number, y: number, angle: number, bulletType: BaseProyectil["type"], ownerId: number) {
-        createProyectil(this, x, y, angle, bulletType, ownerId)
+    private handleRemoteFire(playerId: number, targetX: number, targetY: number): void {
+        if (this.player.getPlayerId() === playerId) {
+            return;
+        }
+
+        const shooter = this.remotePlayers.get(playerId);
+        if (!shooter) {
+            return;
+        }
+
+        shooter.fire(new Phaser.Math.Vector2(targetX, targetY), false);
     }
 
     private syncRemotePlayers(players: PlayerState[]): void {

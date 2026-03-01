@@ -1,4 +1,3 @@
-import { netClient } from "#sockets/netClient.ts";
 import { createProyectil } from "#utils/factories.ts";
 import BaseWeapon from "./BaseWeapon.ts";
 import type { BasePlayer } from "../BasePlayer.ts";
@@ -13,11 +12,9 @@ export default class ShotgunWeapon extends BaseWeapon {
         const angle = Phaser.Math.Angle.Between(this.player.x, this.player.y, targetPos.x, targetPos.y);
         const spread = 0.2;
         const angles = [angle - spread, angle, angle + spread];
-        const playerId = netClient.getLocalPlayerId();
 
         angles.forEach((a) => {
-            if (!netClient.isConnected()) createProyectil(this.scene, this.player.x, this.player.y, a, "BULLET", playerId);
-            netClient.sendFire(this.player.x, this.player.y, a, "BULLET");
+            createProyectil(this.scene, this.player.x, this.player.y, a, "BULLET", this.ownerId);
         });
     }
 }

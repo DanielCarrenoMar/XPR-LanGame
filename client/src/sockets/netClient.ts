@@ -1,7 +1,6 @@
 import { io, Socket } from "socket.io-client";
 import { Modificable } from "#src/modificable.ts";
-import { ProyectilType } from "#entities/proyectil/BaseProyectil.ts";
-import { KillData, NewPlayerData, PlayerHitData, PlayerState, ScoreKillData, SpawnBulletData, StructHitData, StructLifeMap } from "./types.ts";
+import { FireData, KillData, NewPlayerData, PlayerFireData, PlayerHitData, PlayerState, ScoreKillData, StructHitData, StructLifeMap } from "./types.ts";
 import { SERVER_URL } from "#src/config.ts";
 import { repository } from "#utils/repository.ts";
 
@@ -10,7 +9,7 @@ type ClientHandlers = {
     onPlayerAdded?: (player: PlayerState) => void;
     onPlayerMoved?: (player: PlayerState) => void;
     onPlayerRemoved?: (playerId: number) => void;
-    onPlayerShoot?: (data: SpawnBulletData) => void;
+    onPlayerFire?: (data: PlayerFireData) => void;
     onLocalPlayerId?: (playerId: number) => void;
     onPlayerHit?: (data: PlayerHitData) => void;
     onStructHit?: (data: StructHitData) => void;
@@ -69,8 +68,8 @@ class NetClient {
             this.handlers.onPlayerRemoved?.(playerId);
         });
 
-        this.socket.on("spawnBullet", (data: SpawnBulletData) => {
-            this.handlers.onPlayerShoot?.(data);
+        this.socket.on("fire", (data: PlayerFireData) => {
+            this.handlers.onPlayerFire?.(data);
         });
 
         this.socket.on("hit", (data: PlayerHitData) => {
@@ -155,9 +154,9 @@ class NetClient {
         this.socket.emit("posPlayer", { x, y, angle });
     }
 
-    sendFire(x: number, y: number, angle: number, bulletType: ProyectilType): void {
+    sendFire(targetX: number, targetY: number): void {
         if (!this.socket || !this.socket.connected) return;
-        this.socket.emit("fire", { x, y, angle, bulletType });
+        this.socket.emit("fire", { targetX, targetY } as FireData);
     }
 
     sendPlayerHit(targetId: number): void {

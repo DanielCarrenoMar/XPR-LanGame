@@ -2,6 +2,7 @@ import { GameObjects, Scene } from 'phaser';
 import { WeaponType } from '#src/modificable.ts';
 import { createWeapon } from '#utils/factories.ts';
 import BaseWeapon from './weapon/BaseWeapon.ts';
+import { netClient } from '#sockets/netClient.ts';
 
 export class BasePlayer extends GameObjects.Sprite
 {
@@ -100,6 +101,27 @@ export class BasePlayer extends GameObjects.Sprite
         if (this.isInvulnerable()) return;
         this.invunerableTime = this.invulnerabilityDurationMs;
         
+    }
+
+    protected handleFire(pointer: Phaser.Input.Pointer): void {
+        if (!pointer.isDown || !pointer.leftButtonDown()) {
+            return;
+        }
+
+        const targetPos = pointer.positionToCamera(this.scene.cameras.main) as Phaser.Math.Vector2;
+        this.fire(targetPos);
+    }
+
+    public fire(targetPos: Readonly<Phaser.Math.Vector2>, syncWithServer = true): void {
+        const playerPos = new Phaser.Math.Vector2(this.x, this.y);
+        const targetMirror = targetPos.clone().subtract(playerPos).scale(-1).add(playerPos);
+
+        this.frontWeapon?.fire(targetPos);
+        this.backWeapon?.fire(targetMirror);
+
+        if (syncWithServer) {
+            netClient.sendFire(targetPos.x, targetPos.y);
+        }
     }
 
     protected preUpdate(time: number, delta: number): void {

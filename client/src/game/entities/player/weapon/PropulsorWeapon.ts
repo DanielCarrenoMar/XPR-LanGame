@@ -29,6 +29,7 @@ export default class PropulsorWeapon extends BaseWeapon {
     }
 
     protected doFire(targetPos: Readonly<Phaser.Math.Vector2>): void {
+        if (!this.isLocalPlayerWeapon()) return
         const oppositeDirection = new Phaser.Math.Vector2(this.player.x - targetPos.x, this.player.y - targetPos.y);
         this.applyShotImpulse(oppositeDirection, this.impulseForce);
     }

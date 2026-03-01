@@ -75,21 +75,8 @@ export class LocalPlayer extends BasePlayer
         
         this.currentAimAngle = PhaserMath.Angle.Between(this.x, this.y, pointerPosition.x, pointerPosition.y);
 
-        this.handleShoot(pointer);
+        this.handleFire(pointer);
 
         this.updateVisuals();
     }
-
-    private handleShoot(pointer: Phaser.Input.Pointer): void {
-        if (!pointer.isDown || !pointer.leftButtonDown()) {
-            return;
-        }
-        const targetPos = pointer.positionToCamera(this.scene.cameras.main) as PhaserMath.Vector2;
-        const playerPos = new PhaserMath.Vector2(this.x, this.y);
-        const targetMirror = targetPos.clone().subtract(playerPos).scale(-1).add(playerPos);
-
-        this.frontWeapon?.fire(targetPos);
-        this.backWeapon?.fire(targetMirror);
-    }
-
 }

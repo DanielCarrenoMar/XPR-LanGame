@@ -1,4 +1,3 @@
-import { ProyectilType } from "#entities/proyectil/BaseProyectil.ts";
 import { WeaponType } from "#src/modificable.ts";
 
 export type PlayerState = {
@@ -24,12 +23,15 @@ export type PlayerHitData = {
 	targetId: number;
 }
 
-export type SpawnBulletData = {
+export type PlayerFireData = {
     id: number;
-    x: number;
-    y: number;
-    angle: number;
-    bulletType: ProyectilType;
+    targetX: number;
+    targetY: number;
+};
+
+export type FireData = {
+    targetX: number;
+    targetY: number;
 };
 
 export type StructHitData = {
