@@ -180,14 +180,6 @@ export default class Game extends Scene {
             this
         );
 
-        this.physics.add.overlap(
-            this.bulletGroup,
-            this.portalGroup,
-            this.handlePortalTeleport as Phaser.Types.Physics.Arcade.ArcadePhysicsCallback,
-            undefined,
-            this
-        );
-
         this.physics.add.collider(this.bulletGroup, this.floorLayer, (bulletObj, _layer) => {
             const bullet = bulletObj as BaseProyectil;
             bullet.destroy();
