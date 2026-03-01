@@ -1,14 +1,10 @@
-import { GameObjects, Scene } from "phaser";
+import { Scene } from "phaser";
+import IdStruct from "./IdStruct.ts";
+import { createdEvents } from "#utils/eventsDefinitions.ts";
 
-export default class HitStruct extends GameObjects.Sprite {
-	private static nextStructureId = 0;
+export default class HitStruct extends IdStruct {
 	private readonly maxLife;
     private life;
-	public readonly structureId: number;
-
-	public static resetStructureIds(): void {
-		HitStruct.nextStructureId = 0;
-	}
 
 	constructor(scene: Scene, x: number, y: number, texture: string, width: number, height: number, maxLife: number) {
 		super(scene, x, y, texture);
@@ -17,12 +13,7 @@ export default class HitStruct extends GameObjects.Sprite {
         this.setDisplaySize(width, height);
         this.setVisible(false); // Se volvera visible al sincronizar con el server
 
-		this.structureId = HitStruct.nextStructureId;
-		HitStruct.nextStructureId += 1;
-
-		scene.add.existing(this);
-		scene.physics.add.existing(this, true);
-		this.scene.events.emit("struct-created", this);
+		this.scene.events.emit(createdEvents.HIT_STRUCT_CREATED, this);
 	}
 
 	private setLife(life: number): void {

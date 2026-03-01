@@ -14,7 +14,7 @@ export default class Jojo extends BaseProyectil {
         body.setCircle(10);
         body.setVelocity(0, 0);
 
-        //scene.events.emit("melee-created", this);
+        //scene.events.emit(createdEvents.MELEE_CREATED, this);
     }
 
     setTargetPosition(targetPos: Readonly<Phaser.Math.Vector2>): void {

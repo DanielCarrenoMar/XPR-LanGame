@@ -1,12 +1,15 @@
-import HitStruct from "./HitStruct.ts";
+import { createdEvents } from "#utils/eventsDefinitions.ts";
+import IdStruct from "./IdStruct.ts";
 
-export default class Portal extends HitStruct {
+export default class Portal extends IdStruct {
 
     private linkedPortal: Portal | null = null;
     private linkedPortalStructureId: number | null = null;
 
     constructor(scene: Phaser.Scene, x: number, y: number, tintColor: number, texture: string = "shield") {
-        super(scene, x, y, texture, 68, 68, 1);
+        super(scene, x, y, texture);
+
+        this.setDisplaySize(68, 68);
 
         this.setAlpha(0.85);
 
@@ -15,7 +18,7 @@ export default class Portal extends HitStruct {
         this.setTint(tintColor);
         this.syncBody();
 
-        this.scene.events.emit("portal-created", this);
+        this.scene.events.emit(createdEvents.PORTAL_CREATED, this);
     }
 
     public setLinkedPortal(portal: Portal | null): void {
@@ -68,15 +71,5 @@ export default class Portal extends HitStruct {
         if (body) {
             body.updateFromGameObject();
         }
-    }
-
-    override setDamage(_damage: number): void { }
-
-    override onHit(): number {
-        return 1;
-    }
-
-    override onSyncServer(): void {
-        this.setVisible(this.active);
     }
 }

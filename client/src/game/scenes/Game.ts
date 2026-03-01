@@ -17,6 +17,7 @@ import SpawnMenu from '#componets/menus/SpawnMenu.ts';
 import Wall from '#entities/structs/Wall.ts';
 import Portal from '#entities/structs/Portal.ts';
 import { ScoreKillData, StructHitData, StructLifeMap } from '#sockets/types.ts';
+import { createdEvents } from '#utils/eventsDefinitions.ts';
 
 export default class Game extends Scene {
     private map: Phaser.Tilemaps.Tilemap;
@@ -95,20 +96,20 @@ export default class Game extends Scene {
         this.structGroup = this.physics.add.staticGroup();
         this.portalGroup = this.physics.add.staticGroup();
 
-        this.events.on("bullet-created", (bullet: BaseProyectil) => {
+        this.events.on(createdEvents.BULLET_CREATED, (bullet: BaseProyectil) => {
             this.bulletGroup.add(bullet);
         });
-        this.events.on("melee-created", (melee: BaseMelee) => {
+        this.events.on(createdEvents.MELEE_CREATED, (melee: BaseMelee) => {
             this.meleeGroup.add(melee);
         });
-        this.events.on("shield-created", (shield: BaseShield) => {
+        this.events.on(createdEvents.SHIELD_CREATED, (shield: BaseShield) => {
             this.shieldGroup.add(shield);
         });
-        this.events.on("struct-created", (struct: Wall) => {
+        this.events.on(createdEvents.HIT_STRUCT_CREATED, (struct: Wall) => {
             this.wallsById.set(struct.structureId, struct);
             this.structGroup.add(struct);
         });
-        this.events.on("portal-created", (portal: Portal) => {
+        this.events.on(createdEvents.PORTAL_CREATED, (portal: Portal) => {
             this.portalGroup.add(portal);
         });
     }

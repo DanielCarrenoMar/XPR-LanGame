@@ -1,3 +1,4 @@
+import { createdEvents } from "#utils/eventsDefinitions.ts";
 import {BaseProyectil} from "./BaseProyectil.ts";
 
 export default class Bullet extends BaseProyectil {
@@ -7,7 +8,7 @@ export default class Bullet extends BaseProyectil {
     constructor(scene: Phaser.Scene, x: number, y: number, angle: number, ownerId: number | null) {
         const velocity = new Phaser.Math.Vector2(Math.cos(angle), Math.sin(angle)).scale(300);
         super(scene, x, y, velocity, "BULLET", ownerId);
-        scene.events.emit("bullet-created", this);
+        scene.events.emit(createdEvents.BULLET_CREATED, this);
         const body = this.body as Phaser.Physics.Arcade.Body;
         body.setVelocity(this.spawnVelocity.x, this.spawnVelocity.y);
     }

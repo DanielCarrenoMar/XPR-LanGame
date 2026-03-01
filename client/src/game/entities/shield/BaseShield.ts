@@ -1,3 +1,5 @@
+import { createdEvents } from "#utils/eventsDefinitions.ts";
+
 export default abstract class BaseShield extends Phaser.GameObjects.Rectangle {
     protected ownerId: number | null = null;
 
@@ -6,7 +8,7 @@ export default abstract class BaseShield extends Phaser.GameObjects.Rectangle {
         this.setDisplaySize(width, height);
         scene.add.existing(this);
         scene.physics.add.existing(this, true);
-        this.scene.events.emit("shield-created", this);
+        this.scene.events.emit(createdEvents.SHIELD_CREATED, this);
 
         //const body = this.body as Phaser.Physics.Arcade.StaticBody;
     }

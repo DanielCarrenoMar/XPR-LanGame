@@ -1,3 +1,5 @@
+import { createdEvents } from "#utils/eventsDefinitions.ts";
+
 export default abstract class BaseMelee extends Phaser.GameObjects.Sprite {
     private hitDelay: number;
 
@@ -5,7 +7,7 @@ export default abstract class BaseMelee extends Phaser.GameObjects.Sprite {
         super(scene, x, y, texture);
         scene.add.existing(this);
         scene.physics.add.existing(this);
-        this.scene.events.emit("melee-created", this);
+        this.scene.events.emit(createdEvents.MELEE_CREATED, this);
         this.hitDelay = hitDelay;
     }
 
