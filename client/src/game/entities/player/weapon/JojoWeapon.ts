@@ -8,7 +8,7 @@ export default class JojoWeapon extends BaseWeapon {
     private lastFireAt = Number.NEGATIVE_INFINITY;
 
     constructor(scene: Phaser.Scene, x: number, y: number, player: BasePlayer) {
-        super(scene, x, y, player, "sword", 0);
+        super(scene, x, y, player, "sword", 10);
         this.jojo = new Jojo(scene, player.x, player.y, this.ownerId);
     }
 
