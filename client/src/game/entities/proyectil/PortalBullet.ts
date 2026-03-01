@@ -2,10 +2,10 @@ import { BaseProyectil } from "./BaseProyectil.ts";
 import Portal from "#entities/structs/Portal.ts";
 
 export default class PortalBullet extends BaseProyectil {
-    private static readonly SPEED = 430;
-    private static readonly DECELERATION = 720;
+    private static readonly SPEED = 530;
+    private static readonly DECELERATION = 620;
     private static readonly STOP_THRESHOLD = 10;
-    private static readonly MAX_LIFETIME = 2200;
+    private static readonly MAX_LIFETIME = 1200;
 
     private readonly targetPortal: Portal;
     private timer = 0;
