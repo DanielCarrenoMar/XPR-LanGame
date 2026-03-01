@@ -5,7 +5,7 @@ import { BaseProyectil } from "./BaseProyectil.ts";
 export default class Jojo extends BaseProyectil implements OnHitInterface {
     private static readonly INTERPOLATION_SPEED = 850;
     private targetPosition: Phaser.Math.Vector2;
-    private hitDelay: number;
+    private static readonly HITDELAY = 300;
 
     constructor(scene: Phaser.Scene, x: number, y: number, ownerId: number | null) {
         super(scene, x, y, new Phaser.Math.Vector2(0, 0), "JOJO", ownerId);
@@ -19,10 +19,11 @@ export default class Jojo extends BaseProyectil implements OnHitInterface {
 
         scene.events.emit(createdEvents.MELEE_CREATED, this);
     }
+
     onHit(): void {
         this.setActive(false);
 
-        this.scene.time.delayedCall(this.hitDelay, () => {
+        this.scene.time.delayedCall(Jojo.HITDELAY, () => {
             this.setActive(true);
         });
     }
