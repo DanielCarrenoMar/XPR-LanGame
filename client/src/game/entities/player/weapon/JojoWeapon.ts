@@ -18,12 +18,14 @@ export default class JojoWeapon extends BaseWeapon {
         if (!(this.scene.time.now - this.lastFireAt > this.idleReturnDelayMs)) return
 
         this.jojo.setTargetPosition(new Phaser.Math.Vector2(this.x, this.y));
+        this.jojo.setDamageable(false);
 
     }
 
     protected doFire(targetPos: Readonly<Phaser.Math.Vector2>): void {
         this.lastFireAt = this.scene.time.now;
         this.jojo.setTargetPosition(targetPos);
+        this.jojo.setDamageable(true);
     }
 
     override setOwnerId(id: number): void {
