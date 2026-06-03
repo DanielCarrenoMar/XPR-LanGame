@@ -5,6 +5,7 @@ import type { BasePlayer } from "../BasePlayer.ts";
 export default class JojoWeapon extends BaseWeapon {
     private readonly jojo: Jojo;
     private readonly idleReturnDelayMs = 130;
+    private readonly maxDistanceFromPlayer = 250;
     private lastFireAt = Number.NEGATIVE_INFINITY;
 
     constructor(scene: Phaser.Scene, x: number, y: number, player: BasePlayer) {
@@ -24,8 +25,24 @@ export default class JojoWeapon extends BaseWeapon {
 
     protected doFire(targetPos: Readonly<Phaser.Math.Vector2>): void {
         this.lastFireAt = this.scene.time.now;
-        this.jojo.setTargetPosition(targetPos);
+        this.jojo.setTargetPosition(this.clampTargetToPlayer(targetPos.x, targetPos.y));
         this.jojo.setDamageable(true);
+    }
+
+    private clampTargetToPlayer(targetX: number, targetY: number): Phaser.Math.Vector2 {
+        const dx = targetX - this.player.x;
+        const dy = targetY - this.player.y;
+        const distance = Math.hypot(dx, dy);
+
+        if (distance <= this.maxDistanceFromPlayer || distance === 0) {
+            return new Phaser.Math.Vector2(targetX, targetY);
+        }
+
+        const scale = this.maxDistanceFromPlayer / distance;
+        return new Phaser.Math.Vector2(
+            this.player.x + dx * scale,
+            this.player.y + dy * scale,
+        );
     }
 
     override setOwnerId(id: number): void {
