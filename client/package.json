@@ -10,6 +10,7 @@
         "#scenes/*": "./src/game/scenes/*",
         "#sockets/*": "./src/sockets/*",
         "#utils/*": "./src/game/utils/*",
+        "#collisions/*": "./src/game/collisions/*",
         "#src/*": "./src/*"
     },
     "scripts": {

@@ -36,7 +36,8 @@ export class BasePlayer extends GameObjects.Sprite
         y: number,
         frontModule: WeaponType,
         backModule: WeaponType,
-        name: string
+        name: string,
+        collisionGroup: Phaser.Physics.Arcade.Group
     ) {
         super(scene, x, y, "player");
         this.setDisplaySize(130, 130);
@@ -71,6 +72,8 @@ export class BasePlayer extends GameObjects.Sprite
         this.backAccessory?.setDisplaySize(128, 128);
         this.startBlinkLoop();
         this.updateVisuals();
+
+        collisionGroup.add(this);
     }
 
     public setPlayerId(id: number): void {

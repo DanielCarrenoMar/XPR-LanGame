@@ -12,9 +12,10 @@ export class RemotePlayer extends BasePlayer
 
     constructor(
         scene: Scene,
-        playerState: PlayerState
+        playerState: PlayerState,
+        collisionGroup: Phaser.Physics.Arcade.Group
     ) {
-        super(scene, playerState.x, playerState.y, playerState.frontModule, playerState.backModule, playerState.name);
+        super(scene, playerState.x, playerState.y, playerState.frontModule, playerState.backModule, playerState.name, collisionGroup);
         this.targetX = playerState.x;
         this.targetY = playerState.y;
         this.targetAngle = playerState.angle;

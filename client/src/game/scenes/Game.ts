@@ -1,12 +1,8 @@
-import { GameObjects, Scene } from 'phaser';
+import { Scene } from 'phaser';
 import { RemotePlayer } from '#player/RemotePlayer.ts';
 import { LocalPlayer } from '#player/LocalPlayer.ts';
-import { BaseProyectil } from '#entities/proyectil/BaseProyectil.ts';
-import { BasePlayer } from '#player/BasePlayer.ts';
-import BaseMelee from '#entities/melee/BaseMelee.ts';
 import { PlayerState } from '#sockets/types.ts';
 import { netClient } from '#sockets/netClient.ts';
-import BaseShield from '#entities/shield/BaseShield.ts';
 import { repository } from '#utils/repository.ts';
 import InputNameMenu from '#componets/menus/InputNameMenu.ts';
 import PauseMenu from '#componets/menus/PauseMenu.ts';
@@ -15,10 +11,18 @@ import LifeBar from '#componets/LifeBar.ts';
 import AlertText from '#componets/AlertText.ts';
 import SpawnMenu from '#componets/menus/SpawnMenu.ts';
 import Wall from '#entities/structs/Wall.ts';
-import Portal from '#entities/structs/Portal.ts';
 import { ScoreKillData, StructHitData, StructLifeMap } from '#sockets/types.ts';
 import { createdEvents } from '#utils/eventsDefinitions.ts';
-import OnHitInterface from '#entities/DamageEntityInterface.ts';
+import { CollisionManager } from '#collisions/CollisionManager.ts';
+import { CollisionGroupId } from '#collisions/types.ts';
+import makeDamageHandler from '#collisions/handlers/damageHandler.ts';
+import makeShieldBlockHandler from '#collisions/handlers/shieldBlockHandler.ts';
+import makeStructHitHandler from '#collisions/handlers/structHitHandler.ts';
+import makePortalTeleportHandler from '#collisions/handlers/portalTeleportHandler.ts';
+import makeDespawnHandler from '#collisions/handlers/despawnHandler.ts';
+import { composeCollisionHandlers } from '#collisions/compose.ts';
+
+type GroupEntry = Phaser.Types.Physics.Arcade.ArcadeColliderType;
 
 export default class Game extends Scene {
     private map: Phaser.Tilemaps.Tilemap;
@@ -26,12 +30,8 @@ export default class Game extends Scene {
     private camera: Phaser.Cameras.Scene2D.Camera;
     private player: LocalPlayer;
     private remotePlayers: Map<number, RemotePlayer>;
-    private playersGroup!: Phaser.Physics.Arcade.Group;
-    private bulletGroup!: Phaser.Physics.Arcade.Group;
-    private meleeGroup!: Phaser.Physics.Arcade.Group;
-    private shieldGroup!: Phaser.Physics.Arcade.StaticGroup;
-    private structGroup!: Phaser.Physics.Arcade.StaticGroup;
-    private portalGroup!: Phaser.Physics.Arcade.StaticGroup;
+    private collisionGroups!: Record<CollisionGroupId, GroupEntry>;
+    private collisionManager!: CollisionManager;
     private playerHasName = false;
     private activeMenu: Phaser.GameObjects.Container | null = null;
     private lifeBar: LifeBar | null = null;
@@ -90,29 +90,27 @@ export default class Game extends Scene {
     }
 
     private setupCollisionGroups(): void {
-        this.playersGroup = this.physics.add.group();
-        this.bulletGroup = this.physics.add.group();
-        this.meleeGroup = this.physics.add.group();
-        this.shieldGroup = this.physics.add.staticGroup();
-        this.structGroup = this.physics.add.staticGroup();
-        this.portalGroup = this.physics.add.staticGroup();
+        this.collisionGroups = {
+            players: this.physics.add.group(),
+            bullets: this.physics.add.group(),
+            melee: this.physics.add.group(),
+            shields: this.physics.add.staticGroup(),
+            structs: this.physics.add.staticGroup(),
+            portals: this.physics.add.staticGroup(),
+            floor: this.physics.add.staticGroup(),
+        };
 
-        this.events.on(createdEvents.BULLET_CREATED, (bullet: BaseProyectil) => {
-            this.bulletGroup.add(bullet);
-        });
-        this.events.on(createdEvents.MELEE_CREATED, (melee: BaseMelee) => {
-            this.meleeGroup.add(melee);
-        });
-        this.events.on(createdEvents.SHIELD_CREATED, (shield: BaseShield) => {
-            this.shieldGroup.add(shield);
-        });
-        this.events.on(createdEvents.HIT_STRUCT_CREATED, (struct: Wall) => {
-            this.wallsById.set(struct.structureId, struct);
-            this.structGroup.add(struct);
-        });
-        this.events.on(createdEvents.PORTAL_CREATED, (portal: Portal) => {
-            this.portalGroup.add(portal);
-        });
+        this.collisionManager = new CollisionManager(this, this.collisionGroups, [
+            { event: createdEvents.BULLET_CREATED, group: 'bullets' },
+            { event: createdEvents.MELEE_CREATED, group: 'melee' },
+            { event: createdEvents.SHIELD_CREATED, group: 'shields' },
+            {
+                event: createdEvents.HIT_STRUCT_CREATED,
+                group: 'structs',
+                onCreated: (wall: Wall) => this.wallsById.set(wall.structureId, wall),
+            },
+            { event: createdEvents.PORTAL_CREATED, group: 'portals' },
+        ]);
     }
 
     private setupMap() {
@@ -135,55 +133,29 @@ export default class Game extends Scene {
 
         this.physics.world.setBounds(0, 0, this.map.widthInPixels, this.map.heightInPixels);
 
+        this.collisionGroups.floor = this.floorLayer;
+        this.collisionManager.setGroup('floor', this.floorLayer);
+
         loadStructureFromTiledMap(this, this.map, "Structures")
     }
 
     private setupCollision(): void {
-        this.physics.add.overlap(
-            this.playersGroup,
-            this.bulletGroup,
-            this.handleDamageEntityHit as Phaser.Types.Physics.Arcade.ArcadePhysicsCallback,
-            undefined,
-            this
-        );
-        this.physics.add.overlap(
-            this.playersGroup,
-            this.meleeGroup,
-            this.handleDamageEntityHit as Phaser.Types.Physics.Arcade.ArcadePhysicsCallback,
-            undefined,
-            this
-        );
-        this.physics.add.overlap(
-            this.bulletGroup,
-            this.shieldGroup,
-            this.handleShieldBlock as Phaser.Types.Physics.Arcade.ArcadePhysicsCallback,
-            undefined,
-            this
-        );
+        const damage = makeDamageHandler();
+        const shieldBlock = makeShieldBlockHandler();
+        const structHit = makeStructHitHandler();
+        const portal = makePortalTeleportHandler();
+        const despawn = makeDespawnHandler();
 
-        this.physics.add.collider(this.player, this.floorLayer);
-        this.physics.add.collider(this.playersGroup, this.structGroup);
-
-        this.physics.add.overlap(
-            this.bulletGroup,
-            this.structGroup,
-            this.handleStructHit as Phaser.Types.Physics.Arcade.ArcadePhysicsCallback,
-            undefined,
-            this
-        );
-
-        this.physics.add.overlap(
-            this.playersGroup,
-            this.portalGroup,
-            this.handlePortalTeleport as Phaser.Types.Physics.Arcade.ArcadePhysicsCallback,
-            undefined,
-            this
-        );
-
-        this.physics.add.collider(this.bulletGroup, this.floorLayer, (bulletObj, _layer) => {
-            const bullet = bulletObj as BaseProyectil;
-            bullet.destroy();
-        });
+        this.collisionManager.addRule({ source: 'players', target: 'bullets', kind: 'overlap', handler: damage });
+        this.collisionManager.addRule({ source: 'players', target: 'melee', kind: 'overlap', handler: damage });
+        this.collisionManager.addRule({ source: 'bullets', target: 'shields', kind: 'overlap', handler: shieldBlock });
+        this.collisionManager.addRule({ source: 'bullets', target: 'structs', kind: 'overlap', handler: composeCollisionHandlers(structHit, despawn) });
+        this.collisionManager.addRule({ source: 'melee', target: 'structs', kind: 'overlap', handler: structHit });
+        this.collisionManager.addRule({ source: 'players', target: 'portals', kind: 'overlap', handler: portal });
+        this.collisionManager.addRule({ source: 'players', target: 'structs', kind: 'collider' });
+        this.collisionManager.addRule({ source: 'players', target: 'floor', kind: 'collider' });
+        
+        this.collisionManager.addRule({ source: 'bullets', target: 'floor', kind: 'collider', handler: despawn });
     }
 
     private setupNet() {
@@ -236,8 +208,7 @@ export default class Game extends Scene {
     }
 
     private setupPlayer(playerSpawnX: number, playerSpawnY: number, name: string = 'Player') {
-        this.player = new LocalPlayer(this, playerSpawnX, playerSpawnY, name);
-        this.playersGroup.add(this.player);
+        this.player = new LocalPlayer(this, playerSpawnX, playerSpawnY, name, this.collisionGroups.players as Phaser.Physics.Arcade.Group);
         this.camera.startFollow(this.player, false, 0.08, 0.08);
 
         if (!this.lifeBar) {
@@ -335,16 +306,15 @@ export default class Game extends Scene {
         });
     }
 
-    private addRemotePlayer(player: PlayerState): void {
-        if (this.remotePlayers.has(player.id)) {
+    private addRemotePlayer(playerState: PlayerState): void {
+        if (this.remotePlayers.has(playerState.id)) {
             return;
         }
-        const other = new RemotePlayer(this, player);
-        other.setPlayerId(player.id);
-        other.applyRemoteState(player.x, player.y, player.angle ?? 0);
+        const other = new RemotePlayer(this, playerState, this.collisionGroups.players as Phaser.Physics.Arcade.Group);
+        other.setPlayerId(playerState.id);
+        other.applyRemoteState(playerState.x, playerState.y, playerState.angle ?? 0);
 
-        this.remotePlayers.set(player.id, other);
-        this.playersGroup.add(other);
+        this.remotePlayers.set(playerState.id, other);
     }
 
     private moveRemotePlayer(player: PlayerState): void {
@@ -359,17 +329,15 @@ export default class Game extends Scene {
             return;
         }
 
-        this.playersGroup.remove(other, false, false);
+        (this.collisionGroups.players as Phaser.Physics.Arcade.Group).remove(other, false, false);
         other.destroy();
         this.remotePlayers.delete(playerId);
     }
 
     private hitPlayer(data: { fromId: number; targetId: number }): void {
         if (data.targetId === this.player.getPlayerId()) {
-            this.player.onHit();
+            this.onLocalPlayerDamaged();
             const isDead = this.player.getLives() <= 0;
-            this.applyDamageCameraShake();
-            this.lifeBar?.setLives(this.player.getLives(), this.player.getMaxLives());
             if (isDead) {
                 const killerPlayer = this.remotePlayers.get(data.fromId);
                 if (killerPlayer) {
@@ -394,6 +362,12 @@ export default class Game extends Scene {
         if (!player) return
 
 
+    }
+
+    private onLocalPlayerDamaged(): void {
+        this.player.onHit();
+        this.applyDamageCameraShake();
+        this.lifeBar?.setLives(this.player.getLives(), this.player.getMaxLives());
     }
 
     private applyDamageCameraShake(): void {
@@ -424,58 +398,5 @@ export default class Game extends Scene {
         this.wallsById.forEach((wall) => {
             wall.onSyncServer();
         })
-    }
-
-    private handleDamageEntityHit(player: BasePlayer, damageEntity: Phaser.GameObjects.GameObject & OnHitInterface): void {
-        if (!damageEntity.isDamageable()) return
-        if (damageEntity.getOwnerId() === player.getPlayerId()) return
-        if (player.getPlayerId() === netClient.getLocalPlayerId()) return
-
-        damageEntity.onHit();
-        player.onHit();
-        netClient.sendPlayerHit(player.getPlayerId());
-    }
-
-    private handleShieldBlock: Phaser.Types.Physics.Arcade.ArcadePhysicsCallback = (bulletObj, shieldObj) => {
-        const bullet = (bulletObj as unknown) as BaseProyectil;
-        const shield = (shieldObj as unknown) as Phaser.GameObjects.GameObject & { ownerId?: number | null, rotation?: number };
-
-        if (!bullet || !shield || !bullet.active || !shield.active || !bullet.body) {
-            return;
-        }
-
-        if (bullet.getOwnerId() === shield.ownerId) {
-            return;
-        }
-
-        bullet.destroy();
-    }
-
-    private handleStructHit: Phaser.Types.Physics.Arcade.ArcadePhysicsCallback = (bulletObj, structObj) => {
-        const bullet = bulletObj as BaseProyectil;
-        const wall = structObj as Wall;
-
-        if (!bullet || !wall || !bullet.active || !wall.active) {
-            return;
-        }
-
-        if (!bullet.isDamageable()) {
-            return;
-        }
-
-        wall.onHit();
-        netClient.sendHitStruct(wall.structureId);
-        bullet.destroy();
-    }
-
-    private handlePortalTeleport: Phaser.Types.Physics.Arcade.ArcadePhysicsCallback = (objA, portalObj) => {
-        const firstObj = objA as Phaser.GameObjects.GameObject;
-        const portal = portalObj as Portal
-
-        if (!portal || !firstObj || !firstObj.active || !portal.active) {
-            return;
-        }
-
-        portal.teleport(firstObj);
     }
 }

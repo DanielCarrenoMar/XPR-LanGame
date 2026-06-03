@@ -20,9 +20,10 @@ export class LocalPlayer extends BasePlayer
         scene: Scene,
         x: number,
         y: number,
-        name: string
+        name: string,
+        collisionGroup: Phaser.Physics.Arcade.Group
     ) {
-        super(scene, x, y, Modificable.frontModule, Modificable.backModule, name);
+        super(scene, x, y, Modificable.frontModule, Modificable.backModule, name, collisionGroup);
 
         this.speed = 220;
         this.keys = scene.input.keyboard?.addKeys('W,A,S,D') as WasdKeys | null;
